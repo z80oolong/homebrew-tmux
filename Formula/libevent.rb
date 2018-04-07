@@ -1,9 +1,9 @@
 class Libevent < Formula
   desc "Asynchronous event library"
   homepage "http://libevent.org"
-  url "https://github.com/libevent/libevent/archive/d057c45e8f48aa90d8b340cac4c8ae4cc8b5d0ac.zip"
-  sha256 "c312b12a9db35adcb7194adb4df27b52856f53577d203d4b8f3fb0318f8395e2"
-  version "2.2.0-alpha-dev"
+  url "https://github.com/libevent/libevent/archive/791e3de0c38f9f413f33addcac2d8bca68590ca6.zip"
+  sha256 "3a169bc403db4e543b0a93c2e677d8b3f15b983482055aa3ddd8378fed047f80"
+  version "2.2.0-beta-dev"
 
   head do
     url "http://github.com/libevent/libevent.git"

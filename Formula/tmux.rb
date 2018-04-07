@@ -22,12 +22,12 @@ class Tmux < Formula
 
   if build.head? || build.devel?
     patch do
-      url "https://gist.githubusercontent.com/z80oolong/e65baf0d590f62fab8f4f7c358cbcc34/raw/40f71e0cff487ab5c927c0af267cd53c3a04ebc9/tmux-HEAD-9464b94f-fix.diff"
-      sha256 "f23beedbe51f7c192b2f9e7bc78aa5d0f880d6bcaab89f94e6f86e6d586e7933"
+      url "https://raw.githubusercontent.com/z80oolong/diffs/master/tmux/tmux-HEAD-b5c0b2ca-fix.diff"
+      sha256 "5ffde6a168226783e167bb9755def9c8104a06bd83a0bb22a35b7384e1023f04"
     end
   else    
     patch do
-      url "https://gist.githubusercontent.com/z80oolong/e65baf0d590f62fab8f4f7c358cbcc34/raw/cc766299a4ce75ee21b839a74020439fb0d9625b/tmux-2.6-fix.diff"
+      url "https://raw.githubusercontent.com/z80oolong/diffs/master/tmux/tmux-2.6-fix.diff"
       sha256 "406fce895df3f0a1dc745ef7cd15784f4114b3841fe8ee7a51b0d456c213b03b"
     end
   end

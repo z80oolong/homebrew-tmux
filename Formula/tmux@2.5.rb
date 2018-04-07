@@ -17,7 +17,7 @@ class TmuxAT25 < Formula
   end
 
   patch do
-    url "https://gist.githubusercontent.com/z80oolong/e65baf0d590f62fab8f4f7c358cbcc34/raw/365d948925bbd1be513c8ae9fb34ff85b499681c/tmux-2.5-fix.diff"
+    url "https://raw.githubusercontent.com/z80oolong/diffs/master/tmux/tmux-2.5-fix.diff"
     sha256 "4fc930a37c0ef199342a1d6450628d0cdf92c32cda5daa2428f494f73f0b3377"
   end
 
