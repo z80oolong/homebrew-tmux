@@ -1,8 +1,8 @@
 class Tmux < Formula
   desc "Terminal multiplexer"
   homepage "https://tmux.github.io/"
-  url "https://github.com/tmux/tmux/releases/download/2.6/tmux-2.6.tar.gz"
-  sha256 "b17cd170a94d7b58c0698752e1f4f263ab6dc47425230df7e53a6435cc7cd7e8"
+  url "https://github.com/tmux/tmux/releases/download/2.7/tmux-2.7.tar.gz"
+  sha256 "9ded7d100313f6bc5a87404a4048b3745d61f2332f99ec1400a7c4ed9485d452"
 
   depends_on "pkg-config" => :build
   depends_on "z80oolong/tmux/libevent"
@@ -22,13 +22,13 @@ class Tmux < Formula
 
   if build.head? || build.devel?
     patch do
-      url "https://raw.githubusercontent.com/z80oolong/diffs/master/tmux/tmux-HEAD-b5c0b2ca-fix.diff"
-      sha256 "5ffde6a168226783e167bb9755def9c8104a06bd83a0bb22a35b7384e1023f04"
+      url "https://raw.githubusercontent.com/z80oolong/diffs/master/tmux/tmux-HEAD-ae0b7c7d-fix.diff"
+      sha256 "5575860a09b7c5634ce21ac906ef151d29a9d21fe8e84e043ee2f791ccd1e826"
     end
-  else    
+  else
     patch do
-      url "https://raw.githubusercontent.com/z80oolong/diffs/master/tmux/tmux-2.6-fix.diff"
-      sha256 "406fce895df3f0a1dc745ef7cd15784f4114b3841fe8ee7a51b0d456c213b03b"
+      url "https://raw.githubusercontent.com/z80oolong/diffs/master/tmux/tmux-2.7-fix.diff"
+      sha256 "5ffde6a168226783e167bb9755def9c8104a06bd83a0bb22a35b7384e1023f04"
     end
   end
 
