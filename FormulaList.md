@@ -48,6 +48,10 @@ Unicode の規格における東アジア圏の各種文字のうち、いわゆ
 
 上述の Formula によって導入される [tmux][TMUX] に依存するライブラリである [libevent][LIBE] を導入するための Formula です。オリジナルの [libevent][LIBE] の Formula と異なり、安定版の [libevent][LIBE] では、テストプログラムで不具合が発生するため、 [Github 上の libevent][GLEV] を使用しています。
 
+### z80oolong/tmux/doxygen
+
+上述の Formula によって導入される [libevent][LIBE] に依存するライブラリである [doxygen][DOXY] を導入するための Formula です。オリジナルの [doxygen][LIBE] の Formula の安定版において、ソースコードの tarball が取得できない問題を解決しています。
+
 <!-- 外部リンク一覧 -->
 
 [BREW]:https://linuxbrew.sh/
@@ -55,4 +59,5 @@ Unicode の規格における東アジア圏の各種文字のうち、いわゆ
 [EAWA]:http://www.unicode.org/reports/tr11/#Ambiguous
 [GST1]:https://gist.github.com/z80oolong/e65baf0d590f62fab8f4f7c358cbcc34
 [LIBE]:http://libevent.org/
+[DOXY]:http://www.doxygen.org/
 [GLEV]:https://github.com/libevent/libevent
