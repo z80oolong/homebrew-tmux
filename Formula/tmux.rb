@@ -22,8 +22,8 @@ class Tmux < Formula
 
   if build.head? || build.devel?
     patch do
-      url "https://raw.githubusercontent.com/z80oolong/diffs/master/tmux/tmux-HEAD-71d2ab18-fix.diff"
-      sha256 "62d7b7b9f3cc981f89ff3e3524606133abe5730674894d58d5ac6518b87a44c3"
+      url "https://raw.githubusercontent.com/z80oolong/diffs/master/tmux/tmux-HEAD-6abb62df-fix.diff"
+      sha256 "6c9cc81294b1f858aae44e9d0dbf90351d786271c169b8a35bb411fd2ba4e699"
     end
   else
     patch do
