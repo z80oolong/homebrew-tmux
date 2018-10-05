@@ -1,10 +1,9 @@
-class Doxygen < Formula
+class DoxygenAT18 < Formula
   desc "Generate documentation for several programming languages"
   homepage "http://www.doxygen.org/"
   url "https://github.com/doxygen/doxygen/archive/Release_1_8_14.tar.gz"
   version "1.8.14"
   sha256 "18bc3790b4d5f4d57cb8ee0a77dd63a52518f3f70d7fdff868a7ce7961a6edc3"
-  head "https://github.com/doxygen/doxygen.git"
 
   option "with-graphviz", "Build with dot command support from Graphviz."
   option "with-qt", "Build GUI frontend with Qt support."
@@ -21,6 +20,8 @@ class Doxygen < Formula
   depends_on "llvm" => :optional
   depends_on "bison" unless OS.mac?
   depends_on "flex" unless OS.mac?
+
+  keg_only :versioned_formula
 
   def install
     args = std_cmake_args << "-DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=#{MacOS.version}"

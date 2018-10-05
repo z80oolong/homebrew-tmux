@@ -1,17 +1,14 @@
-class Libevent < Formula
+class LibeventAT22 < Formula
   desc "Asynchronous event library"
   homepage "http://libevent.org"
-  url "https://github.com/libevent/libevent/archive/791e3de0c38f9f413f33addcac2d8bca68590ca6.zip"
-  sha256 "3a169bc403db4e543b0a93c2e677d8b3f15b983482055aa3ddd8378fed047f80"
+  url "https://github.com/libevent/libevent/archive/8483c5351abdd18766232de8431290165717bd57.zip"
+  sha256 "0697880747f7252b563e13b6b52b22f568b26562e7eaa49cc2a69c5dfb10ad5c"
   version "2.2.0-beta-dev"
-
-  head do
-    url "http://github.com/libevent/libevent.git"
-  end
+  revision 1
 
   depends_on "autoconf" => :build
   depends_on "automake" => :build
-  depends_on "z80oolong/tmux/doxygen" => :build
+  depends_on "z80oolong/tmux/doxygen@1.8" => :build
   depends_on "libtool" => :build
   depends_on "pkg-config" => :build
   depends_on "openssl"
@@ -19,7 +16,11 @@ class Libevent < Formula
   conflicts_with "pincaster",
     :because => "both install `event_rpcgen.py` binaries"
 
+  keg_only :versioned_formula
+
   def install
+    ENV["PATH"] = "#{Formula["z80oolong/tmux/doxygen@1.8"].opt_bin}:#{ENV["PATH"]}"
+
     inreplace "Doxyfile", /GENERATE_MAN\s*=\s*NO/, "GENERATE_MAN = YES"
     system "./autogen.sh"
     system "./configure", "--disable-dependency-tracking",

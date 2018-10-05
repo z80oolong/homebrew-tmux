@@ -7,7 +7,7 @@ class TmuxAT25 < Formula
   keg_only :versioned_formula
 
   depends_on "pkg-config" => :build
-  depends_on "z80oolong/tmux/libevent"
+  depends_on "z80oolong/tmux/libevent@2.2"
   depends_on "utf8proc" => :optional
   depends_on "ncurses" unless OS.mac?
 
@@ -22,7 +22,9 @@ class TmuxAT25 < Formula
   end
 
   def install
-    system "sh", "autogen.sh" if build.head?
+    ENV.append "CFLAGS",   "-I#{Formula["z80oolong/tmux/libevent@2.2"].opt_include}"
+    ENV.append "CPPFLAGS", "-I#{Formula["z80oolong/tmux/libevent@2.2"].opt_include}"
+    ENV.append "LDFLAGS",  "-L#{Formula["z80oolong/tmux/libevent@2.2"].opt_lib}"
 
     args = %W[
       --disable-Dependency-tracking

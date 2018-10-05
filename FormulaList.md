@@ -12,6 +12,8 @@ Unicode の規格における東アジア圏の各種文字のうち、いわゆ
 
 即ち、この Formula は、 [tmux][TMUX] に、 "[East Asian Ambiguous Character を全角文字の幅で表示する差分ファイル][GST1]" を適用したものを導入します。
 
+なお、 ```brew install --devel z80oolong/tmux/tmux``` として devel 版をインストールすることにより、安定版のプレリリース版の [tmux 2.8-rc][TMUX] を導入する事が可能です。
+
 ### z80oolong/tmux/tmux@2.3
 
 この Formula は、旧安定版である [tmux 2.3][TMUX] に、 "[East Asian Ambiguous Character を全角文字の幅で表示する差分ファイル][GST1]" を適用したものを導入します。
@@ -44,13 +46,17 @@ Unicode の規格における東アジア圏の各種文字のうち、いわゆ
 
 この Formula によって導入される [tmux][TMUX] を使用するには、 ```brew link --force z80oolong/tmux/tmux@2.7``` コマンドを実行する必要があります。
 
-### z80oolong/tmux/libevent
+### z80oolong/tmux/libevent@2.2
 
 上述の Formula によって導入される [tmux][TMUX] に依存するライブラリである [libevent][LIBE] を導入するための Formula です。オリジナルの [libevent][LIBE] の Formula と異なり、安定版の [libevent][LIBE] では、テストプログラムで不具合が発生するため、 [Github 上の libevent][GLEV] を使用しています。
 
-### z80oolong/tmux/doxygen
+**この Formula は、 versioned formula であるため、この Formula によって導入される [libevent][LIBE] は、 keg only で導入されることに留意して下さい。**
+
+### z80oolong/tmux/doxygen@1.8
 
 上述の Formula によって導入される [libevent][LIBE] に依存するライブラリである [doxygen][DOXY] を導入するための Formula です。オリジナルの [doxygen][LIBE] の Formula の安定版において、ソースコードの tarball が取得できない問題を解決しています。
+
+**この Formula は、 versioned formula であるため、この Formula によって導入される [doxygen][DOXY] は、 keg only で導入されることに留意して下さい。**
 
 <!-- 外部リンク一覧 -->
 
