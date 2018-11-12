@@ -58,6 +58,12 @@ Unicode の規格における東アジア圏の各種文字のうち、いわゆ
 
 **この Formula は、 versioned formula であるため、この Formula によって導入される [doxygen][DOXY] は、 keg only で導入されることに留意して下さい。**
 
+### z80oolong/tmux/got-bin
+
+[@gorilla0513 氏][GORI]による、 tmux の session の一覧を表示し、 attach と削除を容易に行うためのソフトウェアである [got][GOT_] を導入するための Formula です。
+
+なお、この Formula は build 済の x86-64 Linux 及び Mac OS 対応のバイナリファイルを導入するものであり、これ以外のアーキテクチャについては、
+
 <!-- 外部リンク一覧 -->
 
 [BREW]:https://linuxbrew.sh/
@@ -67,3 +73,5 @@ Unicode の規格における東アジア圏の各種文字のうち、いわゆ
 [LIBE]:http://libevent.org/
 [DOXY]:http://www.doxygen.org/
 [GLEV]:https://github.com/libevent/libevent
+[GORI]:https://qiita.com/gorilla0513
+[GOT_]:https://github.com/skanehira/got
