@@ -62,7 +62,17 @@ Unicode の規格における東アジア圏の各種文字のうち、いわゆ
 
 [@gorilla0513 氏][GORI]による、 tmux の session の一覧を表示し、 attach と削除を容易に行うためのソフトウェアである [got][GOT_] を導入するための Formula です。
 
-なお、この Formula は build 済の x86-64 Linux 及び Mac OS 対応のバイナリファイルを導入するものであり、これ以外のアーキテクチャについては、
+なお、この Formula は x86-64 Linux 及び Mac OS 向けの build 済バイナリファイルを導入するものであり、これ以外のアーキテクチャについては、後述する Formula である ```z80oolong/tmux/got-src``` を、 ```brew install z80oolong/tmux/got-src``` コマンドを用いて導入した上で、 ```brew link --force z80oolong/tmux/got-src``` を用いて [got][GOT_] コマンドのリンクを行って下さい。
+
+### z80oolong/tmux/got-src
+
+[@gorilla0513 氏][GORI]による、 [got][GOT_] をソースコードから build することにより、導入するための Formula です。
+
+**この Formula は、 ```z80oolong/tmux/got-bin``` と競合するため、この Formula によって導入される [got][GOT_] は、 keg only で導入されることに留意して下さい。**
+
+### z80oolong/tmux/got
+
+[@gorilla0513 氏][GORI]による、 [got][GOT_] を導入するための Formula である ```z80oolong/tmux/got-bin``` の alias です。
 
 <!-- 外部リンク一覧 -->
 

@@ -3,7 +3,7 @@ class GotBin < Formula
   homepage "https://github.com/skanehira/got/"
   version "1.0.2"
 
-  depends_on "z80oolong/tmux/tmux" => :recommended
+  depends_on "z80oolong/tmux/tmux" => :optional
 
   # `got` binary file is x86-64 architecture only.
   if Hardware::CPU.is_32_bit? then
