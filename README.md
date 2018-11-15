@@ -8,6 +8,8 @@
 
 即ち、この Tap リポジトリに含まれる Formula は、端末多重化ソフトウェアである [tmux][TMUX] に、 "[East Asian Ambiguous Character を全角文字の幅で表示する差分ファイル][GST1]" を適用したものを導入します。
 
+また、 [powerline][POWE] や [got][GOT_] 等、本リポジトリで導入される [tmux][TMUX] を使用する際に有用となるツールを導入するための Formula も同梱しています。
+
 ## 使用法
 
 まず最初に、以下に示す Qiita の投稿及び Web ページの記述に基づいて、手元の端末に [Linuxbrew][BREW] を構築し、以下のように  ```brew tap``` コマンドを用いて本リポジトリを導入します。
@@ -42,6 +44,11 @@
 
 [http://www.cl.cam.ac.uk/~mgk25/ucs/wcwidth.c][WCWD]
 
+そして、本リポジトリで導入される [tmux][TMUX] を使用するにあたって非常に有用であるツールであり：
+
+- 端末上で [tmux][TMUX] のセッション選択を容易にするツールである [got][GOT_] を作成された [@gorilla0513 氏][GORI]に心より感謝致します。
+- [tmux][TMUX] のステータスラインを機能的に装飾するツールである Fabrizio Schiavi 氏を始めとする [powerline][POWE] の開発コミュニティの各氏に心より感謝致します。
+
 そして、[Linuxbrew][BREW] の導入に関しては、 [Linuxbrew の公式ページ][BREW] の他、 [thermes 氏][THER]による "[Linuxbrew のススメ][THBR]" 及び [Linuxbrew][BREW] 関連の各種資料を参考にしました。 [Linuxbrew の開発コミュニティ][BREW]及び[thermes 氏][THER]を始めとする各氏に心より感謝致します。
 
 そして最後に、 [tmux][TMUX] の作者である [Nicholas Marriott 氏][NICM]を初め、 [tmux][TMUX] に関わる全ての皆様及び、 [Linuxbrew][BREW] に関わる全ての皆様に心より感謝致します。
@@ -62,5 +69,8 @@
 [WCWD]:http://www.cl.cam.ac.uk/~mgk25/ucs/wcwidth.c
 [DRMK]:http://www.cl.cam.ac.uk/~mgk25/
 [NICM]:https://github.com/nicm
+[GORI]:https://qiita.com/gorilla0513
+[GOT_]:https://github.com/skanehira/got
+[POWE]:https://powerline.readthedocs.io/en/latest/#
 [BSD2]:https://opensource.org/licenses/BSD-2-Clause
 [ZOOL]:http://zool.jpn.org/

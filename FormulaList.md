@@ -12,8 +12,6 @@ Unicode の規格における東アジア圏の各種文字のうち、いわゆ
 
 即ち、この Formula は、 [tmux][TMUX] に、 "[East Asian Ambiguous Character を全角文字の幅で表示する差分ファイル][GST1]" を適用したものを導入します。
 
-なお、 ```brew install --devel z80oolong/tmux/tmux``` として devel 版をインストールすることにより、安定版のプレリリース版の [tmux 2.8-rc][TMUX] を導入する事が可能です。
-
 ### z80oolong/tmux/tmux@2.3
 
 この Formula は、旧安定版である [tmux 2.3][TMUX] に、 "[East Asian Ambiguous Character を全角文字の幅で表示する差分ファイル][GST1]" を適用したものを導入します。
@@ -32,7 +30,7 @@ Unicode の規格における東アジア圏の各種文字のうち、いわゆ
 
 ### z80oolong/tmux/tmux@2.6
 
-この Formula は、安定版である [tmux 2.6][TMUX] に、 "[East Asian Ambiguous Character を全角文字の幅で表示する差分ファイル][GST1]" を適用したものを導入します。
+この Formula は、旧安定版である [tmux 2.6][TMUX] に、 "[East Asian Ambiguous Character を全角文字の幅で表示する差分ファイル][GST1]" を適用したものを導入します。
 
 **この Formula は、 versioned formula であるため、この Formula によって導入される [tmux][TMUX] は、 keg only で導入されることに留意して下さい。**
 
@@ -40,11 +38,19 @@ Unicode の規格における東アジア圏の各種文字のうち、いわゆ
 
 ### z80oolong/tmux/tmux@2.7
 
-この Formula は、安定版である [tmux 2.7][TMUX] に、 "[East Asian Ambiguous Character を全角文字の幅で表示する差分ファイル][GST1]" を適用したものを導入します。
+この Formula は、旧安定版である [tmux 2.7][TMUX] に、 "[East Asian Ambiguous Character を全角文字の幅で表示する差分ファイル][GST1]" を適用したものを導入します。
 
 **この Formula は、 versioned formula であるため、この Formula によって導入される [tmux][TMUX] は、 keg only で導入されることに留意して下さい。**
 
 この Formula によって導入される [tmux][TMUX] を使用するには、 ```brew link --force z80oolong/tmux/tmux@2.7``` コマンドを実行する必要があります。
+
+### z80oolong/tmux/tmux@2.8
+
+この Formula は、安定版である [tmux 2.8][TMUX] に、 "[East Asian Ambiguous Character を全角文字の幅で表示する差分ファイル][GST1]" を適用したものを導入します。
+
+**この Formula は、 versioned formula であるため、この Formula によって導入される [tmux][TMUX] は、 keg only で導入されることに留意して下さい。**
+
+この Formula によって導入される [tmux][TMUX] を使用するには、 ```brew link --force z80oolong/tmux/tmux@2.8``` コマンドを実行する必要があります。
 
 ### z80oolong/tmux/libevent@2.2
 
@@ -74,6 +80,16 @@ Unicode の規格における東アジア圏の各種文字のうち、いわゆ
 
 [@gorilla0513 氏][GORI]による、 [got][GOT_] を導入するための Formula である ```z80oolong/tmux/got-bin``` の alias です。
 
+### z80oolong/tmux/powerline-status
+
+[tmux][TMUX] のステータスラインを機能的に装飾するためのツールである [powerline][POWE] の本体を導入するための Formula です。この Formula で、オリジナルの [powerline][POWE] において発生する [tmux][TMUX] の HEAD 版上で [powerline][POWE] が正常に動作しない不具合を修正しています。
+
+### z80oolong/tmux/powerline-fonts
+
+[tmux][TMUX] のステータスラインを機能的に装飾するためのツールである [powerline][POWE] において使用するフォントを導入するための Formula です。
+
+**なお、この formula によって導入されたフォントは、同時にディレクトリ ```$HOME/.local/share/fonts/powerline-fonts``` 以下にシンボリックリンクが張られることに留意して下さい。**
+
 <!-- 外部リンク一覧 -->
 
 [BREW]:https://linuxbrew.sh/
@@ -85,3 +101,4 @@ Unicode の規格における東アジア圏の各種文字のうち、いわゆ
 [GLEV]:https://github.com/libevent/libevent
 [GORI]:https://qiita.com/gorilla0513
 [GOT_]:https://github.com/skanehira/got
+[POWE]:https://powerline.readthedocs.io/en/latest/#

@@ -26,14 +26,18 @@ class PowerlineStatus < Formula
     system libexec/"bin/pip", "uninstall", "-y", name
 
     venv.pip_install_and_link buildpath
+
+    (share/"powerline").mkpath
+    system "cp", "-pR", "#{libexec}/lib/python2.7/site-packages/powerline/bindings", "#{share}/powerline/bindings"
+    system "cp", "-pR", "#{libexec}/lib/python2.7/site-packages/powerline/config_files", "#{share}/powerline/config_files"
   end
 
   def caveats; <<~EOS
-    To use #{name}, the follow line must be add in #{ENV["HOME"]}/.tmux.conf
+    To use #{name} in tmux, add the following line to the configuration file `#{ENV["HOME"]}/.tmux.conf`.
     
     ...
     run-shell "#{opt_bin}/powerline-daemon -q"
-    source #{opt_libexec}/lib/python2.7/site-packages/powerline/bindings/tmux/powerline.conf
+    source #{opt_share}/powerline/bindings/tmux/powerline.conf
     ...
     EOS
   end
