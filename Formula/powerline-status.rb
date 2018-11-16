@@ -17,7 +17,20 @@ class PowerlineStatus < Formula
   depends_on "python@2"
   depends_on "z80oolong/tmux/tmux" => :recommended
 
-  patch :p1, :DATA
+  option "without-fix-powerline", "Do not fix a problem that causes problems when tmux returns an abnormal version."
+
+  patch :p1, :DATA unless build.without?("fix-powerline")
+
+  def install_symlink_recurse(dst, src)
+    ohai "Install symlink #{src} -> #{dst}"
+
+    if src.directory? || (dst == (share/"powerline"))
+      d = dst/(src.basename); d.mkpath
+      src.each_child {|s| install_symlink_recurse(d, s)}
+    else
+      dst.install_symlink src
+    end
+  end
 
   def install
     venv = virtualenv_create(libexec, "python")
@@ -28,8 +41,8 @@ class PowerlineStatus < Formula
     venv.pip_install_and_link buildpath
 
     (share/"powerline").mkpath
-    system "cp", "-pR", "#{libexec}/lib/python2.7/site-packages/powerline/bindings", "#{share}/powerline/bindings"
-    system "cp", "-pR", "#{libexec}/lib/python2.7/site-packages/powerline/config_files", "#{share}/powerline/config_files"
+    install_symlink_recurse (share/"powerline"), (libexec/"lib/python2.7/site-packages/powerline/bindings")
+    install_symlink_recurse (share/"powerline"), (libexec/"lib/python2.7/site-packages/powerline/config_files")
   end
 
   def caveats; <<~EOS

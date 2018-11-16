@@ -29,6 +29,8 @@ class Tmux < Formula
   depends_on "utf8proc" => :optional
   depends_on "ncurses" unless OS.mac?
 
+  option "with-version-master", "In head build, set the version of tmux as `master`."
+
   resource "completion" do
     url "https://raw.githubusercontent.com/imomaliev/tmux-bash-completion/homebrew_1.0.0/completions/tmux"
     sha256 "05e79fc1ecb27637dc9d6a52c315b8f207cf010cdcee9928805525076c9020ae"
@@ -38,6 +40,12 @@ class Tmux < Formula
     ENV.append "CFLAGS",   "-I#{Formula["z80oolong/tmux/libevent@2.2"].opt_include}"
     ENV.append "CPPFLAGS", "-I#{Formula["z80oolong/tmux/libevent@2.2"].opt_include}"
     ENV.append "LDFLAGS",  "-L#{Formula["z80oolong/tmux/libevent@2.2"].opt_lib}"
+
+    if build.head? && build.with?("version-master") then
+      inreplace "configure.ac" do |s|
+        s.gsub!(/AC_INIT\(\[tmux\],[^)]*\)/, "AC_INIT([tmux], master)")
+      end
+    end
 
     system "sh", "autogen.sh" if build.head?
 

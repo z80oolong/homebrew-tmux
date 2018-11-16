@@ -12,6 +12,8 @@ Unicode の規格における東アジア圏の各種文字のうち、いわゆ
 
 即ち、この Formula は、 [tmux][TMUX] に、 "[East Asian Ambiguous Character を全角文字の幅で表示する差分ファイル][GST1]" を適用したものを導入します。
 
+なお、[tmux][TMUX] 上で [powerline][POWE] が正常に動作しない不具合を回避するために、 ```-V``` オプションを付与してコマンド ```tmux``` を実行した結果を ```tmux master``` とする場合は、オプション ```--with-version-master``` を指定して下さい。
+
 ### z80oolong/tmux/tmux@2.3
 
 この Formula は、旧安定版である [tmux 2.3][TMUX] に、 "[East Asian Ambiguous Character を全角文字の幅で表示する差分ファイル][GST1]" を適用したものを導入します。
@@ -70,9 +72,13 @@ Unicode の規格における東アジア圏の各種文字のうち、いわゆ
 
 なお、この Formula は x86-64 Linux 及び Mac OS 向けの build 済バイナリファイルを導入するものであり、これ以外のアーキテクチャについては、後述する Formula である ```z80oolong/tmux/got-src``` を、 ```brew install z80oolong/tmux/got-src``` コマンドを用いて導入した上で、 ```brew link --force z80oolong/tmux/got-src``` を用いて [got][GOT_] コマンドのリンクを行って下さい。
 
+また、オプション ```--with-tmux``` を指定することにより、 ```z80oolong/tmux/tmux``` を同時に導入することが出来ます。
+
 ### z80oolong/tmux/got-src
 
 [@gorilla0513 氏][GORI]による、 [got][GOT_] をソースコードから build することにより、導入するための Formula です。
+
+なお、オプション ```--with-tmux``` を指定することにより、 ```z80oolong/tmux/tmux``` を同時に導入することが出来ます。
 
 **この Formula は、 ```z80oolong/tmux/got-bin``` と競合するため、この Formula によって導入される [got][GOT_] は、 keg only で導入されることに留意して下さい。**
 
@@ -82,11 +88,17 @@ Unicode の規格における東アジア圏の各種文字のうち、いわゆ
 
 ### z80oolong/tmux/powerline-status
 
-[tmux][TMUX] のステータスラインを機能的に装飾するためのツールである [powerline][POWE] の本体を導入するための Formula です。この Formula で、オリジナルの [powerline][POWE] において発生する [tmux][TMUX] の HEAD 版上で [powerline][POWE] が正常に動作しない不具合を修正しています。
+[tmux][TMUX] のステータスラインを機能的に装飾するためのツールである [powerline][POWE] の本体を導入するための Formula です。この Formula で、オリジナルの [powerline][POWE] において発生する HEAD 版上の [tmux][TMUX] 上で [powerline][POWE] が正常に動作しない不具合を修正しています。
+
+なお、この Formula は、デフォルトでは ```z80oolong/tmux/tmux``` に依存しています。 ```z80oolong/tmux/tmux``` の導入を回避するには、オプション ```--without-tmux``` を指定して下さい。
+
+また、 HEAD 版の [tmux][TMUX] 上で [powerline][POWE] が正常に動作しない不具合を修正せずに [powerline][POWE] を導入する場合は、オプション ```--without-fix-powerline``` を指定して下さい。
 
 ### z80oolong/tmux/powerline-fonts
 
 [tmux][TMUX] のステータスラインを機能的に装飾するためのツールである [powerline][POWE] において使用するフォントを導入するための Formula です。
+
+なお、この Formula は、デフォルトでは ```z80oolong/tmux/powerline-status``` に依存しています。 ```z80oolong/tmux/powerline-status``` の導入を回避するには、オプション ```--without-powerline-status``` を指定して下さい。
 
 **なお、この formula によって導入されたフォントは、同時にディレクトリ ```$HOME/.local/share/fonts/powerline-fonts``` 以下にシンボリックリンクが張られることに留意して下さい。**
 
