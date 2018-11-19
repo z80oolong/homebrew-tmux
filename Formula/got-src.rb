@@ -10,9 +10,9 @@ class GotSrc < Formula
   depends_on "z80oolong/tmux/tmux" => :optional
 
   stable do
-    url "https://github.com/skanehira/got/archive/v1.0.2.tar.gz"
-    version "1.0.2"
-    sha256 "d6812204c4038a459910021104198b271ee0c059af933429c6f9efcf5c8c3bfe"
+    url "https://github.com/skanehira/got/archive/v1.0.3.tar.gz"
+    version "1.0.3"
+    sha256 "4c602520b63e03fd7639b87b94d2661405cd3fd60fffd852c286a83d03d6ef71"
 
     go_resource "github.com/manifoldco/promptui" do
       url "https://github.com/manifoldco/promptui.git",
