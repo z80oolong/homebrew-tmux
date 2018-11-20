@@ -1,8 +1,9 @@
 class TmuxAT23 < Formula
   desc "Terminal multiplexer"
   homepage "https://tmux.github.io/"
-  version "2.3"
-  url "https://github.com/tmux/tmux/releases/download/#{version}/tmux-#{version}.tar.gz"
+
+  tmux_version = "2.3"
+  url "https://github.com/tmux/tmux/releases/download/#{tmux_version}/tmux-#{tmux_version}.tar.gz"
   sha256 "55313e132f0f42de7e020bf6323a1939ee02ab79c48634aa07475db41573852b"
 
   keg_only :versioned_formula
@@ -23,7 +24,7 @@ class TmuxAT23 < Formula
   end
 
   patch do
-    url "https://raw.githubusercontent.com/z80oolong/diffs/master/tmux/tmux-#{version}-fix.diff"
+    url "https://raw.githubusercontent.com/z80oolong/diffs/master/tmux/tmux-#{tmux_version}-fix.diff"
     sha256 "afadff78e831c18c6c79ddba29c970425b7c08398ef00bde691f3fdeae866423"
   end
 
