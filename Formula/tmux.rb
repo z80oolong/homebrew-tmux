@@ -3,11 +3,12 @@ class Tmux < Formula
   homepage "https://tmux.github.io/"
 
   stable do
-    url "https://github.com/tmux/tmux/releases/download/2.8/tmux-2.8.tar.gz"
+    version "2.8"
+    url "https://github.com/tmux/tmux/releases/download/#{version}/tmux-#{version}.tar.gz"
     sha256 "7f6bf335634fafecff878d78de389562ea7f73a7367f268b66d37ea13617a2ba"
 
     patch do
-      url "https://raw.githubusercontent.com/z80oolong/diffs/master/tmux/tmux-2.8-fix.diff"
+      url "https://raw.githubusercontent.com/z80oolong/diffs/master/tmux/tmux-#{version}-fix.diff"
       sha256 "55f5d4aecf8ed6684d20d5659a591a15706c1a0b2a0f798a59c2c4514a85a92c"
     end
   end
