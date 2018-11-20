@@ -5,6 +5,7 @@ class TmuxAT23 < Formula
   tmux_version = "2.3"
   url "https://github.com/tmux/tmux/releases/download/#{tmux_version}/tmux-#{tmux_version}.tar.gz"
   sha256 "55313e132f0f42de7e020bf6323a1939ee02ab79c48634aa07475db41573852b"
+  version tmux_version
 
   keg_only :versioned_formula
 
