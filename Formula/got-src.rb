@@ -6,7 +6,7 @@ class GotSrc < Formula
  
   keg_only "This formula conflictes with `z80oolong/tmux/got-bin`. To use the package, run `brew link --force `z80oolong/tmux/got-src`."
 
-  depends_on "go" => :build
+  depends_on "z80oolong/go/go@1.11" => :build
   depends_on "z80oolong/tmux/tmux" => :optional
 
   stable do
