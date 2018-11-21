@@ -56,11 +56,11 @@ class GotSrc < Formula
     system "ln", "-sf", "#{buildpath}", "#{buildpath}/build/src/github.com/skanehira/got"
 
     if build.head? then
-      system "#{Formula["go"].opt_bin}/go", "get", "-v", "github.com/skanehira/got"
+      system "#{Formula["z80oolong/go/go@1.11"].opt_bin}/go", "get", "-v", "github.com/skanehira/got"
       bin.install buildpath/"build/bin/got"
     else
       Language::Go.stage_deps resources, buildpath/"build/src"
-      system "#{Formula["go"].opt_bin}/go", "build", "-v", "-o", bin/"got", "github.com/skanehira/got"
+      system "#{Formula["z80oolong/go/go@1.11"].opt_bin}/go", "build", "-v", "-o", bin/"got", "github.com/skanehira/got"
     end
 
     (share/"doc/#{name}-#{version}").install "README.md"
