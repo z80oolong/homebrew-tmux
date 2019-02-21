@@ -18,8 +18,8 @@ class Tmux < Formula
     url "https://github.com/tmux/tmux.git"
       
     patch do
-      url "https://raw.githubusercontent.com/z80oolong/diffs/master/tmux/tmux-HEAD-cd8a7fb0-fix.diff"
-      sha256 "feb20891397b223fe35d57ee7b485466cfda65687aa67d4662149e870a0f79fd"
+      url "https://raw.githubusercontent.com/z80oolong/diffs/master/tmux/tmux-HEAD-d5c83790-fix.diff"
+      sha256 "dcb993990d8a14f05efe93f5f9521fe1c0778c56f27a3a6870a9ab2a0fc41a92"
     end
 
     depends_on "automake" => :build
