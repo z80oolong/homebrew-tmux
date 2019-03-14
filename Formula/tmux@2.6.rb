@@ -20,7 +20,7 @@ class TmuxAT26 < Formula
   end
 
   patch do
-    url "https://raw.githubusercontent.com/z80oolong/diffs/master/tmux/tmux-#{tmux_version}-fix.diff"
+    url "https://github.com/z80oolong/tmux-eaw-fix/raw/master/tmux-#{tmux_version}-fix.diff"
     sha256 "406fce895df3f0a1dc745ef7cd15784f4114b3841fe8ee7a51b0d456c213b03b"
   end
 

@@ -9,7 +9,7 @@ class Tmux < Formula
     version tmux_version
 
     patch do
-      url "https://raw.githubusercontent.com/z80oolong/diffs/master/tmux/tmux-#{tmux_version}-fix.diff"
+      url "https://github.com/z80oolong/tmux-eaw-fix/raw/master/tmux-#{tmux_version}-fix.diff"
       sha256 "55f5d4aecf8ed6684d20d5659a591a15706c1a0b2a0f798a59c2c4514a85a92c"
     end
   end
@@ -18,7 +18,7 @@ class Tmux < Formula
     url "https://github.com/tmux/tmux.git"
       
     patch do
-      url "https://raw.githubusercontent.com/z80oolong/diffs/master/tmux/tmux-HEAD-d5c83790-fix.diff"
+      url "https://github.com/z80oolong/tmux-eaw-fix/raw/master/tmux-HEAD-d5c83790-fix.diff"
       sha256 "dcb993990d8a14f05efe93f5f9521fe1c0778c56f27a3a6870a9ab2a0fc41a92"
     end
 
