@@ -14,12 +14,22 @@ class Tmux < Formula
     end
   end
 
+  devel do
+    url "https://github.com/tmux/tmux/releases/download/2.9/tmux-2.9-rc3.tar.gz"
+    sha256 "ef3f012f0f92b1a0947cb1183f14308296bebdc75099be90b01874551d762290"
+
+    patch do
+      url "https://github.com/z80oolong/tmux-eaw-fix/raw/master/tmux-2.9-rc3-fix.diff"
+      sha256 "17c3ea036998fb1e09f131af760627977246ee9d75ed258615fc20f74b5c7ffa"
+    end
+  end
+
   head do
     url "https://github.com/tmux/tmux.git"
       
     patch do
-      url "https://github.com/z80oolong/tmux-eaw-fix/raw/master/tmux-HEAD-2c755e3c-fix.diff"
-      sha256 "103beee079deb0dd5d6611eeffa9e05d7f5c477285d66800f5c4a66c580c0fe4"
+      url "https://github.com/z80oolong/tmux-eaw-fix/raw/master/tmux-HEAD-e6ee3e95-fix.diff"
+      sha256 "50c783c1df73ac15261d522794d9428556b641d262e3c82eefcd9d904a106883"
     end
 
     depends_on "automake" => :build
