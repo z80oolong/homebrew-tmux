@@ -15,9 +15,9 @@ class Tmux < Formula
   end
 
   devel do
-    tmux_version = "3.0-rc2"
+    tmux_version = "3.0-rc3"
     url "https://github.com/tmux/tmux/releases/download/3.0/tmux-#{tmux_version}.tar.gz"
-    sha256 "827eb74e5fdf41fe29b3d7a44106ac7078379e8b3299b3d8c78a6a383637e4ab"
+    sha256 "8f30f25c9f0c61b4fd766c009f7b5ba80e3bb265874f75d69a718c752986d98b"
     version tmux_version
 
     patch do
@@ -30,8 +30,8 @@ class Tmux < Formula
     url "https://github.com/tmux/tmux.git"
       
     patch do
-      url "https://github.com/z80oolong/tmux-eaw-fix/raw/master/tmux-HEAD-e13c1e53-fix.diff"
-      sha256 "dc8448d4444f48986a5d5c6cd8237d61d23cb002538760c51121c78e486d2b2f"
+      url "https://github.com/z80oolong/tmux-eaw-fix/raw/master/tmux-HEAD-5895f1d9-fix.diff"
+      sha256 "614a4aa7f0f6d463fca9cd53bc9171dc67d605f90bac865555c5a27472536f61"
     end
 
     depends_on "automake" => :build
