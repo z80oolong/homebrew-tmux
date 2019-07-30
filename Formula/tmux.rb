@@ -15,14 +15,14 @@ class Tmux < Formula
   end
 
   devel do
-    tmux_version = "3.0-rc3"
+    tmux_version = "3.0-rc4"
     url "https://github.com/tmux/tmux/releases/download/3.0/tmux-#{tmux_version}.tar.gz"
-    sha256 "8f30f25c9f0c61b4fd766c009f7b5ba80e3bb265874f75d69a718c752986d98b"
+    sha256 "98f8ac715f4d4b2297b2bd947925dd24d40aa16a849074a55029156157ac7663"
     version tmux_version
 
     patch do
       url "https://github.com/z80oolong/tmux-eaw-fix/raw/master/tmux-#{tmux_version}-fix.diff"
-      sha256 "e0f47d864a1972b19484a65df91d0f3e822c533d5cc4831c922a9397bc1744cc"
+      sha256 "544c974d692ec6424cb42bfa51bbddc2bd0b202790fdae3b0eb4bb5a54186b31"
     end
   end
 
