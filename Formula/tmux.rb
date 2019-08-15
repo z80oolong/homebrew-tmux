@@ -30,8 +30,8 @@ class Tmux < Formula
     url "https://github.com/tmux/tmux.git"
       
     patch do
-	    url "https://github.com/z80oolong/tmux-eaw-fix/raw/master/tmux-HEAD-2dd9a4fb-fix.diff"
-      sha256 "4244a36c839be0f96da710752b3364fe578f980973dba4f60d71af61a1576975"
+	    url "https://github.com/z80oolong/tmux-eaw-fix/raw/master/tmux-HEAD-9b3fefc4-fix.diff"
+      sha256 "b4de8a25c5d5e37c72fecda84024058ed7bf992b8df1e01f49c80277ea036417"
     end
 
     depends_on "automake" => :build
@@ -39,7 +39,6 @@ class Tmux < Formula
     depends_on "bison" => :build
   end
 
-  depends_on "pkg-config" => :build
   depends_on "z80oolong/tmux/libevent@2.2"
   depends_on "utf8proc" => :optional
   depends_on "ncurses" unless OS.mac?

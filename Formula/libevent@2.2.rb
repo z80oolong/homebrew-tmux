@@ -1,14 +1,18 @@
 class LibeventAT22 < Formula
   desc "Asynchronous event library"
   homepage "http://libevent.org"
-  url "https://github.com/libevent/libevent/archive/8483c5351abdd18766232de8431290165717bd57.zip"
-  sha256 "0697880747f7252b563e13b6b52b22f568b26562e7eaa49cc2a69c5dfb10ad5c"
+  url "https://github.com/libevent/libevent/archive/759573c9e17b0397aa1c6d2616c743551b8ca78d.zip"
+  sha256 "aa4138869d482b244355519594f43e8dcd54cf593a5bc96b41d09bbcf403f66c" 
   version "2.2.0-beta-dev"
-  revision 1
+  revision 2
+
+  option "with-doxygen", "With building doxygen."
 
   depends_on "autoconf" => :build
   depends_on "automake" => :build
-  depends_on "z80oolong/tmux/doxygen@1.8" => :build
+  if build.with?("doxygen") then
+    depends_on "z80oolong/tmux/doxygen@1.8" => :build
+  end
   depends_on "libtool" => :build
   depends_on "pkg-config" => :build
   depends_on "openssl"
@@ -19,17 +23,23 @@ class LibeventAT22 < Formula
   keg_only :versioned_formula
 
   def install
-    ENV["PATH"] = "#{Formula["z80oolong/tmux/doxygen@1.8"].opt_bin}:#{ENV["PATH"]}"
+    if build.with?("doxygen") then
+      ENV["PATH"] = "#{Formula["z80oolong/tmux/doxygen@1.8"].opt_bin}:#{ENV["PATH"]}"
 
-    inreplace "Doxyfile", /GENERATE_MAN\s*=\s*NO/, "GENERATE_MAN = YES"
+      inreplace "Doxyfile", /GENERATE_MAN\s*=\s*NO/, "GENERATE_MAN = YES"
+    end
+
     system "./autogen.sh"
     system "./configure", "--disable-dependency-tracking",
                           "--disable-debug-mode",
                           "--prefix=#{prefix}"
     system "make"
     system "make", "install"
-    system "make", "doxygen"
-    man3.install Dir["doxygen/man/man3/*.3"]
+
+    if build.with?("doxygen") then
+      system "make", "doxygen"
+      man3.install Dir["doxygen/man/man3/*.3"]
+    end
   end
 
   test do
