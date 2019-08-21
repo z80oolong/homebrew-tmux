@@ -6,6 +6,7 @@ class TmuxAT23 < Formula
   url "https://github.com/tmux/tmux/releases/download/#{tmux_version}/tmux-#{tmux_version}.tar.gz"
   sha256 "55313e132f0f42de7e020bf6323a1939ee02ab79c48634aa07475db41573852b"
   version tmux_version
+  revision 1
 
   keg_only :versioned_formula
 
@@ -20,13 +21,8 @@ class TmuxAT23 < Formula
   end
 
   patch do
-    url "https://gist.githubusercontent.com/waltarix/1399751/raw/6c8f54ec8e55823fb99b644a8a5603847cb60882/tmux-pane-border-ascii.patch"
-    sha256 "2019e69de97882b11ba0bf0dcbf29d25f4744576a33ad9909a62329609bfdf40"
-  end
-
-  patch do
     url "https://github.com/z80oolong/tmux-eaw-fix/raw/master/tmux-#{tmux_version}-fix.diff"
-    sha256 "afadff78e831c18c6c79ddba29c970425b7c08398ef00bde691f3fdeae866423"
+    sha256 "a3736af19d2dcaa50b30fa58d4f3f93dce370988234b1ff4eb9485f7d063b54c"
   end
 
   def install

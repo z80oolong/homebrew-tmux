@@ -1,11 +1,12 @@
 class Tmux < Formula
   desc "Terminal multiplexer"
   homepage "https://tmux.github.io/"
+  revision 1
 
   stable do
     tmux_version = "2.9a"
     url "https://github.com/tmux/tmux/releases/download/#{tmux_version}/tmux-#{tmux_version}.tar.gz"
-    sha256 "839d167a4517a6bffa6b6074e89a9a8630547b2dea2086f1fad15af12ab23b25"
+    sha256 "461e0b441c12858e13ad5b6d8f05ed7270827b155b475d6894cfbd1578ecfe87"
     version tmux_version
 
     patch do
@@ -22,16 +23,16 @@ class Tmux < Formula
 
     patch do
       url "https://github.com/z80oolong/tmux-eaw-fix/raw/master/tmux-#{tmux_version}-fix.diff"
-      sha256 "544c974d692ec6424cb42bfa51bbddc2bd0b202790fdae3b0eb4bb5a54186b31"
+      sha256 "cc4b6f1c762635a9e91cede8fb5cef72b569b32439d0fa764f9dc9073ac46042"
     end
   end
 
   head do
     url "https://github.com/tmux/tmux.git"
-      
+
     patch do
-	    url "https://github.com/z80oolong/tmux-eaw-fix/raw/master/tmux-HEAD-9b3fefc4-fix.diff"
-      sha256 "b4de8a25c5d5e37c72fecda84024058ed7bf992b8df1e01f49c80277ea036417"
+      url "https://github.com/z80oolong/tmux-eaw-fix/raw/master/tmux-HEAD-2db9a183-fix.diff"
+      sha256 "9a3a7d35438f0af962d1b6c91202d729df4553f97b75e3376a5a7ed7d1d269a0"
     end
 
     depends_on "automake" => :build

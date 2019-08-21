@@ -6,6 +6,7 @@ class TmuxAT26 < Formula
   url "https://github.com/tmux/tmux/releases/download/#{tmux_version}/tmux-#{tmux_version}.tar.gz"
   sha256 "b17cd170a94d7b58c0698752e1f4f263ab6dc47425230df7e53a6435cc7cd7e8"
   version tmux_version
+  revision 1
 
   keg_only :versioned_formula
 
@@ -21,7 +22,7 @@ class TmuxAT26 < Formula
 
   patch do
     url "https://github.com/z80oolong/tmux-eaw-fix/raw/master/tmux-#{tmux_version}-fix.diff"
-    sha256 "406fce895df3f0a1dc745ef7cd15784f4114b3841fe8ee7a51b0d456c213b03b"
+    sha256 "23ae0a6667f70f270325ac3b2f50bdc92b7c137b99233fad10cd871ef2689e9b"
   end
 
   def install
