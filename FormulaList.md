@@ -62,14 +62,6 @@ Unicode の規格における東アジア圏の各種文字のうち、いわゆ
 
 この Formula によって導入される [tmux][TMUX] を使用するには、 ```brew link --force z80oolong/tmux/tmux@2.8``` コマンドを実行する必要があります。
 
-### z80oolong/tmux/tmux@2.9
-
-この Formula は、安定版である [tmux 2.9][TMUX] に、 "[East Asian Ambiguous Character を全角文字の幅で表示する差分ファイル][GST1]" を適用したものを導入します。
-
-**この Formula は、 versioned formula であるため、この Formula によって導入される [tmux][TMUX] は、 keg only で導入されることに留意して下さい。**
-
-この Formula によって導入される [tmux][TMUX] を使用するには、 ```brew link --force z80oolong/tmux/tmux@2.9``` コマンドを実行する必要があります。
-
 ### z80oolong/tmux/tmux@2.9a
 
 この Formula は、安定版のバグフィックス版である [tmux 2.9a][TMUX] に、 "[East Asian Ambiguous Character を全角文字の幅で表示する差分ファイル][GST1]" を適用したものを導入します。
@@ -81,6 +73,8 @@ Unicode の規格における東アジア圏の各種文字のうち、いわゆ
 ### z80oolong/tmux/libevent@2.2
 
 上述の Formula によって導入される [tmux][TMUX] に依存するライブラリである [libevent][LIBE] を導入するための Formula です。オリジナルの [libevent][LIBE] の Formula と異なり、安定版の [libevent][LIBE] では、テストプログラムで不具合が発生するため、 [Github 上の libevent][GLEV] を使用しています。
+
+なお、この Formula では、デフォルトで [libevent][LIBE] のマニュアル及びドキュメント等が導入されないことに留意して下さい。これらを導入する場合は、オプション ```--with-doxygen``` を使用して下さい。
 
 **この Formula は、 versioned formula であるため、この Formula によって導入される [libevent][LIBE] は、 keg only で導入されることに留意して下さい。**
 
