@@ -6,7 +6,7 @@ class Tmux < Formula
   stable do
     tmux_version = "2.9a"
     url "https://github.com/tmux/tmux/releases/download/#{tmux_version}/tmux-#{tmux_version}.tar.gz"
-    sha256 "461e0b441c12858e13ad5b6d8f05ed7270827b155b475d6894cfbd1578ecfe87"
+    sha256 "839d167a4517a6bffa6b6074e89a9a8630547b2dea2086f1fad15af12ab23b25"
     version tmux_version
 
     patch do
