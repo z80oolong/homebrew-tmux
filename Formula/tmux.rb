@@ -45,6 +45,7 @@ class Tmux < Formula
   depends_on "ncurses" unless OS.mac?
 
   option "with-version-master", "In head build, set the version of tmux as `master`."
+  option "with-bsearch", "In tty-acs.c, use bsearch() function. (see https://github.com/tmux/tmux/pull/1907)"
 
   resource "completion" do
     url "https://raw.githubusercontent.com/imomaliev/tmux-bash-completion/homebrew_1.0.0/completions/tmux"
@@ -61,6 +62,8 @@ class Tmux < Formula
         s.gsub!(/AC_INIT\(\[tmux\],[^)]*\)/, "AC_INIT([tmux], master)")
       end
     end
+
+    ENV.append "CPPFLAGS", "-DUSE_BSEARCH" if build.with?("bsearch")
 
     system "sh", "autogen.sh" if build.head?
 
