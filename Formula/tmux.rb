@@ -16,14 +16,14 @@ class Tmux < Formula
   end
 
   devel do
-    tmux_version = "3.0-rc4"
+    tmux_version = "3.0-rc5"
     url "https://github.com/tmux/tmux/releases/download/3.0/tmux-#{tmux_version}.tar.gz"
-    sha256 "98f8ac715f4d4b2297b2bd947925dd24d40aa16a849074a55029156157ac7663"
+    sha256 "5943e8944eecbd334cd3b213536c4dd10fb9a4034a14d97393d96657a902093c"
     version tmux_version
 
     patch do
       url "https://github.com/z80oolong/tmux-eaw-fix/raw/master/tmux-#{tmux_version}-fix.diff"
-      sha256 "cc4b6f1c762635a9e91cede8fb5cef72b569b32439d0fa764f9dc9073ac46042"
+      sha256 "d51919520e0d1e26e0e38820f4b2b9aac7f95e7e2a2317f6cf0de09e826d4a61"
     end
   end
 
@@ -31,8 +31,8 @@ class Tmux < Formula
     url "https://github.com/tmux/tmux.git"
 
     patch do
-      url "https://github.com/z80oolong/tmux-eaw-fix/raw/master/tmux-HEAD-a5e36a4b-fix.diff"
-      sha256 "43d9a9189f34f99a908cc58b49468e5e024b5e97b60b3517393dc6cb8a9d0b29"
+      url "https://github.com/z80oolong/tmux-eaw-fix/raw/master/tmux-HEAD-5ae2d421-fix.diff"
+      sha256 "33d73cf22ef3fd2aa584c6bbd00a94bc23c6d47b940393e74b545100dd35029f"
     end
 
     depends_on "automake" => :build
@@ -45,7 +45,7 @@ class Tmux < Formula
   depends_on "ncurses" unless OS.mac?
 
   option "with-version-master", "In head build, set the version of tmux as `master`."
-  option "with-bsearch", "In tty-acs.c, use bsearch() function. (see https://github.com/tmux/tmux/pull/1907)"
+  option "without-utf8-cjk", "Build without using East asian Ambiguous Width Character in tmux."
 
   resource "completion" do
     url "https://raw.githubusercontent.com/imomaliev/tmux-bash-completion/homebrew_1.0.0/completions/tmux"
@@ -63,7 +63,7 @@ class Tmux < Formula
       end
     end
 
-    ENV.append "CPPFLAGS", "-DUSE_BSEARCH" if build.with?("bsearch")
+    ENV.append "CPPFLAGS", "-DNO_USE_UTF8CJK" if build.without?("utf8-cjk")
 
     system "sh", "autogen.sh" if build.head?
 
