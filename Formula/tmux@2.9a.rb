@@ -15,6 +15,8 @@ class TmuxAT29a < Formula
   depends_on "utf8proc" => :optional
   depends_on "ncurses" unless OS.mac?
 
+  option "without-utf8-cjk", "Build without using East asian Ambiguous Width Character in tmux."
+
   resource "completion" do
     url "https://raw.githubusercontent.com/imomaliev/tmux-bash-completion/homebrew_1.0.0/completions/tmux"
     sha256 "05e79fc1ecb27637dc9d6a52c315b8f207cf010cdcee9928805525076c9020ae"
@@ -29,6 +31,7 @@ class TmuxAT29a < Formula
     ENV.append "CFLAGS",   "-I#{Formula["z80oolong/tmux/libevent@2.2"].opt_include}"
     ENV.append "CPPFLAGS", "-I#{Formula["z80oolong/tmux/libevent@2.2"].opt_include}"
     ENV.append "LDFLAGS",  "-L#{Formula["z80oolong/tmux/libevent@2.2"].opt_lib}"
+    ENV.append "CPPFLAGS", "-DNO_USE_UTF8CJK" if build.without?("utf8-cjk")
 
     args = %W[
       --disable-Dependency-tracking
