@@ -1,7 +1,7 @@
 class Tmux < Formula
   desc "Terminal multiplexer"
   homepage "https://tmux.github.io/"
-  revision 1
+  revision 2
 
   stable do
     tmux_version = "2.9a"
