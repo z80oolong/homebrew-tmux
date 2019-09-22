@@ -11,7 +11,7 @@ class Tmux < Formula
 
     patch do
       url "https://github.com/z80oolong/tmux-eaw-fix/raw/master/tmux-#{tmux_version}-fix.diff"
-      sha256 "5225429d53b01119dfba3326d4f420ab3851d8da8b00e44dd7dbb4d5f4713ed4"
+      sha256 "67afd90e4120c7c7a7e84b767b23b9eb49cb3b6c9cb2e062f2f9d37d53c24285"
     end
   end
 
