@@ -136,6 +136,17 @@ Unicode の規格における東アジア圏の各種文字のうち、いわゆ
 
 **なお、この formula によって導入されたフォントは、同時にディレクトリ ```$HOME/.local/share/fonts/powerline-fonts``` 以下にシンボリックリンクが張られることに留意して下さい。**
 
+### z80oolong/tmux/tpm
+
+[tmux][TMUX] のプラグインを導入及び管理するためのアプリケーションである [tpm][TPM_] を導入するための Formula です。
+
+この Formula によって導入された [tpm][TPM_] を使用する際は、**設定ファイル ```${HOME}/.tmux.conf``` の末尾に以下の設定を記述する必要があることに留意して下さい。**
+
+```
+# ここに、 HOMEBREW_PREFIX は、 Linuxbrew が置かれているディレクトリであり、環境に応じて読み替えて設定すること。
+run -b "HOMEBREW_PREFIX/opt/tpm/libexec/tpm/tpm"
+```
+
 <!-- 外部リンク一覧 -->
 
 [BREW]:https://linuxbrew.sh/
@@ -147,4 +158,5 @@ Unicode の規格における東アジア圏の各種文字のうち、いわゆ
 [GLEV]:https://github.com/libevent/libevent
 [GORI]:https://qiita.com/gorilla0513
 [GOT_]:https://github.com/skanehira/got
+[TPM_]:https://github.com/tmux-plugins/tpm
 [POWE]:https://powerline.readthedocs.io/en/latest/#
