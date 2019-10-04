@@ -1,7 +1,7 @@
 class Tmux < Formula
   desc "Terminal multiplexer"
   homepage "https://tmux.github.io/"
-  revision 2
+  revision 3
 
   stable do
     tmux_version = "2.9a"
@@ -40,7 +40,7 @@ class Tmux < Formula
     depends_on "bison" => :build
   end
 
-  depends_on "z80oolong/tmux/libevent@2.2"
+  depends_on "z80oolong/tmux/tmux-libevent@2.2"
   depends_on "utf8proc" => :optional
   depends_on "ncurses" unless OS.mac?
 
@@ -53,9 +53,9 @@ class Tmux < Formula
   end
 
   def install
-    ENV.append "CFLAGS",   "-I#{Formula["z80oolong/tmux/libevent@2.2"].opt_include}"
-    ENV.append "CPPFLAGS", "-I#{Formula["z80oolong/tmux/libevent@2.2"].opt_include}"
-    ENV.append "LDFLAGS",  "-L#{Formula["z80oolong/tmux/libevent@2.2"].opt_lib}"
+    ENV.append "CFLAGS",   "-I#{Formula["z80oolong/tmux/tmux-libevent@2.2"].opt_include}"
+    ENV.append "CPPFLAGS", "-I#{Formula["z80oolong/tmux/tmux-libevent@2.2"].opt_include}"
+    ENV.append "LDFLAGS",  "-L#{Formula["z80oolong/tmux/tmux-libevent@2.2"].opt_lib}"
 
     if build.head? && build.with?("version-master") then
       inreplace "configure.ac" do |s|
