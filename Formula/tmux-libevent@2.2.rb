@@ -12,9 +12,6 @@ class TmuxLibeventAT22 < Formula
   depends_on "pkg-config" => :build
   depends_on "openssl"
 
-  conflicts_with "pincaster",
-    :because => "both install `event_rpcgen.py` binaries"
-
   keg_only :versioned_formula
 
   def install
