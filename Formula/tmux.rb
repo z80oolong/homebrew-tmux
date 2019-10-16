@@ -1,7 +1,7 @@
 class Tmux < Formula
   desc "Terminal multiplexer"
   homepage "https://tmux.github.io/"
-  revision 3
+  revision 4
 
   stable do
     tmux_version = "2.9a"
@@ -11,7 +11,7 @@ class Tmux < Formula
 
     patch do
       url "https://github.com/z80oolong/tmux-eaw-fix/raw/master/tmux-#{tmux_version}-fix.diff"
-      sha256 "67afd90e4120c7c7a7e84b767b23b9eb49cb3b6c9cb2e062f2f9d37d53c24285"
+      sha256 "148bbe3a4f86dcd9c4528f4e898a2def93c50cef3c12f512c69ef27473f45187"
     end
   end
 
@@ -23,7 +23,7 @@ class Tmux < Formula
 
     patch do
       url "https://github.com/z80oolong/tmux-eaw-fix/raw/master/tmux-#{tmux_version}-fix.diff"
-      sha256 "d51919520e0d1e26e0e38820f4b2b9aac7f95e7e2a2317f6cf0de09e826d4a61"
+      sha256 "b5e994fc07d96b6bafcaa2dd984274662bd73f7cb4a916a4048ac0757bf7c97e"
     end
   end
 
@@ -46,6 +46,7 @@ class Tmux < Formula
 
   option "with-version-master", "In head build, set the version of tmux as `master`."
   option "without-utf8-cjk", "Build without using East asian Ambiguous Width Character in tmux."
+  option "without-pane-border-acs-ascii", "Build without using ACS ASCII as pane border in tmux."
 
   resource "completion" do
     url "https://raw.githubusercontent.com/imomaliev/tmux-bash-completion/homebrew_1.0.0/completions/tmux"
@@ -64,6 +65,7 @@ class Tmux < Formula
     end
 
     ENV.append "CPPFLAGS", "-DNO_USE_UTF8CJK" if build.without?("utf8-cjk")
+    ENV.append "CPPFLAGS", "-DNO_USE_PANE_BORDER_ACS_ASCII" if build.without?("pane-border-acs-ascii")
 
     system "sh", "autogen.sh" if build.head?
 

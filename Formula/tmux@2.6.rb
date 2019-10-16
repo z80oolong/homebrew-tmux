@@ -6,7 +6,7 @@ class TmuxAT26 < Formula
   url "https://github.com/tmux/tmux/releases/download/#{tmux_version}/tmux-#{tmux_version}.tar.gz"
   sha256 "b17cd170a94d7b58c0698752e1f4f263ab6dc47425230df7e53a6435cc7cd7e8"
   version tmux_version
-  revision 3
+  revision 4
 
   keg_only :versioned_formula
 
@@ -16,6 +16,7 @@ class TmuxAT26 < Formula
   depends_on "ncurses" unless OS.mac?
 
   option "without-utf8-cjk", "Build without using East asian Ambiguous Width Character in tmux."
+  option "without-pane-border-acs-ascii", "Build without using ACS ASCII as pane border in tmux."
 
   resource "completion" do
     url "https://raw.githubusercontent.com/imomaliev/tmux-bash-completion/homebrew_1.0.0/completions/tmux"
@@ -24,14 +25,16 @@ class TmuxAT26 < Formula
 
   patch do
     url "https://github.com/z80oolong/tmux-eaw-fix/raw/master/tmux-#{tmux_version}-fix.diff"
-    sha256 "4f85cf3b45613325d5e02d8f0f3b47bca543a4bc28fa1c27563b5d8782a2c065"
+    sha256 "04266939b43cad4f08136890103ea073e8f9f0c494080b9a5a612b26f0bdf0d9"
   end
 
   def install
     ENV.append "CFLAGS",   "-I#{Formula["z80oolong/tmux/tmux-libevent@2.2"].opt_include}"
     ENV.append "CPPFLAGS", "-I#{Formula["z80oolong/tmux/tmux-libevent@2.2"].opt_include}"
     ENV.append "LDFLAGS",  "-L#{Formula["z80oolong/tmux/tmux-libevent@2.2"].opt_lib}"
+
     ENV.append "CPPFLAGS", "-DNO_USE_UTF8CJK" if build.without?("utf8-cjk")
+    ENV.append "CPPFLAGS", "-DNO_USE_PANE_BORDER_ACS_ASCII" if build.without?("pane-border-acs-ascii")
 
     args = %W[
       --disable-Dependency-tracking
