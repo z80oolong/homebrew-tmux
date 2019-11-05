@@ -31,7 +31,7 @@ class Tmux < Formula
     url "https://github.com/tmux/tmux.git"
 
     patch do
-      url "https://github.com/z80oolong/tmux-eaw-fix/raw/master/tmux-HEAD-a1006db9-fix.diff"
+      url "https://github.com/z80oolong/tmux-eaw-fix/raw/master/tmux-HEAD-4408df1e-fix.diff"
       sha256 "7ec43df40593ba625d03cda229b8a60ae97937cb2169215f611ad3ddde9822fc"
     end
 
