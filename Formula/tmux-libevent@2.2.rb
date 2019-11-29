@@ -10,7 +10,7 @@ class TmuxLibeventAT22 < Formula
   depends_on "automake" => :build
   depends_on "libtool" => :build
   depends_on "pkg-config" => :build
-  depends_on "openssl"
+  depends_on "openssl@1.1"
 
   keg_only :versioned_formula
 
