@@ -1,10 +1,10 @@
 class TmuxLibeventAT22 < Formula
   desc "Asynchronous event library"
   homepage "http://libevent.org"
-  url "https://github.com/libevent/libevent/archive/8d5c5650d281019832fa7b5133b85c7ad29f664e.zip"
-  sha256 "d5a4077bf5779868c78677e8bb6eaa1890b3c35f91edb51f2e8cf8ab54cfbefe" 
+  url "https://github.com/libevent/libevent/archive/aff231229eb5f421201d7954bc453584bdde4398.zip"
+  sha256 "92e540fe4d04eaf8cb5aca7dcb0af10156f4fda730cb271eeff80020a4fbf54c"
   version "2.2.0-beta-dev"
-  revision 3
+  revision 4
 
   depends_on "autoconf" => :build
   depends_on "automake" => :build
