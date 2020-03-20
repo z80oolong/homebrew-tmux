@@ -1,38 +1,20 @@
-class Tmux < Formula
+class TmuxAT29 < Formula
   desc "Terminal multiplexer"
   homepage "https://tmux.github.io/"
+
+  tmux_version = "2.9"
+  url "https://github.com/tmux/tmux/releases/download/#{tmux_version}/tmux-#{tmux_version}.tar.gz"
+  sha256 "34901232f486fd99f3a39e864575e658b5d49f43289ccc6ee57c365f2e2c2980"
+  version tmux_version
   revision 4
 
-  stable do
-    tmux_version = "3.0a"
-    url "https://github.com/tmux/tmux/releases/download/#{tmux_version}/tmux-#{tmux_version}.tar.gz"
-    sha256 "4ad1df28b4afa969e59c08061b45082fdc49ff512f30fc8e43217d7b0e5f8db9"
-    version tmux_version
+  keg_only :versioned_formula
 
-    patch do
-      url "https://github.com/z80oolong/tmux-eaw-fix/raw/master/tmux-#{tmux_version}-fix.diff"
-      sha256 "d223ddc4d7621416ae0f8ac874155bc963a16365ada9598eff74129141ad7948"
-    end
-  end
-
-  head do
-    url "https://github.com/tmux/tmux.git"
-
-    patch do
-      url "https://github.com/z80oolong/tmux-eaw-fix/raw/master/tmux-HEAD-5b71943f-fix.diff"
-      sha256 "25727b55d7e96ce3de2c43ca7468443556dd52484812838b9b75bc1a2cab79ea"
-    end
-
-    depends_on "automake" => :build
-    depends_on "autoconf" => :build
-    depends_on "bison" => :build
-  end
-
+  depends_on "pkg-config" => :build
   depends_on "z80oolong/tmux/tmux-libevent@2.2"
   depends_on "utf8proc" => :optional
   depends_on "ncurses" unless OS.mac?
 
-  option "with-version-master", "In head build, set the version of tmux as `master`."
   option "without-utf8-cjk", "Build without using East asian Ambiguous Width Character in tmux."
   option "without-pane-border-acs-ascii", "Build without using ACS ASCII as pane border in tmux."
 
@@ -41,21 +23,18 @@ class Tmux < Formula
     sha256 "05e79fc1ecb27637dc9d6a52c315b8f207cf010cdcee9928805525076c9020ae"
   end
 
+  patch do
+    url "https://github.com/z80oolong/tmux-eaw-fix/raw/master/tmux-#{tmux_version}-fix.diff"
+    sha256 "148bbe3a4f86dcd9c4528f4e898a2def93c50cef3c12f512c69ef27473f45187"
+  end
+
   def install
     ENV.append "CFLAGS",   "-I#{Formula["z80oolong/tmux/tmux-libevent@2.2"].opt_include}"
     ENV.append "CPPFLAGS", "-I#{Formula["z80oolong/tmux/tmux-libevent@2.2"].opt_include}"
     ENV.append "LDFLAGS",  "-L#{Formula["z80oolong/tmux/tmux-libevent@2.2"].opt_lib}"
 
-    if build.head? && build.with?("version-master") then
-      inreplace "configure.ac" do |s|
-        s.gsub!(/AC_INIT\(\[tmux\],[^)]*\)/, "AC_INIT([tmux], master)")
-      end
-    end
-
     ENV.append "CPPFLAGS", "-DNO_USE_UTF8CJK" if build.without?("utf8-cjk")
     ENV.append "CPPFLAGS", "-DNO_USE_PANE_BORDER_ACS_ASCII" if build.without?("pane-border-acs-ascii")
-
-    system "sh", "autogen.sh" if build.head?
 
     args = %W[
       --disable-Dependency-tracking
