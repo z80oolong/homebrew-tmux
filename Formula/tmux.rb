@@ -15,6 +15,18 @@ class Tmux < Formula
     end
   end
 
+  devel do
+    tmux_version = "3.1-rc"
+    url "https://github.com/tmux/tmux/releases/download/3.1/tmux-#{tmux_version}.tar.gz"
+    sha256 "9fd91ff2048c9a445e99698e20e20bb64a4b5fd316d2a842b1726de6bc49f9b6"
+    version tmux_version
+
+    patch do
+      url "https://github.com/z80oolong/tmux-eaw-fix/raw/master/tmux-#{tmux_version}-fix.diff"
+      sha256 "f9efcbdcd7048b549141ca06be435dbc142d99fefc06464995aea650f778d480"
+    end
+  end
+
   head do
     url "https://github.com/tmux/tmux.git"
 
