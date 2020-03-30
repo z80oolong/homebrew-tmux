@@ -3,9 +3,10 @@ class AppimageTmuxAT23 < Formula
   homepage "https://tmux.github.io/"
 
   tmux_version = "2.3"
-  url "https://github.com/z80oolong/tmux-eaw-appimage/releases/download/v3.0a-eaw-appimage-0.1.1/tmux-eaw-#{tmux_version}-x86_64.AppImage"
-  sha256 "e2834b0e815f0ca91724e0e5836beb279babbe8f8c9018d7d9c98513404801a9"
+  url "https://github.com/z80oolong/tmux-eaw-appimage/releases/download/v3.0a-eaw-appimage-0.1.2/tmux-eaw-#{tmux_version}-x86_64.AppImage"
+  sha256 "6a6eb6ddb4d0136e10d04761302aa559dd0924fd2df28ff6152cbaa34e7ae213"
   version tmux_version
+  revision 1
 
   keg_only :versioned_formula
 
@@ -25,8 +26,9 @@ class AppimageTmuxAT23 < Formula
       libexec.cd do
         system "#{buildpath}/tmux-eaw-#{version}-x86_64.AppImage", "--appimage-extract"
       end
+      inreplace (libexec/"squashfs-root/AppRun").to_s, /^#export APPDIR=.*$/, %{export APPDIR="#{libexec}/squashfs-root"}
 
-      (bin/"tmux").make_symlink (libexec/"squashfs-root/usr/bin/tmux")
+      (bin/"tmux").make_symlink (libexec/"squashfs-root/AppRun")
     else
       bin.install "#{buildpath}/tmux-eaw-#{version}-x86_64.AppImage" => "tmux"
     end

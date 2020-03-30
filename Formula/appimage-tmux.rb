@@ -3,21 +3,22 @@ class AppimageTmux < Formula
   homepage "https://tmux.github.io/"
 
   tmux_version = "3.0a"
-  url "https://github.com/z80oolong/tmux-eaw-appimage/releases/download/v3.0a-eaw-appimage-0.1.1/tmux-eaw-#{tmux_version}-x86_64.AppImage"
-  sha256 "a3b221d95820a4689c0ba43898e896839353523c882063748a0ba8c1d09a4313"
+  url "https://github.com/z80oolong/tmux-eaw-appimage/releases/download/v3.0a-eaw-appimage-0.1.2/tmux-eaw-#{tmux_version}-x86_64.AppImage"
+  sha256 "9c3b649c37b89be66fc97d2ceca90f9aabf7bee8c53aa8433b1de12b6bfb72d5"
   version tmux_version
+  revision 1
 
   devel do
     tmux_version = "3.1-rc3"
-    url "https://github.com/z80oolong/tmux-eaw-appimage/releases/download/v3.0a-eaw-appimage-0.1.1/tmux-eaw-#{tmux_version}-x86_64.AppImage"
-    sha256 "4b2672573765681d93ee7081f501e5d56599eeafa3992d6c05134e4248e4c1f4"
+    url "https://github.com/z80oolong/tmux-eaw-appimage/releases/download/v3.0a-eaw-appimage-0.1.2/tmux-eaw-#{tmux_version}-x86_64.AppImage"
+    sha256 "b993931fa0384fafa548f4723f8e1046f17a96f826e1950a984a2052ced1c099"
     version tmux_version
   end
 
   head do
-    tmux_version = "HEAD-5b71943f"
-    url "https://github.com/z80oolong/tmux-eaw-appimage/releases/download/v3.0a-eaw-appimage-0.1.1/tmux-eaw-#{tmux_version}-x86_64.AppImage"
-    sha256 "17541dca6aabbd2a0e247845323909a16b8b4aabb8b9f9eb2c8c0d38e6308224"
+    tmux_version = "HEAD-f986539e"
+    url "https://github.com/z80oolong/tmux-eaw-appimage/releases/download/v3.0a-eaw-appimage-0.1.2/tmux-eaw-#{tmux_version}-x86_64.AppImage"
+    sha256 "c52689baa3f19b7487081f5d18496179456ce97abf2884499050591eaf42e385"
     version tmux_version
   end
 
@@ -31,7 +32,7 @@ class AppimageTmux < Formula
   end
 
   def install
-    tmux_version = build.head? ? "HEAD-5b71943f" : version
+    tmux_version = build.head? ? "HEAD-f986539e" : version
 
     (buildpath/"tmux-eaw-#{tmux_version}-x86_64.AppImage").chmod(0755)
 
@@ -41,8 +42,9 @@ class AppimageTmux < Formula
       libexec.cd do
         system "#{buildpath}/tmux-eaw-#{tmux_version}-x86_64.AppImage", "--appimage-extract"
       end
+      inreplace (libexec/"squashfs-root/AppRun").to_s, /^#export APPDIR=.*$/, %{export APPDIR="#{libexec}/squashfs-root"}
 
-      (bin/"tmux").make_symlink (libexec/"squashfs-root/usr/bin/tmux")
+      (bin/"tmux").make_symlink (libexec/"squashfs-root/AppRun")
     else
       bin.install "#{buildpath}/tmux-eaw-#{tmux_version}-x86_64.AppImage" => "tmux"
     end
