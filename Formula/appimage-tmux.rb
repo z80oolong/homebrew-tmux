@@ -3,23 +3,23 @@ class AppimageTmux < Formula
   homepage "https://tmux.github.io/"
 
   tmux_version = "3.0a"
-  appimage_version = "v3.0a-eaw-appimage-0.1.2"
+  appimage_version = "v3.0a-eaw-appimage-0.2.0"
   url "https://github.com/z80oolong/tmux-eaw-appimage/releases/download/#{appimage_version}/tmux-eaw-#{tmux_version}-x86_64.AppImage"
-  sha256 "9c3b649c37b89be66fc97d2ceca90f9aabf7bee8c53aa8433b1de12b6bfb72d5"
+  sha256 "b6f91e7662ed11529c9e2b09ad419a60082e99528857f6d1f687bf0633300f52"
   version tmux_version
-  revision 1
+  revision 2
 
   devel do
-    tmux_version = "3.1-rc3"
+    tmux_version = "3.1-rc4"
     url "https://github.com/z80oolong/tmux-eaw-appimage/releases/download/#{appimage_version}/tmux-eaw-#{tmux_version}-x86_64.AppImage"
-    sha256 "b993931fa0384fafa548f4723f8e1046f17a96f826e1950a984a2052ced1c099"
+    sha256 "0ab403d4ffc22dae65357f219d21c13bce23f27bb93cc9372af4b22d411a8dcc"
     version tmux_version
   end
 
   head do
-    tmux_version = "HEAD-f986539e"
+    tmux_version = "HEAD-b117c3b8"
     url "https://github.com/z80oolong/tmux-eaw-appimage/releases/download/#{appimage_version}/tmux-eaw-#{tmux_version}-x86_64.AppImage"
-    sha256 "c52689baa3f19b7487081f5d18496179456ce97abf2884499050591eaf42e385"
+    sha256 "67e6cc1ee5506f962c94c5452532a6a28943911664b69c8dde8cc1a5b593138e"
     version tmux_version
   end
 
