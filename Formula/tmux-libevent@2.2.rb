@@ -1,16 +1,15 @@
 class TmuxLibeventAT22 < Formula
   desc "Asynchronous event library"
   homepage "http://libevent.org"
-  url "https://github.com/libevent/libevent/archive/aff231229eb5f421201d7954bc453584bdde4398.zip"
-  sha256 "92e540fe4d04eaf8cb5aca7dcb0af10156f4fda730cb271eeff80020a4fbf54c"
+  url "https://github.com/libevent/libevent/archive/f0b3160f8ce7fbd411493dcd023f562f4f9d17ee.zip"
+  sha256 "cdbfaf9d1d7a7b66319e6a51030e2da8ac3c603f4ca655995e9e05faf1d7b796"
   version "2.2.0-beta-dev"
-  revision 4
+  revision 5
 
   depends_on "autoconf" => :build
   depends_on "automake" => :build
   depends_on "libtool" => :build
   depends_on "pkg-config" => :build
-  depends_on "openssl@1.1"
 
   keg_only :versioned_formula
 
@@ -18,6 +17,7 @@ class TmuxLibeventAT22 < Formula
     system "./autogen.sh"
     system "./configure", "--disable-dependency-tracking",
                           "--disable-debug-mode",
+                          "--disable-openssl",
                           "--prefix=#{prefix}"
     system "make"
     system "make", "install"
