@@ -1,4 +1,4 @@
-class AppimageTmux < Formula
+class AppimageTmuxAT30 < Formula
   desc "AppImage package of Terminal multiplexer"
   homepage "https://tmux.github.io/"
 
@@ -9,14 +9,7 @@ class AppimageTmux < Formula
   version tmux_version
   revision 3
 
-  head do
-    tmux_version = "HEAD-79b4d839"
-    url "https://github.com/z80oolong/tmux-eaw-appimage/releases/download/#{appimage_version}/tmux-eaw-#{tmux_version}-x86_64.AppImage"
-    sha256 "bcbdfabaeae96e8805ee87e3c231c547ab2e078183fcd581e86db88d08b9b2c7"
-    version tmux_version
-  end
-
-  keg_only "This formula is conflict with z80oolong/tmux/tmux."
+  keg_only :versioned_formula
 
   option "with-extract", "Extract tmux AppImage."
 
@@ -26,21 +19,19 @@ class AppimageTmux < Formula
   end
 
   def install
-    tmux_version = build.head? ? "HEAD-f986539e" : version
-
-    (buildpath/"tmux-eaw-#{tmux_version}-x86_64.AppImage").chmod(0755)
+    (buildpath/"tmux-eaw-#{version}-x86_64.AppImage").chmod(0755)
 
     if build.with?("extract") then
       libexec.mkdir; bin.mkdir
 
       libexec.cd do
-        system "#{buildpath}/tmux-eaw-#{tmux_version}-x86_64.AppImage", "--appimage-extract"
+        system "#{buildpath}/tmux-eaw-#{version}-x86_64.AppImage", "--appimage-extract"
       end
       inreplace (libexec/"squashfs-root/AppRun").to_s, /^#export APPDIR=.*$/, %{export APPDIR="#{libexec}/squashfs-root"}
 
       (bin/"tmux").make_symlink (libexec/"squashfs-root/AppRun")
     else
-      bin.install "#{buildpath}/tmux-eaw-#{tmux_version}-x86_64.AppImage" => "tmux"
+      bin.install "#{buildpath}/tmux-eaw-#{version}-x86_64.AppImage" => "tmux"
     end
 
     bash_completion.install resource("completion")
