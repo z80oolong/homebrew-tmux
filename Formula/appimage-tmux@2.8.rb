@@ -7,7 +7,7 @@ class AppimageTmuxAT28 < Formula
   url "https://github.com/z80oolong/tmux-eaw-appimage/releases/download/#{appimage_version}/tmux-eaw-#{tmux_version}-x86_64.AppImage"
   sha256 "b9efd878a132ff1952920bd82719cff82c40f51597cacffdc45877a8195171db"
   version tmux_version
-  revisiion 5
+  revision 5
 
   keg_only :versioned_formula
 
