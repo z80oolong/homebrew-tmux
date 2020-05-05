@@ -2,17 +2,17 @@ class AppimageTmux < Formula
   desc "AppImage package of Terminal multiplexer"
   homepage "https://tmux.github.io/"
 
-  tmux_version = "3.1a"
-  appimage_version = "v3.1a-eaw-appimage-0.1.0"
+  tmux_version = "3.1b"
+  appimage_version = "v3.1b-eaw-appimage-0.1.0"
   url "https://github.com/z80oolong/tmux-eaw-appimage/releases/download/#{appimage_version}/tmux-eaw-#{tmux_version}-x86_64.AppImage"
-  sha256 "cbecae2a50cacdb5d0ec84c105f80ce97dfedbb466c53e5ec1dff2f0010843e3"
+  sha256 "a9b11ea3c94e78377b60b9e4d426a4d2a036c4f207ab20e292309f51bc5d66c0"
   version tmux_version
-  revision 4
+  revisiion 5
 
   head do
-    tmux_version = "HEAD-5af69439"
+    tmux_version = "HEAD-a08f1c8c"
     url "https://github.com/z80oolong/tmux-eaw-appimage/releases/download/#{appimage_version}/tmux-eaw-#{tmux_version}-x86_64.AppImage"
-    sha256 "0c1240ffc745f0945eba9263ec81399a65241ac6c125c30358670975fdcf2c5e"
+    sha256 "5c4b146f5b2c6ede779e9dac9ab7fdccc56fa3c028de581bb1e0058eb54308c2"
     version tmux_version
   end
 
