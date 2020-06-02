@@ -19,8 +19,8 @@ class Tmux < Formula
     url "https://github.com/tmux/tmux.git"
 
     patch do
-      url "https://raw.githubusercontent.com/z80oolong/tmux-eaw-fix/master/tmux-HEAD-a08f1c8c-fix.diff"
-      sha256 "8edfe9fffa4ecc7d96635940309d45404ca679ba7ca9fa2798e8326e890dee1f"
+      url "https://raw.githubusercontent.com/z80oolong/tmux-eaw-fix/master/tmux-HEAD-191a8365-fix.diff"
+      sha256 "e126de02b0ec9b9f467d793aaa4c1084bd9982d0256ac5af7bbe78a428bd7cf9"
     end
 
     depends_on "automake" => :build
@@ -34,6 +34,7 @@ class Tmux < Formula
 
   option "with-version-master", "In head build, set the version of tmux as `master`."
   option "without-utf8-cjk", "Build without using East asian Ambiguous Width Character in tmux."
+  option "without-utf8-emoji", "Build without using Emoji Character in tmux."
   option "without-pane-border-acs-ascii", "Build without using ACS ASCII as pane border in tmux."
 
   resource "completion" do
@@ -53,6 +54,7 @@ class Tmux < Formula
     end
 
     ENV.append "CPPFLAGS", "-DNO_USE_UTF8CJK" if build.without?("utf8-cjk")
+    ENV.append "CPPFLAGS", "-DNO_USE_UTF8CJK_EMOJI" if build.without?("utf8-emoji")
     ENV.append "CPPFLAGS", "-DNO_USE_PANE_BORDER_ACS_ASCII" if build.without?("pane-border-acs-ascii")
 
     system "sh", "autogen.sh" if build.head?
