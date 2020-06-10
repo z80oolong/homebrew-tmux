@@ -10,9 +10,10 @@ class TmuxAT31 < Formula
   keg_only :versioned_formula
 
   depends_on "pkg-config" => :build
+  depends_on "patchelf" => :build
   depends_on "z80oolong/tmux/tmux-libevent@2.2"
   depends_on "utf8proc" => :optional
-  depends_on "ncurses" unless OS.mac?
+  depends_on "z80oolong/tmux/tmux-ncurses@6.2" unless OS.mac?
 
   option "without-utf8-cjk", "Build without using East asian Ambiguous Width Character in tmux."
   option "without-pane-border-acs-ascii", "Build without using ACS ASCII as pane border in tmux."
@@ -22,15 +23,16 @@ class TmuxAT31 < Formula
     sha256 "05e79fc1ecb27637dc9d6a52c315b8f207cf010cdcee9928805525076c9020ae"
   end
 
-  patch do
-    url "https://github.com/z80oolong/tmux-eaw-fix/raw/master/tmux-#{tmux_version}-fix.diff"
-    sha256 "f9efcbdcd7048b549141ca06be435dbc142d99fefc06464995aea650f778d480"
-  end
+  diff_file = Tap.fetch("z80oolong/tmux").path/"diff/tmux-#{version}-fix.diff"
+  patch :p1, diff_file.open.gets(nil)
 
   def install
     ENV.append "CFLAGS",   "-I#{Formula["z80oolong/tmux/tmux-libevent@2.2"].opt_include}"
     ENV.append "CPPFLAGS", "-I#{Formula["z80oolong/tmux/tmux-libevent@2.2"].opt_include}"
     ENV.append "LDFLAGS",  "-L#{Formula["z80oolong/tmux/tmux-libevent@2.2"].opt_lib}"
+    ENV.append "CFLAGS",   "-I#{Formula["z80oolong/tmux/tmux-ncurses@6.2"].opt_include}"
+    ENV.append "CPPFLAGS", "-I#{Formula["z80oolong/tmux/tmux-ncurses@6.2"].opt_include}"
+    ENV.append "LDFLAGS",  "-L#{Formula["z80oolong/tmux/tmux-ncurses@6.2"].opt_lib}"
 
     ENV.append "CPPFLAGS", "-DNO_USE_UTF8CJK" if build.without?("utf8-cjk")
     ENV.append "CPPFLAGS", "-DNO_USE_PANE_BORDER_ACS_ASCII" if build.without?("pane-border-acs-ascii")
@@ -47,9 +49,21 @@ class TmuxAT31 < Formula
     system "./configure", *args
 
     system "make", "install"
+    fix_rpath "#{bin}/tmux", ["z80oolong/tmux/tmux-ncurses@6.2"], ["ncurses"]
 
     pkgshare.install "example_tmux.conf"
     bash_completion.install resource("completion")
+  end
+
+  def fix_rpath(binname, append_list, delete_list)
+    delete_list_hash = {}
+    rpath = %x{#{Formula["patchelf"].opt_bin}/patchelf --print-rpath #{binname}}.chomp.split(":")
+
+    (append_list + delete_list).each {|name| delete_list_hash["#{Formula[name].opt_lib}"] = true}
+    rpath.delete_if {|path| delete_list_hash[path]}
+    append_list.each {|name| rpath.unshift("#{Formula[name].opt_lib}")}
+
+    system "#{Formula["patchelf"].opt_bin}/patchelf", "--set-rpath", "#{rpath.join(":")}", "#{binname}"
   end
 
   def caveats; <<~EOS

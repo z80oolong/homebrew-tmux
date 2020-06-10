@@ -1,7 +1,7 @@
 class Tmux < Formula
   desc "Terminal multiplexer"
   homepage "https://tmux.github.io/"
-  revision 4
+  revision 5
 
   stable do
     tmux_version = "3.1b"
@@ -9,19 +9,15 @@ class Tmux < Formula
     sha256 "d93f351d50af05a75fe6681085670c786d9504a5da2608e481c47cf5e1486db9"
     version tmux_version
 
-    patch do
-      url "https://github.com/z80oolong/tmux-eaw-fix/raw/master/tmux-#{tmux_version}-fix.diff"
-      sha256 "f9efcbdcd7048b549141ca06be435dbc142d99fefc06464995aea650f778d480"
-    end
+    diff_file = Tap.fetch("z80oolong/tmux").path/"diff/tmux-#{tmux_version}-fix.diff"
+    patch :p1, diff_file.open.gets(nil)
   end
 
   head do
     url "https://github.com/tmux/tmux.git"
 
-    patch do
-      url "https://raw.githubusercontent.com/z80oolong/tmux-eaw-fix/master/tmux-HEAD-191a8365-fix.diff"
-      sha256 "e126de02b0ec9b9f467d793aaa4c1084bd9982d0256ac5af7bbe78a428bd7cf9"
-    end
+    diff_file = Tap.fetch("z80oolong/tmux").path/"diff/tmux-HEAD-208d9449-fix.diff"
+    patch :p1, diff_file.open.gets(nil)
 
     depends_on "automake" => :build
     depends_on "autoconf" => :build
@@ -30,7 +26,7 @@ class Tmux < Formula
 
   depends_on "z80oolong/tmux/tmux-libevent@2.2"
   depends_on "utf8proc" => :optional
-  depends_on "ncurses" unless OS.mac?
+  depends_on "z80oolong/tmux/tmux-ncurses@6.2" unless OS.mac?
 
   option "with-version-master", "In head build, set the version of tmux as `master`."
   option "without-utf8-cjk", "Build without using East asian Ambiguous Width Character in tmux."
@@ -46,6 +42,9 @@ class Tmux < Formula
     ENV.append "CFLAGS",   "-I#{Formula["z80oolong/tmux/tmux-libevent@2.2"].opt_include}"
     ENV.append "CPPFLAGS", "-I#{Formula["z80oolong/tmux/tmux-libevent@2.2"].opt_include}"
     ENV.append "LDFLAGS",  "-L#{Formula["z80oolong/tmux/tmux-libevent@2.2"].opt_lib}"
+    ENV.append "CFLAGS",   "-I#{Formula["z80oolong/tmux/tmux-ncurses@6.2"].opt_include}"
+    ENV.append "CPPFLAGS", "-I#{Formula["z80oolong/tmux/tmux-ncurses@6.2"].opt_include}"
+    ENV.append "LDFLAGS",  "-L#{Formula["z80oolong/tmux/tmux-ncurses@6.2"].opt_lib}"
 
     if build.head? && build.with?("version-master") then
       inreplace "configure.ac" do |s|
@@ -71,9 +70,21 @@ class Tmux < Formula
     system "./configure", *args
 
     system "make", "install"
+    fix_rpath "#{bin}/tmux", ["z80oolong/tmux/tmux-ncurses@6.2"], ["ncurses"]
 
     pkgshare.install "example_tmux.conf"
     bash_completion.install resource("completion")
+  end
+
+  def fix_rpath(binname, append_list, delete_list)
+    delete_list_hash = {}
+    rpath = %x{#{Formula["patchelf"].opt_bin}/patchelf --print-rpath #{binname}}.chomp.split(":")
+
+    (append_list + delete_list).each {|name| delete_list_hash["#{Formula[name].opt_lib}"] = true}
+    rpath.delete_if {|path| delete_list_hash[path]}
+    append_list.each {|name| rpath.unshift("#{Formula[name].opt_lib}")}
+
+    system "#{Formula["patchelf"].opt_bin}/patchelf", "--set-rpath", "#{rpath.join(":")}", "#{binname}"
   end
 
   def caveats; <<~EOS
