@@ -16,36 +16,6 @@ Unicode の規格における東アジア圏の各種文字のうち、いわゆ
 
 また、 [tmux][TMUX] において East Asian Ambiguous Character の全角文字幅での表示を無効化する場合は、オプション ```--without-utf8-cjk``` を指定して下さい。そして、 [tmux][TMUX] において、画面分割におけるボーダーラインの罫線文字を判別し、適切に描画するための修正を無効化するには、オプション ```--without-pane-border-acs-ascii``` を指定して下さい。
 
-### z80oolong/tmux/tmux@2.3
-
-この Formula は、旧安定版である [tmux 2.3][TMUX] に、 "[East Asian Ambiguous Character を全角文字の幅で表示する差分ファイル][GST1]" を適用したものを導入します。
-
-なお、 [tmux][TMUX] において East Asian Ambiguous Character の全角文字幅での表示を無効化する場合は、オプション ```--without-utf8-cjk``` を指定して下さい。そして、 [tmux][TMUX] において、画面分割におけるボーダーラインの罫線文字を判別し、適切に描画するための修正を無効化するには、オプション ```--without-pane-border-acs-ascii``` を指定して下さい。
-
-**この Formula は、 versioned formula であるため、この Formula によって導入される [tmux][TMUX] は、 keg only で導入されることに留意して下さい。**
-
-この Formula によって導入される [tmux][TMUX] を使用するには、 ```brew link --force z80oolong/tmux/tmux@2.3``` コマンドを実行する必要があります。
-
-### z80oolong/tmux/tmux@2.4
-
-この Formula は、旧安定版である [tmux 2.4][TMUX] に、 "[East Asian Ambiguous Character を全角文字の幅で表示する差分ファイル][GST1]" を適用したものを導入します。
-
-なお、 [tmux][TMUX] において East Asian Ambiguous Character の全角文字幅での表示を無効化する場合は、オプション ```--without-utf8-cjk``` を指定して下さい。そして、 [tmux][TMUX] において、画面分割におけるボーダーラインの罫線文字を判別し、適切に描画するための修正を無効化するには、オプション ```--without-pane-border-acs-ascii``` を指定して下さい。
-
-**この Formula は、 versioned formula であるため、この Formula によって導入される [tmux][TMUX] は、 keg only で導入されることに留意して下さい。**
-
-この Formula によって導入される [tmux][TMUX] を使用するには、 ```brew link --force z80oolong/tmux/tmux@2.4``` コマンドを実行する必要があります。
-
-### z80oolong/tmux/tmux@2.5
-
-この Formula は、旧安定版である [tmux 2.5][TMUX] に、 "[East Asian Ambiguous Character を全角文字の幅で表示する差分ファイル][GST1]" を適用したものを導入します。
-
-なお、 [tmux][TMUX] において East Asian Ambiguous Character の全角文字幅での表示を無効化する場合は、オプション ```--without-utf8-cjk``` を指定して下さい。そして、 [tmux][TMUX] において、画面分割におけるボーダーラインの罫線文字を判別し、適切に描画するための修正を無効化するには、オプション ```--without-pane-border-acs-ascii``` を指定して下さい。
-
-**この Formula は、 versioned formula であるため、この Formula によって導入される [tmux][TMUX] は、 keg only で導入されることに留意して下さい。**
-
-この Formula によって導入される [tmux][TMUX] を使用するには、 ```brew link --force z80oolong/tmux/tmux@2.5``` コマンドを実行する必要があります。
-
 ### z80oolong/tmux/tmux@2.6
 
 この Formula は、旧安定版である [tmux 2.6][TMUX] に、 "[East Asian Ambiguous Character を全角文字の幅で表示する差分ファイル][GST1]" を適用したものを導入します。
@@ -158,36 +128,6 @@ Unicode の規格における東アジア圏の各種文字のうち、 [East As
 
 この Formula によって導入される [tmux][TMUX] を使用するには、 ```brew link --force z80oolong/tmux/appimage-tmux``` コマンドを実行する必要があります。
 
-### z80oolong/tmux/appimage-tmux@2.3
-
-この Formula は、"[East Asian Ambiguous Character を全角文字の幅で表示する差分ファイル][GST1]" を適用した旧安定版 [tmux 2.3][TMUX] の AppImage パッケージを導入します。
-
-なお、 AppImage パッケージが正常に機能しない環境において、この Formula によって [tmux][TMUX] を導入する場合は、オプション ```--with-extract``` を指定して、 AppImage パッケージの内容を展開して下さい。
-
-**この Formula は、 versioned formula であるため、この Formula によって導入される [tmux][TMUX] は、 keg only で導入されることに留意して下さい。**
-
-この Formula によって導入される [tmux][TMUX] を使用するには、 ```brew link --force z80oolong/tmux/appimage-tmux@2.3``` コマンドを実行する必要があります。
-
-### z80oolong/tmux/appimage-tmux@2.4
-
-この Formula は、"[East Asian Ambiguous Character を全角文字の幅で表示する差分ファイル][GST1]" を適用した旧安定版 [tmux 2.4][TMUX] の AppImage パッケージを導入します。
-
-なお、 AppImage パッケージが正常に機能しない環境において、この Formula によって [tmux][TMUX] を導入する場合は、オプション ```--with-extract``` を指定して、 AppImage パッケージの内容を展開して下さい。
-
-**この Formula は、 versioned formula であるため、この Formula によって導入される [tmux][TMUX] は、 keg only で導入されることに留意して下さい。**
-
-この Formula によって導入される [tmux][TMUX] を使用するには、 ```brew link --force z80oolong/tmux/appimage-tmux@2.4``` コマンドを実行する必要があります。
-
-### z80oolong/tmux/appimage-tmux@2.5
-
-この Formula は、"[East Asian Ambiguous Character を全角文字の幅で表示する差分ファイル][GST1]" を適用した旧安定版 [tmux 2.5][TMUX] の AppImage パッケージを導入します。
-
-なお、 AppImage パッケージが正常に機能しない環境において、この Formula によって [tmux][TMUX] を導入する場合は、オプション ```--with-extract``` を指定して、 AppImage パッケージの内容を展開して下さい。
-
-**この Formula は、 versioned formula であるため、この Formula によって導入される [tmux][TMUX] は、 keg only で導入されることに留意して下さい。**
-
-この Formula によって導入される [tmux][TMUX] を使用するには、 ```brew link --force z80oolong/tmux/appimage-tmux@2.5``` コマンドを実行する必要があります。
-
 ### z80oolong/tmux/appimage-tmux@2.6
 
 この Formula は、"[East Asian Ambiguous Character を全角文字の幅で表示する差分ファイル][GST1]" を適用した旧安定版 [tmux 2.6][TMUX] の AppImage パッケージを導入します。
@@ -296,6 +236,12 @@ Unicode の規格における東アジア圏の各種文字のうち、 [East As
 
 **この Formula は、 versioned formula であるため、この Formula によって導入される [libevent][LIBE] は、 keg only で導入されることに留意して下さい。**
 
+### z80oolong/tmux/tmux-ncurses@6.2
+
+上述の Formula によって導入される [tmux][TMUX] に依存するライブラリである [libevent][LIBE] を導入するための Formula です。オリジナルの ncurses ライブラリに、 East Asian Ambiguous Character の文字幅を全角文字の幅として扱う修正を加えています。
+
+**この Formula は、 versioned formula であるため、この Formula によって導入される ncurses は、 keg only で導入されることに留意して下さい。**
+
 ### z80oolong/tmux/got-bin
 
 [@gorilla0513 氏][GORI]による、 tmux の session の一覧を表示し、 attach と削除を容易に行うためのソフトウェアである [got][GOT_] を導入するための Formula です。
@@ -340,7 +286,7 @@ Unicode の規格における東アジア圏の各種文字のうち、 [East As
 
 ```
 # ここに、 HOMEBREW_PREFIX は、 Linuxbrew が置かれているディレクトリであり、環境に応じて読み替えて設定すること。
-run -b "HOMEBREW_PREFIX/opt/tpm/libexec/tpm/tpm"
+run-shell -b "HOMEBREW_PREFIX/opt/tpm/libexec/tpm/tpm"
 ```
 
 <!-- 外部リンク一覧 -->
