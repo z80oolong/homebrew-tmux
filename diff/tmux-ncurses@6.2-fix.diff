@@ -118,10 +118,10 @@ index e2611701..93c89494 100644
 +#endif
 +#endif
 diff --git a/ncurses/widechar/lib_wacs.c b/ncurses/widechar/lib_wacs.c
-index 5b6f6da2..dd5adda7 100644
+index 5b6f6da2..8061683f 100644
 --- a/ncurses/widechar/lib_wacs.c
 +++ b/ncurses/widechar/lib_wacs.c
-@@ -35,6 +35,55 @@
+@@ -35,6 +35,57 @@
  
  MODULE_ID("$Id: lib_wacs.c,v 1.20 2020/02/02 23:34:34 tom Exp $")
  
@@ -138,6 +138,7 @@ index 5b6f6da2..dd5adda7 100644
 +    return (strcmp(environ, "0") != 0);
 +}
 +
++#ifndef NO_USE_FOR_TMUX
 +static int _nc_environ_cmp(const char *name, char *str)
 +{
 +    char *environ = getenv(name);
@@ -147,6 +148,7 @@ index 5b6f6da2..dd5adda7 100644
 +
 +    return strcmp(environ, str);
 +}
++#endif
 +
 +int _nc_wcwidth_cjk(wchar_t ucs)
 +{
@@ -177,7 +179,7 @@ index 5b6f6da2..dd5adda7 100644
  NCURSES_EXPORT_VAR(cchar_t) * _nc_wacs = 0;
  
  NCURSES_EXPORT(void)
-@@ -131,7 +180,25 @@ _nc_init_wacs(void)
+@@ -131,7 +182,25 @@ _nc_init_wacs(void)
  #endif
  
  	    m = table[n].map;
