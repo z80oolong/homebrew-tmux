@@ -13,10 +13,20 @@ class Tmux < Formula
     patch :p1, diff_file.open.gets(nil)
   end
 
+  devel do
+    tmux_version = "3.2-rc"
+    url "https://github.com/tmux/tmux/releases/download/#{tmux_version}/tmux-#{tmux_version}.tar.gz"
+    sha256 "626d17dcebf3f0e8d4f9c305ee285552d65d0a8206069cf176d3052ba937b4c6"
+    version tmux_version
+
+    diff_file = Tap.fetch("z80oolong/tmux").path/"diff/tmux-#{tmux_version}-fix.diff"
+    patch :p1, diff_file.open.gets(nil)
+  end
+
   head do
     url "https://github.com/tmux/tmux.git"
 
-    diff_file = Tap.fetch("z80oolong/tmux").path/"diff/tmux-HEAD-208d9449-fix.diff"
+    diff_file = Tap.fetch("z80oolong/tmux").path/"diff/tmux-HEAD-2a2ebf31-fix.diff"
     patch :p1, diff_file.open.gets(nil)
 
     depends_on "automake" => :build
