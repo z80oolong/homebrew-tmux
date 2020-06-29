@@ -24,6 +24,9 @@ class TmuxAT27 < Formula
   end
 
   diff_file = Tap.fetch("z80oolong/tmux").path/"diff/tmux-#{version}-fix.diff"
+  unless diff_file.exist? then
+    diff_file = Formula["z80oolong/tmux/#{name}"].opt_prefix/".brew/tmux-#{version}-fix.diff"
+  end
   patch :p1, diff_file.open.gets(nil)
 
   def install
@@ -53,6 +56,10 @@ class TmuxAT27 < Formula
 
     pkgshare.install "example_tmux.conf"
     bash_completion.install resource("completion")
+  end
+
+  def post_install
+    system "install", "-m", "0444", Tap.fetch("z80oolong/tmux").path/"diff/tmux-#{version}-fix.diff", "#{prefix}/.brew"
   end
 
   def fix_rpath(binname, append_list, delete_list)

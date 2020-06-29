@@ -1,23 +1,15 @@
-class AppimageTmux < Formula
+class AppimageTmuxAT32 < Formula
   desc "AppImage package of Terminal multiplexer"
   homepage "https://tmux.github.io/"
 
-  tmux_version = "3.1b"
+  tmux_version = "3.2-rc"
   appimage_version = "v3.1b-eaw-appimage-0.1.3"
   url "https://github.com/z80oolong/tmux-eaw-appimage/releases/download/#{appimage_version}/tmux-eaw-#{tmux_version}-x86_64.AppImage"
-  sha256 "d9c364a78aec7533ccde9c92053cb51a5c725f1386fc244f5044cde5cc7af9eb"
+  sha256 "247c08d9bb746964690cfb1868fc9a60e1b3e288e7c9f04f7bfbf87f757b947a"
   version tmux_version
   revision 8
 
-  head do
-    tmux_commit = "2a2ebf31"; tmux_version = "HEAD-#{tmux_commit}"
-    url "https://github.com/z80oolong/tmux-eaw-appimage/releases/download/#{appimage_version}/tmux-eaw-#{tmux_version}-x86_64.AppImage"
-    sha256 "475323ae15fb49b533df72fb649db0ce957a58fa04ffc70f8682fb659c7779b9"
-    version tmux_version
-    version.update_commit(tmux_commit)
-  end
-
-  keg_only "This formula is conflict with z80oolong/tmux/tmux."
+  keg_only :versioned_formula
 
   option "with-extract", "Extract tmux AppImage."
 
