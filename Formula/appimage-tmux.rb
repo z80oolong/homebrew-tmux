@@ -3,16 +3,16 @@ class AppimageTmux < Formula
   homepage "https://tmux.github.io/"
 
   tmux_version = "3.1b"
-  appimage_version = "v3.1b-eaw-appimage-0.1.3"
+  appimage_version = "v3.1b-eaw-appimage-0.2.0"
   url "https://github.com/z80oolong/tmux-eaw-appimage/releases/download/#{appimage_version}/tmux-eaw-#{tmux_version}-x86_64.AppImage"
-  sha256 "d9c364a78aec7533ccde9c92053cb51a5c725f1386fc244f5044cde5cc7af9eb"
+  sha256 "2cfad48c33b35914cdd99d90a1e0b081a60acb07b43e8d3dec5aaaf4e56f6e21"
   version tmux_version
-  revision 8
+  revision 9
 
   head do
-    tmux_commit = "2a2ebf31"; tmux_version = "HEAD-#{tmux_commit}"
+    tmux_commit = "a5f99e14"; tmux_version = "HEAD-#{tmux_commit}"
     url "https://github.com/z80oolong/tmux-eaw-appimage/releases/download/#{appimage_version}/tmux-eaw-#{tmux_version}-x86_64.AppImage"
-    sha256 "475323ae15fb49b533df72fb649db0ce957a58fa04ffc70f8682fb659c7779b9"
+    sha256 "ce2f874e2e161b0a060538854b562f6e7efa44aa97f1bd1cb0beabde90855093"
     version tmux_version
     version.update_commit(tmux_commit)
   end
