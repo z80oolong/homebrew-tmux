@@ -3,7 +3,7 @@ class TmuxAT32 < Formula
   homepage "https://tmux.github.io/"
 
   tmux_version = "3.2-rc"
-  url "https://github.com/tmux/tmux/releases/download/3.2/tmux-#{tmux_version}.tar.gz"
+  url "https://github.com/tmux/tmux/releases/download/#{tmux_version}/tmux-#{tmux_version}.tar.gz"
   sha256 "626d17dcebf3f0e8d4f9c305ee285552d65d0a8206069cf176d3052ba937b4c6"
   version tmux_version
 
