@@ -1,5 +1,5 @@
 diff --git a/options-table.c b/options-table.c
-index 0555d43e..05e901a4 100644
+index b24c6e36..5bd02465 100644
 --- a/options-table.c
 +++ b/options-table.c
 @@ -1068,6 +1068,38 @@ const struct options_table_entry options_table[] = {
@@ -109,7 +109,7 @@ index b9a676a2..c2e2df1c 100644
  	exit(client_main(osdep_event_init(), argc, argv, flags, feat));
  }
 diff --git a/tmux.h b/tmux.h
-index 8f09d5ca..71d2a604 100644
+index a17ae5c6..9c4fd7b7 100644
 --- a/tmux.h
 +++ b/tmux.h
 @@ -69,6 +69,10 @@ struct winlink;
@@ -441,7 +441,7 @@ index 9ad88597..e1457ab6 100644
  	/* Log the capabilities. */
  	for (i = 0; i < tty_term_ncodes(); i++)
 diff --git a/utf8.c b/utf8.c
-index 5ba41e9a..aaf53c08 100644
+index e640d845..7b3766c8 100644
 --- a/utf8.c
 +++ b/utf8.c
 @@ -26,6 +26,407 @@

@@ -19,10 +19,11 @@ class Tmux < Formula
 
   head do
     url "https://github.com/tmux/tmux.git"
+    @@head_commit = "90158b59"
 
-    diff_file = Tap.fetch("z80oolong/tmux").path/"diff/tmux-HEAD-a5f99e14-fix.diff"
+    diff_file = Tap.fetch("z80oolong/tmux").path/"diff/tmux-HEAD-#{@@head_commit}-fix.diff"
     unless diff_file.exist? then
-      diff_file = Formula["z80oolong/tmux/#{name}"].opt_prefix/".brew/tmux-HEAD-a5f99e14-fix.diff"
+      diff_file = Formula["z80oolong/tmux/#{name}"].opt_prefix/".brew/tmux-HEAD-#{@@head_commit}-fix.diff"
     end
     patch :p1, diff_file.open.gets(nil)
 
@@ -85,7 +86,7 @@ class Tmux < Formula
 
   def post_install
     if build.head? then
-      system "install", "-m", "0444", Tap.fetch("z80oolong/tmux").path/"diff/tmux-HEAD-a5f99e14-fix.diff", "#{prefix}/.brew"
+      system "install", "-m", "0444", Tap.fetch("z80oolong/tmux").path/"diff/tmux-HEAD-#{@@head_commit}-fix.diff", "#{prefix}/.brew"
     else
       system "install", "-m", "0444", Tap.fetch("z80oolong/tmux").path/"diff/tmux-#{version}-fix.diff", "#{prefix}/.brew"
     end
