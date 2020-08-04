@@ -15,7 +15,8 @@ class Tmux < Formula
 
 
   head do
-    tmux_version = "HEAD-90158b59"
+    tmux_commit  = "98aa8350"
+    tmux_version = "HEAD-#{tmux_commit}"
     url "https://github.com/tmux/tmux.git"
     version tmux_version
 
@@ -212,7 +213,7 @@ index b9a676a2..c2e2df1c 100644
  	exit(client_main(osdep_event_init(), argc, argv, flags, feat));
  }
 diff --git a/tmux.h b/tmux.h
-index a17ae5c6..9c4fd7b7 100644
+index 67951215..f9557564 100644
 --- a/tmux.h
 +++ b/tmux.h
 @@ -69,6 +69,10 @@ struct winlink;
