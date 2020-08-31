@@ -15,7 +15,7 @@ class Tmux < Formula
 
 
   head do
-    tmux_commit  = "98aa8350"
+    tmux_commit  = "4d39c9df"
     tmux_version = "HEAD-#{tmux_commit}"
     url "https://github.com/tmux/tmux.git"
     version tmux_version
@@ -103,10 +103,10 @@ end
 
 __END__
 diff --git a/options-table.c b/options-table.c
-index b24c6e36..5bd02465 100644
+index 873f8d67..5688613b 100644
 --- a/options-table.c
 +++ b/options-table.c
-@@ -1068,6 +1068,38 @@ const struct options_table_entry options_table[] = {
+@@ -1076,6 +1076,38 @@ const struct options_table_entry options_table[] = {
  	          "This option is no longer used."
  	},
  
@@ -213,7 +213,7 @@ index b9a676a2..c2e2df1c 100644
  	exit(client_main(osdep_event_init(), argc, argv, flags, feat));
  }
 diff --git a/tmux.h b/tmux.h
-index 67951215..f9557564 100644
+index dce5f140..0df27661 100644
 --- a/tmux.h
 +++ b/tmux.h
 @@ -69,6 +69,10 @@ struct winlink;
@@ -517,10 +517,10 @@ index 63eccb93..7729eca5 100644
 +#endif
  }
 diff --git a/tty-term.c b/tty-term.c
-index 9ad88597..e1457ab6 100644
+index a5d57cd7..3ccdd4f2 100644
 --- a/tty-term.c
 +++ b/tty-term.c
-@@ -603,6 +603,15 @@ tty_term_create(struct tty *tty, char *name, int *feat, int fd, char **cause)
+@@ -605,6 +605,15 @@ tty_term_create(struct tty *tty, char *name, int *feat, int fd, char **cause)
  	if (!tty_term_flag(term, TTYC_AM))
  		term->flags |= TERM_NOAM;
  
@@ -536,7 +536,7 @@ index 9ad88597..e1457ab6 100644
  	/* Generate ACS table. If none is present, use nearest ASCII. */
  	memset(term->acs, 0, sizeof term->acs);
  	if (tty_term_has(term, TTYC_ACSC))
-@@ -611,6 +620,7 @@ tty_term_create(struct tty *tty, char *name, int *feat, int fd, char **cause)
+@@ -613,6 +622,7 @@ tty_term_create(struct tty *tty, char *name, int *feat, int fd, char **cause)
  		acs = "a#j+k+l+m+n+o-p-q-r-s-t+u+v+w+x|y<z>~.";
  	for (; acs[0] != '\0' && acs[1] != '\0'; acs += 2)
  		term->acs[(u_char) acs[0]][0] = acs[1];
