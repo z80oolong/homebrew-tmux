@@ -15,10 +15,8 @@ class Tmux < Formula
 
 
   head do
-    tmux_commit  = "4d39c9df"
-    tmux_version = "HEAD-#{tmux_commit}"
+    tmux_commit  = "b895ffbf"
     url "https://github.com/tmux/tmux.git"
-    version tmux_version
 
     patch :p1, :DATA
 
