@@ -14,7 +14,7 @@ class PowerlineStatus < Formula
     url "https://github.com/powerline/powerline.git", :revision => "develop"
   end
 
-  depends_on "python@2"
+  depends_on "z80oolong/tmux/python@2"
   depends_on "z80oolong/tmux/tmux" => :recommended
 
   option "without-fix-powerline", "Do not fix a problem that causes problems when tmux returns an abnormal version."
@@ -33,7 +33,7 @@ class PowerlineStatus < Formula
   end
 
   def install
-    venv = virtualenv_create(libexec, "python")
+    venv = virtualenv_create(libexec, "python2")
 
     system libexec/"bin/pip", "install", "-v", "--no-binary", ":all:", "--ignore-installed", buildpath
     system libexec/"bin/pip", "uninstall", "-y", name

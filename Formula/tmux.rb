@@ -9,9 +9,19 @@ class Tmux < Formula
     sha256 "d93f351d50af05a75fe6681085670c786d9504a5da2608e481c47cf5e1486db9"
     version tmux_version
 
-    depends_on "gnu-sed" => :build
-    patch :p1, %x{#{Formula["gnu-sed"].opt_bin}/sed -e "1,/^__END__/d" < #{Formula["z80oolong/tmux/tmux@3.1b"].path}}
-  end
+    def pick_diff(formula_path)
+      f = true
+      lines = formula_path.each_line.to_a.delete_if do |l|
+        f = false if (/^__END__/ === l); f
+      end 
+      lines.shift
+
+      return lines.join("")
+    end
+
+    #depends_on "gnu-sed" => :build
+    patch :p1, pick_diff(Formula["z80oolong/tmux/tmux@3.1b"].path)
+   end
 
 
   head do
