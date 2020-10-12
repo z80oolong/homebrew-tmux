@@ -23,7 +23,7 @@ class Tmux < Formula
 
 
   head do
-    tmux_commit = "eea85fb4"
+    tmux_commit = "30601d11"
     url "https://github.com/tmux/tmux.git"
 
     patch :p1, :DATA
