@@ -152,7 +152,7 @@ index 873f8d67..5688613b 100644
  	OPTIONS_TABLE_HOOK("after-bind-key", ""),
  	OPTIONS_TABLE_HOOK("after-capture-pane", ""),
 diff --git a/tmux.c b/tmux.c
-index b9a676a2..c2e2df1c 100644
+index 066714df..40b5bd52 100644
 --- a/tmux.c
 +++ b/tmux.c
 @@ -321,19 +321,28 @@ main(int argc, char **argv)
@@ -163,8 +163,8 @@ index b9a676a2..c2e2df1c 100644
 +	char					*ctype;
 +#endif
  	const char				*s, *shell, *cwd;
- 	int					 opt, flags = 0, keys;
- 	int					 feat = 0;
+ 	int					 opt, keys, feat = 0;
+ 	uint64_t				 flags = 0;
  	const struct options_table_entry	*oe;
  
 +#ifdef NO_USE_UTF8CJK
@@ -219,7 +219,7 @@ index b9a676a2..c2e2df1c 100644
  	exit(client_main(osdep_event_init(), argc, argv, flags, feat));
  }
 diff --git a/tmux.h b/tmux.h
-index efc54a9a..545bc920 100644
+index 5a4db83b..ba558a21 100644
 --- a/tmux.h
 +++ b/tmux.h
 @@ -69,6 +69,10 @@ struct winlink;
@@ -523,10 +523,10 @@ index 63eccb93..7729eca5 100644
 +#endif
  }
 diff --git a/tty-term.c b/tty-term.c
-index a5d57cd7..3ccdd4f2 100644
+index 3007dc01..8f67ad23 100644
 --- a/tty-term.c
 +++ b/tty-term.c
-@@ -605,6 +605,15 @@ tty_term_create(struct tty *tty, char *name, int *feat, int fd, char **cause)
+@@ -607,6 +607,15 @@ tty_term_create(struct tty *tty, char *name, int *feat, int fd, char **cause)
  	if (!tty_term_flag(term, TTYC_AM))
  		term->flags |= TERM_NOAM;
  
@@ -542,7 +542,7 @@ index a5d57cd7..3ccdd4f2 100644
  	/* Generate ACS table. If none is present, use nearest ASCII. */
  	memset(term->acs, 0, sizeof term->acs);
  	if (tty_term_has(term, TTYC_ACSC))
-@@ -613,6 +622,7 @@ tty_term_create(struct tty *tty, char *name, int *feat, int fd, char **cause)
+@@ -615,6 +624,7 @@ tty_term_create(struct tty *tty, char *name, int *feat, int fd, char **cause)
  		acs = "a#j+k+l+m+n+o-p-q-r-s-t+u+v+w+x|y<z>~.";
  	for (; acs[0] != '\0' && acs[1] != '\0'; acs += 2)
  		term->acs[(u_char) acs[0]][0] = acs[1];
