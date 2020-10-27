@@ -6,6 +6,7 @@ class TmuxAT31a < Formula
   url "https://github.com/tmux/tmux/releases/download/#{tmux_version}/tmux-#{tmux_version}.tar.gz"
   sha256 "10687cbb02082b8b9e076cf122f1b783acc2157be73021b4bedb47e958f4e484"
   version tmux_version
+  revision 6
 
   keg_only :versioned_formula
 
@@ -16,6 +17,7 @@ class TmuxAT31a < Formula
   depends_on "z80oolong/tmux/tmux-ncurses@6.2" unless OS.mac?
 
   option "without-utf8-cjk", "Build without using East asian Ambiguous Width Character in tmux."
+  option "without-utf8-emoji", "Build without using Emoji Character in tmux."
   option "without-pane-border-acs-ascii", "Build without using ACS ASCII as pane border in tmux."
 
   resource "completion" do
@@ -34,6 +36,7 @@ class TmuxAT31a < Formula
     ENV.append "LDFLAGS",  "-L#{Formula["z80oolong/tmux/tmux-ncurses@6.2"].opt_lib}"
 
     ENV.append "CPPFLAGS", "-DNO_USE_UTF8CJK" if build.without?("utf8-cjk")
+    ENV.append "CPPFLAGS", "-DNO_USE_UTF8CJK_EMOJI" if build.without?("utf8-emoji")
     ENV.append "CPPFLAGS", "-DNO_USE_PANE_BORDER_ACS_ASCII" if build.without?("pane-border-acs-ascii")
 
     args = %W[
@@ -78,10 +81,10 @@ end
 
 __END__
 diff --git a/options-table.c b/options-table.c
-index be0d220..cf902b2 100644
+index be0d220..b83a994 100644
 --- a/options-table.c
 +++ b/options-table.c
-@@ -804,6 +804,29 @@ const struct options_table_entry options_table[] = {
+@@ -804,6 +804,38 @@ const struct options_table_entry options_table[] = {
  	  .default_num = 1
  	},
  
@@ -92,6 +95,15 @@ index be0d220..cf902b2 100644
 +	  .scope = OPTIONS_TABLE_SERVER,
 +	  .default_num = 1
 +	},
++
++#ifndef NO_USE_UTF8CJK_EMOJI
++	/* UTF8 Emoji charactor options. */
++	{ .name = "utf8-emoji",
++	  .type = OPTIONS_TABLE_FLAG,
++	  .scope = OPTIONS_TABLE_SERVER,
++	  .default_num = 1
++	},
++#endif
 +#endif
 +
 +#ifndef NO_USE_PANE_BORDER_ACS_ASCII
@@ -112,7 +124,7 @@ index be0d220..cf902b2 100644
  	OPTIONS_TABLE_HOOK("after-bind-key", ""),
  	OPTIONS_TABLE_HOOK("after-capture-pane", ""),
 diff --git a/tmux.c b/tmux.c
-index 3c1fecc..716c8c8 100644
+index 3c1fecc..27c1ba0 100644
 --- a/tmux.c
 +++ b/tmux.c
 @@ -220,18 +220,27 @@ int
@@ -143,22 +155,52 @@ index 3c1fecc..716c8c8 100644
  
  	setlocale(LC_TIME, "");
  	tzset();
-@@ -356,6 +365,13 @@ main(int argc, char **argv)
+@@ -356,6 +365,21 @@ main(int argc, char **argv)
  		options_set_number(global_w_options, "mode-keys", keys);
  	}
  
 +#ifndef NO_USE_UTF8CJK
 +	if (!strncmp(ctype, "ja", 2) || !strncmp(ctype, "ko", 2) || !strncmp(ctype, "zh", 2)) {
 +		options_set_number(global_options, "utf8-cjk", 1);
++#ifndef NO_USE_UTF8CJK_EMOJI
++		options_set_number(global_options, "utf8-emoji", 1);
++#endif
++		options_set_number(global_s_options, "pane-border-ascii", 1);
 +	} else {
 +		options_set_number(global_options, "utf8-cjk", 0);
++#ifndef NO_USE_UTF8CJK_EMOJI
++		options_set_number(global_options, "utf8-emoji", 0);
++#endif
++		options_set_number(global_s_options, "pane-border-ascii", 0);
 +	}
 +#endif
  	/*
  	 * If socket is specified on the command-line with -S or -L, it is
  	 * used. Otherwise, $TMUX is checked and if that fails "default" is
+diff --git a/tmux.h b/tmux.h
+index 3720bee..3949842 100644
+--- a/tmux.h
++++ b/tmux.h
+@@ -67,6 +67,17 @@ struct winlink;
+ #define TMUX_CONF "/etc/tmux.conf:~/.tmux.conf"
+ #endif
+ 
++/* If "pane-border-ascii" is not used, "utf8-cjk" is not used too. */
++#ifdef NO_USE_PANE_BORDER_ASCII
++#ifndef NO_USE_UTF8CJK
++#define NO_USE_UTF8CJK
++#endif
++#endif
++
++#ifdef NO_USE_UTF8CJK
++#define NO_USE_UTF8CJK_EMOJI
++#endif
++
+ /* Minimum layout cell size, NOT including border lines. */
+ #define PANE_MINIMUM 1
+ 
 diff --git a/tty-acs.c b/tty-acs.c
-index 1463412..3242621 100644
+index 1463412..d1cd5ee 100644
 --- a/tty-acs.c
 +++ b/tty-acs.c
 @@ -22,6 +22,83 @@
@@ -245,7 +287,55 @@ index 1463412..3242621 100644
  static int	tty_acs_cmp(const void *, const void *);
  
  /* Table mapping ACS entries to UTF-8. */
-@@ -77,11 +154,91 @@ tty_acs_cmp(const void *key, const void *value)
+@@ -68,6 +145,47 @@ static const struct tty_acs_entry tty_acs_table[] = {
+ 	{ '~', "\302\267" }		/* bullet */
+ };
+ 
++#ifndef NO_USE_PANE_BORDER_ASCII
++const struct tty_acs_entry tty_acs_table_putty[] = {
++	{ '+', "\342\206\222" },
++	{ ',', "\342\206\220" },
++	{ '-', "\342\206\221" },
++	{ '.', "\342\206\223" },
++	{ '0', "\342\226\256" },
++	{ '`', "\342\227\206" },
++	{ 'a', "\342\226\222" },
++	{ 'b', "\342\220\211" },
++	{ 'c', "\342\220\214" },
++	{ 'd', "\342\220\215" },
++	{ 'e', "\342\220\212" },
++	{ 'f', "\302\260" },
++	{ 'g', "\302\261" },
++	{ 'h', "\342\226\222" },
++	{ 'i', "\342\230\203" },
++	{ 'j', "+" },
++	{ 'k', "+" },
++	{ 'l', "+" },
++	{ 'm', "+" },
++	{ 'n', "+" },
++	{ 'o', "\342\216\272" },
++	{ 'p', "\342\216\273" },
++	{ 'q', "-" },
++	{ 'r', "\342\216\274" },
++	{ 's', "\342\216\275" },
++	{ 't', "+" },
++	{ 'u', "+" },
++	{ 'v', "+" },
++	{ 'w', "+" },
++	{ 'x', "|" },
++	{ 'y', "\342\211\244" },
++	{ 'z', "\342\211\245" },
++	{ '{', "\317\200" },
++	{ '|', "\342\211\240" },
++	{ '}', "\302\243" },
++	{ '~', "*" }
++};
++#endif
++
+ static int
+ tty_acs_cmp(const void *key, const void *value)
+ {
+@@ -77,11 +195,91 @@ tty_acs_cmp(const void *key, const void *value)
  	ch = *(u_char *) key;
  	return (ch - entry->key);
  }
@@ -337,7 +427,7 @@ index 1463412..3242621 100644
  	if (tty == NULL)
  		return (0);
  
-@@ -102,12 +259,31 @@ tty_acs_needed(struct tty *tty)
+@@ -102,12 +300,31 @@ tty_acs_needed(struct tty *tty)
  	if (tty->flags & TTY_UTF8)
  		return (0);
  	return (1);
@@ -369,7 +459,25 @@ index 1463412..3242621 100644
  	struct tty_acs_entry	*entry;
  
  	/* Use the ACS set instead of UTF-8 if needed. */
-@@ -123,4 +299,5 @@ tty_acs_get(struct tty *tty, u_char ch)
+@@ -118,9 +335,23 @@ tty_acs_get(struct tty *tty, u_char ch)
+ 	}
+ 
+ 	/* Otherwise look up the UTF-8 translation. */
++#ifdef NO_USE_PANE_BORDER_ASCII
+ 	entry = bsearch(&ch, tty_acs_table, nitems(tty_acs_table),
+ 	    sizeof tty_acs_table[0], tty_acs_cmp);
++#else
++	struct tty_acs_entry *entries;
++
++#ifdef NO_USE_UTF8_CJK
++	entries = options_get_number(global_s_options, "pane-border-ascii") ? tty_acs_table_putty : tty_acs_table;
++#else
++	entries = (options_get_number(global_options, "utf8-cjk") || options_get_number(global_s_options, "pane-border-ascii")) \
++		    ? tty_acs_table_putty : tty_acs_table;
++#endif
++
++	entry = bsearch(&ch, (const void *)entries, nitems(tty_acs_table), sizeof tty_acs_table[0], tty_acs_cmp);
++#endif
  	if (entry == NULL)
  		return (NULL);
  	return (entry->string);
@@ -404,10 +512,10 @@ index e556df6..304d05e 100644
  	/* On terminals with xterm titles (XT), fill in tsl and fsl. */
  	if (tty_term_flag(term, TTYC_XT) &&
 diff --git a/utf8.c b/utf8.c
-index b4e448f..bac3753 100644
+index b4e448f..f9d0b88 100644
 --- a/utf8.c
 +++ b/utf8.c
-@@ -26,6 +26,319 @@
+@@ -26,6 +26,407 @@
  
  #include "tmux.h"
  
@@ -722,18 +830,113 @@ index b4e448f..bac3753 100644
 +
 +  return width;
 +}
++
++#ifndef NO_USE_UTF8CJK_EMOJI
++/* The following function returns 1 if wide charactor code ucs is
++ * The following functions are the same as mk_wcwidth_cjk() and
++ * mk_wcswidth_cjk(), except that spacing characters in the "Emoji"
++ * characters as defined in Unicode have a column width of 2.
++ * This function is based on the following vim-jp issue,
++ * by Mr.mattn <https://github.com/mattn>.
++ *
++ * https://github.com/vim-jp/issues/issues/1086
++ */
++int mk_wcwidth_cjk_emoji(wchar_t ucs)
++{
++  /* Sorted list of non-overlapping intervals of all Emoji characters,
++   * based on http://unicode.org/emoji/charts/emoji-list.html */
++
++  static const struct interval emoji_all[] = {
++    { 0x203c, 0x203c }, { 0x2049, 0x2049 }, { 0x2122, 0x2122 },
++    { 0x2139, 0x2139 }, { 0x2194, 0x2199 }, { 0x21a9, 0x21aa },
++    { 0x231a, 0x231b }, { 0x2328, 0x2328 }, { 0x23cf, 0x23cf },
++    { 0x23e9, 0x23f3 }, { 0x23f8, 0x23fa }, { 0x24c2, 0x24c2 },
++    { 0x25aa, 0x25ab }, { 0x25b6, 0x25b6 }, { 0x25c0, 0x25c0 },
++    { 0x25fb, 0x25fe }, { 0x2600, 0x2604 }, { 0x260e, 0x260e },
++    { 0x2611, 0x2611 }, { 0x2614, 0x2615 }, { 0x2618, 0x2618 },
++    { 0x261d, 0x261d }, { 0x2620, 0x2620 }, { 0x2622, 0x2623 },
++    { 0x2626, 0x2626 }, { 0x262a, 0x262a }, { 0x262e, 0x262f },
++    { 0x2638, 0x263a }, { 0x2640, 0x2640 }, { 0x2642, 0x2642 },
++    { 0x2648, 0x2653 }, { 0x2660, 0x2660 }, { 0x2663, 0x2663 },
++    { 0x2665, 0x2666 }, { 0x2668, 0x2668 }, { 0x267b, 0x267b },
++    { 0x267f, 0x267f }, { 0x2692, 0x2697 }, { 0x2699, 0x2699 },
++    { 0x269b, 0x269c }, { 0x26a0, 0x26a1 }, { 0x26aa, 0x26ab },
++    { 0x26b0, 0x26b1 }, { 0x26bd, 0x26be }, { 0x26c4, 0x26c5 },
++    { 0x26c8, 0x26c8 }, { 0x26ce, 0x26cf }, { 0x26d1, 0x26d1 },
++    { 0x26d3, 0x26d4 }, { 0x26e9, 0x26ea }, { 0x26f0, 0x26f5 },
++    { 0x26f7, 0x26fa }, { 0x26fd, 0x26fd }, { 0x2702, 0x2702 },
++    { 0x2705, 0x2705 }, { 0x2708, 0x270d }, { 0x270f, 0x270f },
++    { 0x2712, 0x2712 }, { 0x2714, 0x2714 }, { 0x2716, 0x2716 },
++    { 0x271d, 0x271d }, { 0x2721, 0x2721 }, { 0x2728, 0x2728 },
++    { 0x2733, 0x2734 }, { 0x2744, 0x2744 }, { 0x2747, 0x2747 },
++    { 0x274c, 0x274c }, { 0x274e, 0x274e }, { 0x2753, 0x2755 },
++    { 0x2757, 0x2757 }, { 0x2763, 0x2764 }, { 0x2795, 0x2797 },
++    { 0x27a1, 0x27a1 }, { 0x27b0, 0x27b0 }, { 0x27bf, 0x27bf },
++    { 0x2934, 0x2935 }, { 0x2b05, 0x2b07 }, { 0x2b1b, 0x2b1c },
++    { 0x2b50, 0x2b50 }, { 0x2b55, 0x2b55 }, { 0x3030, 0x3030 },
++    { 0x303d, 0x303d }, { 0x3297, 0x3297 }, { 0x3299, 0x3299 },
++    { 0x1f004, 0x1f004 }, { 0x1f0cf, 0x1f0cf }, { 0x1f170, 0x1f171 },
++    { 0x1f17e, 0x1f17f }, { 0x1f18e, 0x1f18e }, { 0x1f191, 0x1f19a },
++    { 0x1f1e6, 0x1f1ff }, { 0x1f201, 0x1f202 }, { 0x1f21a, 0x1f21a },
++    { 0x1f22f, 0x1f22f }, { 0x1f232, 0x1f23a }, { 0x1f250, 0x1f251 },
++    { 0x1f300, 0x1f321 }, { 0x1f324, 0x1f393 }, { 0x1f396, 0x1f397 },
++    { 0x1f399, 0x1f39b }, { 0x1f39e, 0x1f3f0 }, { 0x1f3f3, 0x1f3f5 },
++    { 0x1f3f7, 0x1f4fd }, { 0x1f4ff, 0x1f53d }, { 0x1f549, 0x1f54e },
++    { 0x1f550, 0x1f567 }, { 0x1f56f, 0x1f570 }, { 0x1f573, 0x1f57a },
++    { 0x1f587, 0x1f587 }, { 0x1f58a, 0x1f58d }, { 0x1f590, 0x1f590 },
++    { 0x1f595, 0x1f596 }, { 0x1f5a4, 0x1f5a5 }, { 0x1f5a8, 0x1f5a8 },
++    { 0x1f5b1, 0x1f5b2 }, { 0x1f5bc, 0x1f5bc }, { 0x1f5c2, 0x1f5c4 },
++    { 0x1f5d1, 0x1f5d3 }, { 0x1f5dc, 0x1f5de }, { 0x1f5e1, 0x1f5e1 },
++    { 0x1f5e3, 0x1f5e3 }, { 0x1f5e8, 0x1f5e8 }, { 0x1f5ef, 0x1f5ef },
++    { 0x1f5f3, 0x1f5f3 }, { 0x1f5fa, 0x1f64f }, { 0x1f680, 0x1f6c5 },
++    { 0x1f6cb, 0x1f6d2 }, { 0x1f6e0, 0x1f6e5 }, { 0x1f6e9, 0x1f6e9 },
++    { 0x1f6eb, 0x1f6ec }, { 0x1f6f0, 0x1f6f0 }, { 0x1f6f3, 0x1f6f8 },
++    { 0x1f910, 0x1f93a }, { 0x1f93c, 0x1f93e }, { 0x1f940, 0x1f945 },
++    { 0x1f947, 0x1f94c }, { 0x1f950, 0x1f96b }, { 0x1f980, 0x1f997 },
++    { 0x1f9c0, 0x1f9c0 }, { 0x1f9d0, 0x1f9e6 }
++  };
++
++  /* binary search in table of non-spacing characters */
++  if (bisearch(ucs, emoji_all,
++	       sizeof(emoji_all) / sizeof(struct interval) - 1))
++    return 2;
++
++  return mk_wcwidth_cjk(ucs);
++}
++
++
++int mk_wcswidth_cjk_emoji(const wchar_t *pwcs, size_t n)
++{
++  int w, width = 0;
++
++  for (;*pwcs && n-- > 0; pwcs++)
++    if ((w = mk_wcwidth_cjk_emoji(*pwcs)) < 0)
++      return -1;
++    else
++      width += w;
++
++  return width;
++}
++#endif
 +#endif
 +
  static int	utf8_width(wchar_t);
  
  /* Set a single character. */
-@@ -110,10 +423,22 @@ utf8_width(wchar_t wc)
+@@ -110,10 +511,29 @@ utf8_width(wchar_t wc)
  {
  	int	width;
  
 +#ifndef NO_USE_UTF8CJK
 +	if (options_get_number(global_options, "utf8-cjk")) {
++#ifndef NO_USE_UTF8CJK_EMOJI
++		if (options_get_number(global_options, "utf8-emoji"))
++			width = mk_wcwidth_cjk_emoji(wc);
++		else
++			width = mk_wcwidth_cjk(wc);
++#else
 +		width = mk_wcwidth_cjk(wc);
++#endif
 +	} else {
 +#ifdef HAVE_UTF8PROC
 +		width = utf8proc_wcwidth(wc);

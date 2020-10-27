@@ -6,6 +6,7 @@ class TmuxAT32 < Formula
   url "https://github.com/tmux/tmux/releases/download/3.2-rc/tmux-#{tmux_version}.tar.gz"
   sha256 "41004e75fcf0a4c7cb31df24bfb4b5315b59d5c5afb18466b0f89710d340faa9"
   version tmux_version
+  revision 6
 
   keg_only :versioned_formula
 
@@ -16,6 +17,7 @@ class TmuxAT32 < Formula
   depends_on "z80oolong/tmux/tmux-ncurses@6.2" unless OS.mac?
 
   option "without-utf8-cjk", "Build without using East asian Ambiguous Width Character in tmux."
+  option "without-utf8-emoji", "Build without using Emoji Character in tmux."
   option "without-pane-border-acs-ascii", "Build without using ACS ASCII as pane border in tmux."
 
   resource "completion" do
@@ -34,6 +36,7 @@ class TmuxAT32 < Formula
     ENV.append "LDFLAGS",  "-L#{Formula["z80oolong/tmux/tmux-ncurses@6.2"].opt_lib}"
 
     ENV.append "CPPFLAGS", "-DNO_USE_UTF8CJK" if build.without?("utf8-cjk")
+    ENV.append "CPPFLAGS", "-DNO_USE_UTF8CJK_EMOJI" if build.without?("utf8-emoji")
     ENV.append "CPPFLAGS", "-DNO_USE_PANE_BORDER_ACS_ASCII" if build.without?("pane-border-acs-ascii")
 
     args = %W[
@@ -188,20 +191,27 @@ index b9a676a..c2e2df1 100644
  	exit(client_main(osdep_event_init(), argc, argv, flags, feat));
  }
 diff --git a/tmux.h b/tmux.h
-index a17ae5c..9c4fd7b 100644
+index a17ae5c..07a846a 100644
 --- a/tmux.h
 +++ b/tmux.h
-@@ -69,6 +69,10 @@ struct winlink;
- /* Client-server protocol version. */
- #define PROTOCOL_VERSION 8
+@@ -77,6 +77,17 @@ struct winlink;
+ #define TMUX_SOCK "$TMUX_TMPDIR:" _PATH_TMP
+ #endif
  
++/* If "pane-border-ascii" is not used, "utf8-cjk" is not used too. */
++#ifdef NO_USE_PANE_BORDER_ASCII
++#ifndef NO_USE_UTF8CJK
++#define NO_USE_UTF8CJK
++#endif
++#endif
++
 +#ifdef NO_USE_UTF8CJK
 +#define NO_USE_UTF8CJK_EMOJI
 +#endif
 +
- /* Default configuration files and socket paths. */
- #ifndef TMUX_CONF
- #define TMUX_CONF "/etc/tmux.conf:~/.tmux.conf"
+ /* Minimum layout cell size, NOT including border lines. */
+ #define PANE_MINIMUM 1
+ 
 diff --git a/tty-acs.c b/tty-acs.c
 index 63eccb9..7729eca 100644
 --- a/tty-acs.c

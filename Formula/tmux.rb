@@ -1,7 +1,7 @@
 class Tmux < Formula
   desc "Terminal multiplexer"
   homepage "https://tmux.github.io/"
-  revision 5
+  revision 6
 
   stable do
     tmux_version = "3.1b"
@@ -219,20 +219,27 @@ index 066714df..40b5bd52 100644
  	exit(client_main(osdep_event_init(), argc, argv, flags, feat));
  }
 diff --git a/tmux.h b/tmux.h
-index 5a4db83b..ba558a21 100644
+index 5a4db83b..e06adc15 100644
 --- a/tmux.h
 +++ b/tmux.h
-@@ -69,6 +69,10 @@ struct winlink;
- /* Client-server protocol version. */
- #define PROTOCOL_VERSION 8
+@@ -77,6 +77,17 @@ struct winlink;
+ #define TMUX_SOCK "$TMUX_TMPDIR:" _PATH_TMP
+ #endif
  
++/* If "pane-border-ascii" is not used, "utf8-cjk" is not used too. */
++#ifdef NO_USE_PANE_BORDER_ASCII
++#ifndef NO_USE_UTF8CJK
++#define NO_USE_UTF8CJK
++#endif
++#endif
++
 +#ifdef NO_USE_UTF8CJK
 +#define NO_USE_UTF8CJK_EMOJI
 +#endif
 +
- /* Default configuration files and socket paths. */
- #ifndef TMUX_CONF
- #define TMUX_CONF "/etc/tmux.conf:~/.tmux.conf"
+ /* Minimum layout cell size, NOT including border lines. */
+ #define PANE_MINIMUM 1
+ 
 diff --git a/tty-acs.c b/tty-acs.c
 index 63eccb93..7729eca5 100644
 --- a/tty-acs.c
@@ -523,10 +530,10 @@ index 63eccb93..7729eca5 100644
 +#endif
  }
 diff --git a/tty-term.c b/tty-term.c
-index 3007dc01..8f67ad23 100644
+index ec8302a6..72876642 100644
 --- a/tty-term.c
 +++ b/tty-term.c
-@@ -607,6 +607,15 @@ tty_term_create(struct tty *tty, char *name, int *feat, int fd, char **cause)
+@@ -610,6 +610,15 @@ tty_term_create(struct tty *tty, char *name, int *feat, int fd, char **cause)
  	if (!tty_term_flag(term, TTYC_AM))
  		term->flags |= TERM_NOAM;
  
@@ -542,7 +549,7 @@ index 3007dc01..8f67ad23 100644
  	/* Generate ACS table. If none is present, use nearest ASCII. */
  	memset(term->acs, 0, sizeof term->acs);
  	if (tty_term_has(term, TTYC_ACSC))
-@@ -615,6 +624,7 @@ tty_term_create(struct tty *tty, char *name, int *feat, int fd, char **cause)
+@@ -618,6 +627,7 @@ tty_term_create(struct tty *tty, char *name, int *feat, int fd, char **cause)
  		acs = "a#j+k+l+m+n+o-p-q-r-s-t+u+v+w+x|y<z>~.";
  	for (; acs[0] != '\0' && acs[1] != '\0'; acs += 2)
  		term->acs[(u_char) acs[0]][0] = acs[1];
