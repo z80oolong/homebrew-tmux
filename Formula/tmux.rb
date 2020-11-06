@@ -4,9 +4,9 @@ class Tmux < Formula
   revision 6
 
   stable do
-    tmux_version = "3.1b"
+    tmux_version = "3.1c"
     url "https://github.com/tmux/tmux/releases/download/#{tmux_version}/tmux-#{tmux_version}.tar.gz"
-    sha256 "d93f351d50af05a75fe6681085670c786d9504a5da2608e481c47cf5e1486db9"
+    sha256 "918f7220447bef33a1902d4faff05317afd9db4ae1c9971bef5c787ac6c88386"
     version tmux_version
 
     def pick_diff(formula_path)
@@ -18,12 +18,12 @@ class Tmux < Formula
       return lines.join("")
     end
 
-    patch :p1, pick_diff(Formula["z80oolong/tmux/tmux@3.1b"].path)
+    patch :p1, pick_diff(Formula["z80oolong/tmux/tmux@3.1c"].path)
    end
 
 
   head do
-    tmux_commit = "30601d11"
+    tmux_commit = "dac285c9"
     url "https://github.com/tmux/tmux.git"
 
     patch :p1, :DATA
@@ -219,7 +219,7 @@ index 066714df..40b5bd52 100644
  	exit(client_main(osdep_event_init(), argc, argv, flags, feat));
  }
 diff --git a/tmux.h b/tmux.h
-index 5a4db83b..e06adc15 100644
+index 44ba53f5..9560e08e 100644
 --- a/tmux.h
 +++ b/tmux.h
 @@ -77,6 +77,17 @@ struct winlink;

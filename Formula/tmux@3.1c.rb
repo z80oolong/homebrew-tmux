@@ -1,10 +1,10 @@
-class TmuxAT32 < Formula
+class TmuxAT31c < Formula
   desc "Terminal multiplexer"
   homepage "https://tmux.github.io/"
 
-  tmux_version = "3.2-rc3"
-  url "https://github.com/tmux/tmux/releases/download/3.2-rc/tmux-#{tmux_version}.tar.gz"
-  sha256 "724d787895fc94556488560e03726ac803b7720ea1e302bc52b11acfca72aa61"
+  tmux_version = "3.1c"
+  url "https://github.com/tmux/tmux/releases/download/#{tmux_version}/tmux-#{tmux_version}.tar.gz"
+  sha256 "918f7220447bef33a1902d4faff05317afd9db4ae1c9971bef5c787ac6c88386"
   version tmux_version
   revision 6
 
@@ -81,11 +81,11 @@ end
 
 __END__
 diff --git a/options-table.c b/options-table.c
-index 873f8d6..5688613 100644
+index be0d220..b83a994 100644
 --- a/options-table.c
 +++ b/options-table.c
-@@ -1076,6 +1076,38 @@ const struct options_table_entry options_table[] = {
- 	          "This option is no longer used."
+@@ -804,6 +804,38 @@ const struct options_table_entry options_table[] = {
+ 	  .default_num = 1
  	},
  
 +#ifndef NO_USE_UTF8CJK
@@ -124,19 +124,18 @@ index 873f8d6..5688613 100644
  	OPTIONS_TABLE_HOOK("after-bind-key", ""),
  	OPTIONS_TABLE_HOOK("after-capture-pane", ""),
 diff --git a/tmux.c b/tmux.c
-index 066714d..40b5bd5 100644
+index 3c1fecc..27c1ba0 100644
 --- a/tmux.c
 +++ b/tmux.c
-@@ -321,19 +321,28 @@ main(int argc, char **argv)
+@@ -220,18 +220,27 @@ int
+ main(int argc, char **argv)
  {
- 	char					*path = NULL, *label = NULL;
- 	char					*cause, **var;
+ 	char					*path, *label, *cause, **var;
 +#ifndef NO_USE_UTF8CJK
 +	char					*ctype;
 +#endif
  	const char				*s, *shell, *cwd;
- 	int					 opt, keys, feat = 0;
- 	uint64_t				 flags = 0;
+ 	int					 opt, flags, keys;
  	const struct options_table_entry	*oe;
  
 +#ifdef NO_USE_UTF8CJK
@@ -156,7 +155,7 @@ index 066714d..40b5bd5 100644
  
  	setlocale(LC_TIME, "");
  	tzset();
-@@ -464,6 +473,19 @@ main(int argc, char **argv)
+@@ -356,6 +365,21 @@ main(int argc, char **argv)
  		options_set_number(global_w_options, "mode-keys", keys);
  	}
  
@@ -166,36 +165,24 @@ index 066714d..40b5bd5 100644
 +#ifndef NO_USE_UTF8CJK_EMOJI
 +		options_set_number(global_options, "utf8-emoji", 1);
 +#endif
++		options_set_number(global_s_options, "pane-border-ascii", 1);
 +	} else {
 +		options_set_number(global_options, "utf8-cjk", 0);
 +#ifndef NO_USE_UTF8CJK_EMOJI
 +		options_set_number(global_options, "utf8-emoji", 0);
 +#endif
++		options_set_number(global_s_options, "pane-border-ascii", 0);
 +	}
 +#endif
  	/*
  	 * If socket is specified on the command-line with -S or -L, it is
  	 * used. Otherwise, $TMUX is checked and if that fails "default" is
-@@ -489,6 +511,13 @@ main(int argc, char **argv)
- 	socket_path = path;
- 	free(label);
- 
-+#ifndef NO_USE_FIX_NOEPOLL
-+#ifdef __linux__
-+	/* Set the environment variable EVENT_NOEPOLL to "1" certainly. */
-+	environ_set(global_environ, "EVENT_NOEPOLL", 0, "%d", 1);
-+#endif
-+#endif
-+
- 	/* Pass control to the client. */
- 	exit(client_main(osdep_event_init(), argc, argv, flags, feat));
- }
 diff --git a/tmux.h b/tmux.h
-index 44ba53f..9560e08 100644
+index 3720bee..3949842 100644
 --- a/tmux.h
 +++ b/tmux.h
-@@ -77,6 +77,17 @@ struct winlink;
- #define TMUX_SOCK "$TMUX_TMPDIR:" _PATH_TMP
+@@ -67,6 +67,17 @@ struct winlink;
+ #define TMUX_CONF "/etc/tmux.conf:~/.tmux.conf"
  #endif
  
 +/* If "pane-border-ascii" is not used, "utf8-cjk" is not used too. */
@@ -213,17 +200,17 @@ index 44ba53f..9560e08 100644
  #define PANE_MINIMUM 1
  
 diff --git a/tty-acs.c b/tty-acs.c
-index 63eccb9..7729eca 100644
+index 1463412..d1cd5ee 100644
 --- a/tty-acs.c
 +++ b/tty-acs.c
-@@ -23,6 +23,130 @@
+@@ -22,6 +22,83 @@
  
  #include "tmux.h"
  
 +#ifndef NO_USE_PANE_BORDER_ACS_ASCII
 +#include <string.h>
 +
-+static const char tty_acs_table[UCHAR_MAX][4] = {
++static char tty_acs_table[UCHAR_MAX][4] = {
 +	['+'] = "\342\206\222",	/* arrow pointing right */
 +	[','] = "\342\206\220",	/* arrow pointing left */
 +	['-'] = "\342\206\221",	/* arrow pointing up */
@@ -237,7 +224,7 @@ index 63eccb9..7729eca 100644
 +	['e'] = "\342\220\212",
 +	['f'] = "\302\260",	/* degree symbol */
 +	['g'] = "\302\261",	/* plus/minus */
-+	['h'] = "\342\220\244",
++	['h'] = "\342\220\244",	/* board of squares	ACS_BOARD	*/
 +	['i'] = "\342\220\213",
 +	['j'] = "\342\224\230",	/* lower right corner */
 +	['k'] = "\342\224\220",	/* upper right corner */
@@ -256,10 +243,10 @@ index 63eccb9..7729eca 100644
 +	['x'] = "\342\224\202",	/* vertical line */
 +	['y'] = "\342\211\244",	/* less-than-or-equal-to */
 +	['z'] = "\342\211\245",	/* greater-than-or-equal-to */
-+	['{'] = "\317\200",	/* greek pi */
++	['{'] = "\317\200",   	/* greek pi */
 +	['|'] = "\342\211\240",	/* not-equal */
 +	['}'] = "\302\243",	/* UK pound sign */
-+	['~'] = "\302\267",	/* bullet */
++	['~'] = "\302\267"	/* bullet */
 +};
 +
 +static char tty_acs_ascii_table[UCHAR_MAX][2] = {
@@ -296,60 +283,61 @@ index 63eccb9..7729eca 100644
 +	['k'] = "+",	/* upper right corner		ACS_URCORNER	*/
 +	['x'] = "|",	/* vertical line		ACS_VLINE	*/
 +};
-+
-+static int tty_acs_reverse_table[USHRT_MAX][1] = {
-+       [0xfb1d] = 0x7e,        /* "\302\267"     = '~' */
-+       [0xcd2e] = 0x71,        /* "\342\224\200" = 'q' */
-+       [0xcd2f] = 0x71,        /* "\342\224\201" = 'q' */
-+       [0xcd30] = 0x78,        /* "\342\224\202" = 'x' */
-+       [0xcd31] = 0x78,        /* "\342\224\203" = 'x' */
-+       [0xcd3a] = 0x6c,        /* "\342\224\214" = 'l' */
-+       [0xcd3d] = 0x6b,        /* "\342\224\217" = 'k' */
-+       [0xcd3e] = 0x6b,        /* "\342\224\220" = 'k' */
-+       [0xcd41] = 0x6c,        /* "\342\224\223" = 'l' */
-+       [0xcd42] = 0x6d,        /* "\342\224\224" = 'm' */
-+       [0xcd45] = 0x6d,        /* "\342\224\227" = 'm' */
-+       [0xcd46] = 0x6a,        /* "\342\224\230" = 'j' */
-+       [0xcd49] = 0x6a,        /* "\342\224\233" = 'j' */
-+       [0xcd4a] = 0x74,        /* "\342\224\234" = 't' */
-+       [0xcd51] = 0x74,        /* "\342\224\243" = 't' */
-+       [0xcd52] = 0x75,        /* "\342\224\244" = 'u' */
-+       [0xcd59] = 0x75,        /* "\342\224\253" = 'u' */
-+       [0xcd61] = 0x77,        /* "\342\224\263" = 'w' */
-+       [0xcd62] = 0x76,        /* "\342\224\264" = 'v' */
-+       [0xcd69] = 0x76,        /* "\342\224\273" = 'v' */
-+       [0xcd6a] = 0x6e,        /* "\342\224\274" = 'n' */
-+       [0xcd4c] = 0x6e,        /* "\342\225\213" = 'n' */
-+       [0xcd51] = 0x71,        /* "\342\225\220" = 'q' */
-+       [0xcd52] = 0x78,        /* "\342\225\221" = 'x' */
-+       [0xcd55] = 0x6c,        /* "\342\225\224" = 'l' */
-+       [0xcd58] = 0x6b,        /* "\342\225\227" = 'k' */
-+       [0xcd5b] = 0x6d,        /* "\342\225\232" = 'm' */
-+       [0xcd5e] = 0x6a,        /* "\342\225\235" = 'j' */
-+       [0xcd61] = 0x74,        /* "\342\225\240" = 't' */
-+       [0xcd64] = 0x75,        /* "\342\225\243" = 'u' */
-+       [0xcd67] = 0x77,        /* "\342\225\246" = 'w' */
-+       [0xcd6a] = 0x76,        /* "\342\225\251" = 'v' */
-+       [0xcd6d] = 0x6e,        /* "\342\225\254" = 'n' */
-+};
-+
-+static int
-+acs_reverse_hash(const char *str, size_t strlen)
-+{
-+	int result;
-+
-+	for (result = 0; (strlen > 0) || (*str != '\0'); str++, strlen--)
-+		result = 19 * result + ((int)*str);
-+
-+	return (result & 0xffff);
-+}
 +#else
- /* Table mapping ACS entries to UTF-8. */
- struct tty_acs_entry {
- 	u_char	 	 key;
-@@ -127,11 +251,91 @@ tty_acs_reverse_cmp(const void *key, const void *value)
+ static int	tty_acs_cmp(const void *, const void *);
  
- 	return (strcmp(test, entry->string));
+ /* Table mapping ACS entries to UTF-8. */
+@@ -68,6 +145,47 @@ static const struct tty_acs_entry tty_acs_table[] = {
+ 	{ '~', "\302\267" }		/* bullet */
+ };
+ 
++#ifndef NO_USE_PANE_BORDER_ASCII
++const struct tty_acs_entry tty_acs_table_putty[] = {
++	{ '+', "\342\206\222" },
++	{ ',', "\342\206\220" },
++	{ '-', "\342\206\221" },
++	{ '.', "\342\206\223" },
++	{ '0', "\342\226\256" },
++	{ '`', "\342\227\206" },
++	{ 'a', "\342\226\222" },
++	{ 'b', "\342\220\211" },
++	{ 'c', "\342\220\214" },
++	{ 'd', "\342\220\215" },
++	{ 'e', "\342\220\212" },
++	{ 'f', "\302\260" },
++	{ 'g', "\302\261" },
++	{ 'h', "\342\226\222" },
++	{ 'i', "\342\230\203" },
++	{ 'j', "+" },
++	{ 'k', "+" },
++	{ 'l', "+" },
++	{ 'm', "+" },
++	{ 'n', "+" },
++	{ 'o', "\342\216\272" },
++	{ 'p', "\342\216\273" },
++	{ 'q', "-" },
++	{ 'r', "\342\216\274" },
++	{ 's', "\342\216\275" },
++	{ 't', "+" },
++	{ 'u', "+" },
++	{ 'v', "+" },
++	{ 'w', "+" },
++	{ 'x', "|" },
++	{ 'y', "\342\211\244" },
++	{ 'z', "\342\211\245" },
++	{ '{', "\317\200" },
++	{ '|', "\342\211\240" },
++	{ '}', "\302\243" },
++	{ '~', "*" }
++};
++#endif
++
+ static int
+ tty_acs_cmp(const void *key, const void *value)
+ {
+@@ -77,11 +195,91 @@ tty_acs_cmp(const void *key, const void *value)
+ 	ch = *(u_char *) key;
+ 	return (ch - entry->key);
  }
 +#endif  /* NO_USE_PANE_BORDER_ACS_ASCII */
 +
@@ -409,7 +397,7 @@ index 63eccb9..7729eca 100644
 +	if (options_get_number(global_s_options, "pane-border-ascii"))
 +		return (ACST_ASCII);
 +
-+	if ((tty->client->flags & CLIENT_UTF8) &&
++	if ((tty->flags & TTY_UTF8) &&
 +	    (!tty_term_has(tty->term, TTYC_U8) ||
 +	     tty_term_number(tty->term, TTYC_U8) != 0)) {
 +		static int hline_width = 0;
@@ -439,14 +427,14 @@ index 63eccb9..7729eca 100644
  	if (tty == NULL)
  		return (0);
  
-@@ -152,12 +356,31 @@ tty_acs_needed(struct tty *tty)
- 	if (tty->client->flags & CLIENT_UTF8)
+@@ -102,12 +300,31 @@ tty_acs_needed(struct tty *tty)
+ 	if (tty->flags & TTY_UTF8)
  		return (0);
  	return (1);
 +#endif /* NO_USE_PANE_BORDER_ACS_ASCII */
  }
  
- /* Retrieve ACS to output as UTF-8. */
+ /* Retrieve ACS to output as a string. */
  const char *
  tty_acs_get(struct tty *tty, u_char ch)
  {
@@ -468,46 +456,40 @@ index 63eccb9..7729eca 100644
 +		return (&tty_acs_ascii_table[ch][0]);
 +	return (NULL);
 +#else
- 	const struct tty_acs_entry	*entry;
+ 	struct tty_acs_entry	*entry;
  
  	/* Use the ACS set instead of UTF-8 if needed. */
-@@ -173,12 +396,23 @@ tty_acs_get(struct tty *tty, u_char ch)
+@@ -118,9 +335,23 @@ tty_acs_get(struct tty *tty, u_char ch)
+ 	}
+ 
+ 	/* Otherwise look up the UTF-8 translation. */
++#ifdef NO_USE_PANE_BORDER_ASCII
+ 	entry = bsearch(&ch, tty_acs_table, nitems(tty_acs_table),
+ 	    sizeof tty_acs_table[0], tty_acs_cmp);
++#else
++	struct tty_acs_entry *entries;
++
++#ifdef NO_USE_UTF8_CJK
++	entries = options_get_number(global_s_options, "pane-border-ascii") ? tty_acs_table_putty : tty_acs_table;
++#else
++	entries = (options_get_number(global_options, "utf8-cjk") || options_get_number(global_s_options, "pane-border-ascii")) \
++		    ? tty_acs_table_putty : tty_acs_table;
++#endif
++
++	entry = bsearch(&ch, (const void *)entries, nitems(tty_acs_table), sizeof tty_acs_table[0], tty_acs_cmp);
++#endif
  	if (entry == NULL)
  		return (NULL);
  	return (entry->string);
 +#endif /* NO_USE_PANE_BORDER_ACS_ASCII */
  }
- 
- /* Reverse UTF-8 into ACS. */
- int
- tty_acs_reverse_get(__unused struct tty *tty, const char *s, size_t slen)
- {
-+#ifndef NO_USE_PANE_BOARDER_ACS_ASCII
-+	int ch;
-+
-+	if (tty_acs_type(tty) == ACST_UTF8) {
-+		if ((ch = tty_acs_reverse_table[acs_reverse_hash(s, slen)][0]) != 0)
-+			return ch;
-+	}
-+
-+	return (-1);
-+#else
- 	const struct tty_acs_reverse_entry	*table, *entry;
- 	u_int					 items;
- 
-@@ -194,4 +428,5 @@ tty_acs_reverse_get(__unused struct tty *tty, const char *s, size_t slen)
- 	if (entry == NULL)
- 		return (-1);
- 	return (entry->key);
-+#endif
- }
 diff --git a/tty-term.c b/tty-term.c
-index ec8302a..7287664 100644
+index e556df6..304d05e 100644
 --- a/tty-term.c
 +++ b/tty-term.c
-@@ -610,6 +610,15 @@ tty_term_create(struct tty *tty, char *name, int *feat, int fd, char **cause)
- 	if (!tty_term_flag(term, TTYC_AM))
- 		term->flags |= TERM_NOAM;
+@@ -551,6 +551,15 @@ tty_term_find(char *name, int fd, char **cause)
+ 	if (!tty_term_flag(term, TTYC_XENL))
+ 		term->flags |= TERM_NOXENL;
  
 +#ifndef NO_USE_PANE_BORDER_ACS_ASCII
 +	/* Generate ACS table. */
@@ -521,16 +503,16 @@ index ec8302a..7287664 100644
  	/* Generate ACS table. If none is present, use nearest ASCII. */
  	memset(term->acs, 0, sizeof term->acs);
  	if (tty_term_has(term, TTYC_ACSC))
-@@ -618,6 +627,7 @@ tty_term_create(struct tty *tty, char *name, int *feat, int fd, char **cause)
+@@ -559,6 +568,7 @@ tty_term_find(char *name, int fd, char **cause)
  		acs = "a#j+k+l+m+n+o-p-q-r-s-t+u+v+w+x|y<z>~.";
  	for (; acs[0] != '\0' && acs[1] != '\0'; acs += 2)
  		term->acs[(u_char) acs[0]][0] = acs[1];
 +#endif
  
- 	/* Log the capabilities. */
- 	for (i = 0; i < tty_term_ncodes(); i++)
+ 	/* On terminals with xterm titles (XT), fill in tsl and fsl. */
+ 	if (tty_term_flag(term, TTYC_XT) &&
 diff --git a/utf8.c b/utf8.c
-index 458363b..f8780f1 100644
+index b4e448f..f9d0b88 100644
 --- a/utf8.c
 +++ b/utf8.c
 @@ -26,6 +26,407 @@
@@ -938,35 +920,36 @@ index 458363b..f8780f1 100644
 +#endif
 +#endif
 +
- struct utf8_item {
- 	RB_ENTRY(utf8_item)	index_entry;
- 	u_int			index;
-@@ -225,10 +626,28 @@ utf8_width(struct utf8_data *ud, int *width)
- 	case 0:
- 		return (UTF8_ERROR);
- 	}
+ static int	utf8_width(wchar_t);
+ 
+ /* Set a single character. */
+@@ -110,10 +511,29 @@ utf8_width(wchar_t wc)
+ {
+ 	int	width;
+ 
 +#ifndef NO_USE_UTF8CJK
 +	if (options_get_number(global_options, "utf8-cjk")) {
 +#ifndef NO_USE_UTF8CJK_EMOJI
 +		if (options_get_number(global_options, "utf8-emoji"))
-+			*width = mk_wcwidth_cjk_emoji(wc);
++			width = mk_wcwidth_cjk_emoji(wc);
 +		else
-+			*width = mk_wcwidth_cjk(wc);
++			width = mk_wcwidth_cjk(wc);
 +#else
-+		*width = mk_wcwidth_cjk(wc);
++		width = mk_wcwidth_cjk(wc);
 +#endif
 +	} else {
-+		*width = mk_wcwidth(wc);
-+	}
-+	log_debug("UTF-8 %.*s, wcwidth() %d", (int)ud->size, ud->data, *width);
-+	if (*width >= 0 && *width <= 0xff)
-+		return (UTF8_DONE);
++#ifdef HAVE_UTF8PROC
++		width = utf8proc_wcwidth(wc);
 +#else
- 	*width = wcwidth(wc);
- 	if (*width >= 0 && *width <= 0xff)
- 		return (UTF8_DONE);
- 	log_debug("UTF-8 %.*s, wcwidth() %d", (int)ud->size, ud->data, *width);
++		width = wcwidth(wc);
 +#endif
- 
- #ifndef __OpenBSD__
- 	/*
++	}
++#else
+ #ifdef HAVE_UTF8PROC
+ 	width = utf8proc_wcwidth(wc);
+ #else
+ 	width = wcwidth(wc);
++#endif
+ #endif
+ 	if (width < 0 || width > 0xff) {
+ 		log_debug("Unicode %04lx, wcwidth() %d", (long)wc, width);
