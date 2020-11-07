@@ -3,11 +3,11 @@ class AppimageTmuxAT29a < Formula
   homepage "https://tmux.github.io/"
 
   tmux_version = "2.9a"
-  appimage_version = "v3.1b-eaw-appimage-0.2.0"
+  appimage_version = "v3.1c-eaw-appimage-0.1.0"
   url "https://github.com/z80oolong/tmux-eaw-appimage/releases/download/#{appimage_version}/tmux-eaw-#{tmux_version}-x86_64.AppImage"
-  sha256 "de253b4d3f501b04df1a33e6b1c6d5e2f832e034c3b95378cd97e37ed12f66d2"
+  sha256 "25a7218d0473b1f9614547ce070ba1a698df7b2412c9a1fd3c72f8466a84efc6"
   version tmux_version
-  revision 9
+  revision 10
 
   keg_only :versioned_formula
 
@@ -20,10 +20,9 @@ class AppimageTmuxAT29a < Formula
 
   def install
     (buildpath/"tmux-eaw-#{version}-x86_64.AppImage").chmod(0755)
+    bin.mkdir; libexec.mkdir
 
     if build.with?("extract") then
-      libexec.mkdir; bin.mkdir
-
       libexec.cd do
         system "#{buildpath}/tmux-eaw-#{version}-x86_64.AppImage", "--appimage-extract"
       end
@@ -31,7 +30,8 @@ class AppimageTmuxAT29a < Formula
 
       (bin/"tmux").make_symlink (libexec/"squashfs-root/AppRun")
     else
-      bin.install "#{buildpath}/tmux-eaw-#{version}-x86_64.AppImage" => "tmux"
+      libexec.install "#{buildpath}/tmux-eaw-#{version}-x86_64.AppImage"
+      (bin/"tmux").make_symlink (libexec/"tmux-eaw-#{version}-x86_64.AppImage")
     end
 
     bash_completion.install resource("completion")
