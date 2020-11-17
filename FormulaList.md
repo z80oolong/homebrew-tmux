@@ -268,7 +268,7 @@ Unicode の規格における東アジア圏の各種文字のうち、 [East As
 
 ### z80oolong/tmux/tmux-ncurses@6.2
 
-上述の Formula によって導入される [tmux][TMUX] に依存するライブラリである [libevent][LIBE] を導入するための Formula です。オリジナルの ncurses ライブラリに、 East Asian Ambiguous Character の文字幅を全角文字の幅として扱う修正を加えています。
+上述の Formula によって導入される [tmux][TMUX] に依存する ncurses ライブラリを導入するための Formula です。オリジナルの ncurses ライブラリに、 East Asian Ambiguous Character の文字幅を全角文字の幅として扱う修正を加えています。
 
 **この Formula は、 versioned formula であるため、この Formula によって導入される ncurses は、 keg only で導入されることに留意して下さい。**
 
