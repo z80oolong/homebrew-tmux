@@ -308,11 +308,9 @@ Unicode の規格における東アジア圏の各種文字のうち、 [East As
 
 **なお、この formula によって導入されたフォントは、同時にディレクトリ ```$HOME/.local/share/fonts/powerline-fonts``` 以下にシンボリックリンクが張られることに留意して下さい。**
 
-### z80oolong/tmux/python@2
+### z80oolong/tmux/python@3.9
 
-上述の Formula によって導入される [powerline][POWE] に依存する 2.* 系の Python 処理系を導入するための Formula です。
-
-**この Formula は、 versioned formula であるため、この Formula によって導入される ncurses は、 keg only で導入されることに留意して下さい。**
+上述の Formula によって導入される [powerline][POWE] に依存する 3.9 系の Python 処理系を導入するための Formula です。
 
 ### z80oolong/tmux/tpm
 
