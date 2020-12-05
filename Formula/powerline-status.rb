@@ -14,7 +14,7 @@ class PowerlineStatus < Formula
     url "https://github.com/powerline/powerline.git", :revision => "develop"
   end
 
-  depends_on "z80oolong/tmux/python@3.9"
+  depends_on "python@3.8"
   depends_on "z80oolong/tmux/tmux" => :recommended
 
   option "without-fix-powerline", "Do not fix a problem that causes problems when tmux returns an abnormal version."
@@ -41,8 +41,8 @@ class PowerlineStatus < Formula
     venv.pip_install_and_link buildpath
 
     (share/"powerline").mkpath
-    install_symlink_recurse (share/"powerline"), (libexec/"lib/python3.9/site-packages/powerline/bindings")
-    install_symlink_recurse (share/"powerline"), (libexec/"lib/python3.9/site-packages/powerline/config_files")
+    install_symlink_recurse (share/"powerline"), (libexec/"lib/python3.8/site-packages/powerline/bindings")
+    install_symlink_recurse (share/"powerline"), (libexec/"lib/python3.8/site-packages/powerline/config_files")
   end
 
   def caveats; <<~EOS
