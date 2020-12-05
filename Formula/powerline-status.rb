@@ -5,16 +5,16 @@ class PowerlineStatus < Formula
   homepage "https://powerline.readthedocs.org/en/latest/"
 
   stable do
-    url "https://github.com/powerline/powerline/archive/2.7.tar.gz"
-    sha256 "45173a3fd583e60d1c6752b00b67e7f9c342285ec57a57abc1cd6d785d1632c0"
-    version "2.7"
+    url "https://github.com/powerline/powerline/archive/2.8.1.tar.gz"
+    sha256 "a4f36ad9d88a6c90b82427d574c8b5518b3c8b11b6eaf38acf2336064c63565d"
+    version "2.8.1"
   end
 
   head do
     url "https://github.com/powerline/powerline.git", :revision => "develop"
   end
 
-  depends_on "z80oolong/tmux/python@2"
+  depends_on "z80oolong/tmux/python@3.9"
   depends_on "z80oolong/tmux/tmux" => :recommended
 
   option "without-fix-powerline", "Do not fix a problem that causes problems when tmux returns an abnormal version."
@@ -33,7 +33,7 @@ class PowerlineStatus < Formula
   end
 
   def install
-    venv = virtualenv_create(libexec, "python2")
+    venv = virtualenv_create(libexec, "python3")
 
     system libexec/"bin/pip", "install", "-v", "--no-binary", ":all:", "--ignore-installed", buildpath
     system libexec/"bin/pip", "uninstall", "-y", name
@@ -41,8 +41,8 @@ class PowerlineStatus < Formula
     venv.pip_install_and_link buildpath
 
     (share/"powerline").mkpath
-    install_symlink_recurse (share/"powerline"), (libexec/"lib/python2.7/site-packages/powerline/bindings")
-    install_symlink_recurse (share/"powerline"), (libexec/"lib/python2.7/site-packages/powerline/config_files")
+    install_symlink_recurse (share/"powerline"), (libexec/"lib/python3.9/site-packages/powerline/bindings")
+    install_symlink_recurse (share/"powerline"), (libexec/"lib/python3.9/site-packages/powerline/config_files")
   end
 
   def caveats; <<~EOS
@@ -58,19 +58,21 @@ end
 
 __END__
 diff --git a/powerline/bindings/tmux/__init__.py b/powerline/bindings/tmux/__init__.py
-index 011cd689..26cc7dfd 100644
+index eb84e7a..8f5cb4f 100644
 --- a/powerline/bindings/tmux/__init__.py
 +++ b/powerline/bindings/tmux/__init__.py
-@@ -78,7 +78,11 @@ def get_tmux_version(pl):
+@@ -78,8 +78,12 @@ def get_tmux_version(pl):
  	version_string = version_string.strip()
  	if version_string == 'master':
  		return TmuxVersionInfo(float('inf'), 0, version_string)
 -	major, minor = version_string.split('.')
+-	major = NON_DIGITS.subn('', major)[0]
 -	suffix = DIGITS.subn('', minor)[0] or None
 -	minor = NON_DIGITS.subn('', minor)[0]
 -	return TmuxVersionInfo(int(major), int(minor), suffix)
 +	try:
 +		major, minor = version_string.split('.')
++		major = NON_DIGITS.subn('', major)[0]
 +		suffix = DIGITS.subn('', minor)[0] or None
 +		minor = NON_DIGITS.subn('', minor)[0]
 +		return TmuxVersionInfo(int(major), int(minor), suffix)
