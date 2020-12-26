@@ -1,18 +1,12 @@
-class PowerlineStatus < Formula
+class PowerlineStatusAT281 < Formula
   include Language::Python::Virtualenv
 
   desc "Statusline plugin for vim, and provides statuslines and prompts for zsh, tmux and etc."
   homepage "https://powerline.readthedocs.org/en/latest/"
 
-  stable do
-    url "https://github.com/powerline/powerline/archive/2.8.1.tar.gz"
-    sha256 "a4f36ad9d88a6c90b82427d574c8b5518b3c8b11b6eaf38acf2336064c63565d"
-    version "2.8.1"
-  end
-
-  head do
-    url "https://github.com/powerline/powerline.git", :revision => "develop"
-  end
+  url "https://github.com/powerline/powerline/archive/2.8.1.tar.gz"
+  sha256 "a4f36ad9d88a6c90b82427d574c8b5518b3c8b11b6eaf38acf2336064c63565d"
+  version "2.8.1"
 
   option "with-appimage-python", "Use appimage-python to run powerline-status."
   option "without-fix-powerline", "Do not fix a problem that causes problems when tmux returns an abnormal version."

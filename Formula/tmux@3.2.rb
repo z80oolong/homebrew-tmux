@@ -1,20 +1,24 @@
 class TmuxAT32 < Formula
   desc "Terminal multiplexer"
   homepage "https://tmux.github.io/"
+  license "ISC"
 
   tmux_version = "3.2-rc3"
   url "https://github.com/tmux/tmux/releases/download/3.2-rc/tmux-#{tmux_version}.tar.gz"
   sha256 "724d787895fc94556488560e03726ac803b7720ea1e302bc52b11acfca72aa61"
   version tmux_version
-  revision 6
+  revision 7
 
   keg_only :versioned_formula
 
   depends_on "pkg-config" => :build
-  depends_on "patchelf" => :build
   depends_on "z80oolong/tmux/tmux-libevent@2.2"
   depends_on "utf8proc" => :optional
-  depends_on "z80oolong/tmux/tmux-ncurses@6.2" unless OS.mac?
+  depends_on "z80oolong/tmux/tmux-ncurses@6.2"
+
+  on_linux do
+    depends_on "patchelf" => :build
+  end
 
   option "without-utf8-cjk", "Build without using East asian Ambiguous Width Character in tmux."
   option "without-utf8-emoji", "Build without using Emoji Character in tmux."
@@ -46,12 +50,16 @@ class TmuxAT32 < Formula
     ]
 
     args << "--enable-utf8proc" if build.with?("utf8proc")
+    args << "--enable-static"   if build.with?("static-link")
 
     ENV.append "LDFLAGS", "-lresolv"
     system "./configure", *args
 
     system "make", "install"
-    fix_rpath "#{bin}/tmux", ["z80oolong/tmux/tmux-ncurses@6.2"], ["ncurses"]
+
+    if OS.linux? && !build.with?("static-link") then
+      fix_rpath "#{bin}/tmux", ["z80oolong/tmux/tmux-ncurses@6.2"], ["ncurses"]
+    end
 
     pkgshare.install "example_tmux.conf"
     bash_completion.install resource("completion")
