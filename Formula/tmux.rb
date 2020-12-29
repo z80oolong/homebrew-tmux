@@ -24,7 +24,7 @@ class Tmux < Formula
 
 
   head do
-    tmux_commit = "70a5207b"
+    tmux_commit = "3cbe186e"
     url "https://github.com/tmux/tmux.git"
 
     patch :p1, :DATA
@@ -119,7 +119,7 @@ end
 
 __END__
 diff --git a/options-table.c b/options-table.c
-index 873f8d67..5688613b 100644
+index cf0d8c5e..a663847c 100644
 --- a/options-table.c
 +++ b/options-table.c
 @@ -1076,6 +1076,38 @@ const struct options_table_entry options_table[] = {
@@ -229,7 +229,7 @@ index 066714df..40b5bd52 100644
  	exit(client_main(osdep_event_init(), argc, argv, flags, feat));
  }
 diff --git a/tmux.h b/tmux.h
-index 44ba53f5..9560e08e 100644
+index 58899680..aaa570af 100644
 --- a/tmux.h
 +++ b/tmux.h
 @@ -77,6 +77,17 @@ struct winlink;
