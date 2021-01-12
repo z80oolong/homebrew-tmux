@@ -24,7 +24,7 @@ class Tmux < Formula
 
 
   head do
-    tmux_commit = "f04cc399"
+    tmux_commit = "dc1e1125"
     url "https://github.com/tmux/tmux.git"
 
     patch :p1, :DATA
@@ -119,10 +119,10 @@ end
 
 __END__
 diff --git a/options-table.c b/options-table.c
-index cf0d8c5e..a663847c 100644
+index 3fd3fe4a..be4b2e81 100644
 --- a/options-table.c
 +++ b/options-table.c
-@@ -1076,6 +1076,38 @@ const struct options_table_entry options_table[] = {
+@@ -1080,6 +1080,38 @@ const struct options_table_entry options_table[] = {
  	          "This option is no longer used."
  	},
  
@@ -229,7 +229,7 @@ index 066714df..40b5bd52 100644
  	exit(client_main(osdep_event_init(), argc, argv, flags, feat));
  }
 diff --git a/tmux.h b/tmux.h
-index 58899680..aaa570af 100644
+index 2fdf7eb6..e2596fac 100644
 --- a/tmux.h
 +++ b/tmux.h
 @@ -77,6 +77,17 @@ struct winlink;
