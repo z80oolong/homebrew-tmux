@@ -39,13 +39,13 @@ class TmuxNcursesAT62 < Formula
 
     %w[form menu ncurses panel].each do |name|
       if OS.mac?
-        (lib/"lib#{name}w.#{major}.#{minor}.dylib").rename(lib/"lib#{name}w-eaw.#{major}.#{minor}.dylib")
-        lib.install_symlink "lib#{name}w-eaw.#{major}.#{minor}.dylib" => "lib#{name}w-eaw.dylib"
-        lib.install_symlink "lib#{name}w-eaw.#{major}.#{minor}.dylib" => "lib#{name}w.dylib"
-        lib.install_symlink "lib#{name}w-eaw.#{major}.#{minor}.dylib" => "lib#{name}-eaw.dylib"
-        lib.install_symlink "lib#{name}w-eaw.#{major}.#{minor}.dylib" => "lib#{name}.dylib"
-        lib.install_symlink "lib#{name}w-eaw.#{major}.#{minor}.dylib" => "lib#{name}.#{major}.dylib"
-        lib.install_symlink "lib#{name}w-eaw.#{major}.#{minor}.dylib" => "lib#{name}w.#{major}.dylib"
+        (lib/"lib#{name}w.#{major}.dylib").rename(lib/"lib#{name}w-eaw.#{major}.dylib")
+        lib.install_symlink "lib#{name}w-eaw.#{major}.dylib" => "lib#{name}w-eaw.dylib"
+        lib.install_symlink "lib#{name}w-eaw.#{major}.dylib" => "lib#{name}w.dylib"
+        lib.install_symlink "lib#{name}w-eaw.#{major}.dylib" => "lib#{name}-eaw.dylib"
+        lib.install_symlink "lib#{name}w-eaw.#{major}.dylib" => "lib#{name}.dylib"
+        lib.install_symlink "lib#{name}w-eaw.#{major}.dylib" => "lib#{name}.#{major}.dylib"
+        lib.install_symlink "lib#{name}w-eaw.#{major}.dylib" => "lib#{name}w.#{major}.dylib"
       else
         (lib/"lib#{name}w.so.#{major}.#{minor}").rename(lib/"lib#{name}w-eaw.so.#{major}.#{minor}")
         lib.install_symlink "lib#{name}w-eaw.so.#{major}.#{minor}" => "lib#{name}-eaw.so"
