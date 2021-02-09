@@ -5,9 +5,9 @@ class AppimageTmuxAT32 < Formula
   tmux_version = "3.2-rc3"
   appimage_version = "v3.1c-eaw-appimage-0.1.5"
   url "https://github.com/z80oolong/tmux-eaw-appimage/releases/download/#{appimage_version}/tmux-eaw-#{tmux_version}-x86_64.AppImage"
-  sha256 "d50db838ed423893e365a4f1eca6b190b29de3e300e212170eb58467ee5ece05"
+  sha256 "5fd595f7ea181da1ff1c5d99224eb95761ea33c94f7ebc07c170548c8250863a"
   version tmux_version
-  revision 14
+  revision 13
 
   keg_only :versioned_formula
 
