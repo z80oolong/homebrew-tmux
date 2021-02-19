@@ -24,7 +24,7 @@ class Tmux < Formula
 
 
   head do
-    tmux_commit = "fe3ab51b"
+    tmux_commit = "11e404ca"
     url "https://github.com/tmux/tmux.git"
 
     patch :p1, :DATA
@@ -229,7 +229,7 @@ index ef8ff384..4c7e0082 100644
  	exit(client_main(osdep_event_init(), argc, argv, flags, feat));
  }
 diff --git a/tmux.h b/tmux.h
-index 3c496ae0..1b9ec924 100644
+index 626d2978..41389b99 100644
 --- a/tmux.h
 +++ b/tmux.h
 @@ -76,6 +76,17 @@ struct winlink;
@@ -540,10 +540,10 @@ index 63eccb93..7729eca5 100644
 +#endif
  }
 diff --git a/tty-term.c b/tty-term.c
-index ad6a5567..59d2d5f0 100644
+index cc0b8ceb..b5d6cb6c 100644
 --- a/tty-term.c
 +++ b/tty-term.c
-@@ -611,6 +611,15 @@ tty_term_create(struct tty *tty, char *name, int *feat, int fd, char **cause)
+@@ -592,6 +592,15 @@ tty_term_create(struct tty *tty, char *name, char **caps, u_int ncaps,
  	if (!tty_term_flag(term, TTYC_AM))
  		term->flags |= TERM_NOAM;
  
@@ -559,7 +559,7 @@ index ad6a5567..59d2d5f0 100644
  	/* Generate ACS table. If none is present, use nearest ASCII. */
  	memset(term->acs, 0, sizeof term->acs);
  	if (tty_term_has(term, TTYC_ACSC))
-@@ -619,6 +628,7 @@ tty_term_create(struct tty *tty, char *name, int *feat, int fd, char **cause)
+@@ -600,6 +609,7 @@ tty_term_create(struct tty *tty, char *name, char **caps, u_int ncaps,
  		acs = "a#j+k+l+m+n+o-p-q-r-s-t+u+v+w+x|y<z>~.";
  	for (; acs[0] != '\0' && acs[1] != '\0'; acs += 2)
  		term->acs[(u_char) acs[0]][0] = acs[1];
@@ -568,7 +568,7 @@ index ad6a5567..59d2d5f0 100644
  	/* Log the capabilities. */
  	for (i = 0; i < tty_term_ncodes(); i++)
 diff --git a/utf8.c b/utf8.c
-index 458363b8..f8780f13 100644
+index f43945e6..fefff471 100644
 --- a/utf8.c
 +++ b/utf8.c
 @@ -26,6 +26,407 @@
@@ -979,7 +979,7 @@ index 458363b8..f8780f13 100644
  struct utf8_item {
  	RB_ENTRY(utf8_item)	index_entry;
  	u_int			index;
-@@ -225,10 +626,28 @@ utf8_width(struct utf8_data *ud, int *width)
+@@ -229,6 +630,22 @@ utf8_width(struct utf8_data *ud, int *width)
  	case 0:
  		return (UTF8_ERROR);
  	}
@@ -999,8 +999,10 @@ index 458363b8..f8780f13 100644
 +	log_debug("UTF-8 %.*s, wcwidth() %d", (int)ud->size, ud->data, *width);
 +	if (*width >= 0 && *width <= 0xff)
 +		return (UTF8_DONE);
-+#else
- 	*width = wcwidth(wc);
+ #ifdef HAVE_UTF8PROC
+ 	*width = utf8proc_wcwidth(wc);
+ #else
+@@ -237,6 +654,7 @@ utf8_width(struct utf8_data *ud, int *width)
  	if (*width >= 0 && *width <= 0xff)
  		return (UTF8_DONE);
  	log_debug("UTF-8 %.*s, wcwidth() %d", (int)ud->size, ud->data, *width);
