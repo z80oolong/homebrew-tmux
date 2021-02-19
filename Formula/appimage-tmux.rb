@@ -7,7 +7,7 @@ class AppimageTmux < Formula
   url "https://github.com/z80oolong/tmux-eaw-appimage/releases/download/#{appimage_version}/tmux-eaw-#{tmux_version}-x86_64.AppImage"
   sha256 "78ff7028f5030c8235399acf4928808abf29f1902d40812c16ce8da5c93168da"
   version tmux_version
-  revision 13 
+  revision 15 
 
   head do
     tmux_commit = "11e404ca"; tmux_version = "HEAD-#{tmux_commit}"
