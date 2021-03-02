@@ -162,20 +162,21 @@ index a6f07cf9..7e07eb6d 100644
  	OPTIONS_TABLE_HOOK("after-bind-key", ""),
  	OPTIONS_TABLE_HOOK("after-capture-pane", ""),
 diff --git a/tmux.c b/tmux.c
-index ef8ff384..4c7e0082 100644
+index 3a49c803..70733fc9 100644
 --- a/tmux.c
 +++ b/tmux.c
-@@ -320,19 +320,28 @@ main(int argc, char **argv)
+@@ -327,20 +327,29 @@ main(int argc, char **argv)
  {
  	char					*path = NULL, *label = NULL;
  	char					*cause, **var;
 +#ifndef NO_USE_UTF8CJK
 +	char					*ctype;
 +#endif
- 	const char				*s, *shell, *cwd;
+ 	const char				*s, *cwd;
  	int					 opt, keys, feat = 0;
  	uint64_t				 flags = 0;
  	const struct options_table_entry	*oe;
+ 	u_int					 i;
  
 +#ifdef NO_USE_UTF8CJK
  	if (setlocale(LC_CTYPE, "en_US.UTF-8") == NULL &&
@@ -194,7 +195,7 @@ index ef8ff384..4c7e0082 100644
  
  	setlocale(LC_TIME, "");
  	tzset();
-@@ -466,6 +475,19 @@ main(int argc, char **argv)
+@@ -479,6 +488,19 @@ main(int argc, char **argv)
  		options_set_number(global_w_options, "mode-keys", keys);
  	}
  
@@ -214,7 +215,7 @@ index ef8ff384..4c7e0082 100644
  	/*
  	 * If socket is specified on the command-line with -S or -L, it is
  	 * used. Otherwise, $TMUX is checked and if that fails "default" is
-@@ -491,6 +513,13 @@ main(int argc, char **argv)
+@@ -504,6 +526,13 @@ main(int argc, char **argv)
  	socket_path = path;
  	free(label);
  
@@ -229,7 +230,7 @@ index ef8ff384..4c7e0082 100644
  	exit(client_main(osdep_event_init(), argc, argv, flags, feat));
  }
 diff --git a/tmux.h b/tmux.h
-index 626d2978..41389b99 100644
+index 401bf82f..c114e0da 100644
 --- a/tmux.h
 +++ b/tmux.h
 @@ -76,6 +76,17 @@ struct winlink;
@@ -540,7 +541,7 @@ index 63eccb93..7729eca5 100644
 +#endif
  }
 diff --git a/tty-term.c b/tty-term.c
-index cc0b8ceb..b5d6cb6c 100644
+index 1d9b36da..20f48506 100644
 --- a/tty-term.c
 +++ b/tty-term.c
 @@ -592,6 +592,15 @@ tty_term_create(struct tty *tty, char *name, char **caps, u_int ncaps,
