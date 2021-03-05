@@ -569,7 +569,7 @@ index 1d9b36da..20f48506 100644
  	/* Log the capabilities. */
  	for (i = 0; i < tty_term_ncodes(); i++)
 diff --git a/utf8.c b/utf8.c
-index f43945e6..fefff471 100644
+index f43945e6..6fdda8cd 100644
 --- a/utf8.c
 +++ b/utf8.c
 @@ -26,6 +26,407 @@
@@ -980,7 +980,7 @@ index f43945e6..fefff471 100644
  struct utf8_item {
  	RB_ENTRY(utf8_item)	index_entry;
  	u_int			index;
-@@ -229,6 +630,22 @@ utf8_width(struct utf8_data *ud, int *width)
+@@ -229,6 +630,23 @@ utf8_width(struct utf8_data *ud, int *width)
  	case 0:
  		return (UTF8_ERROR);
  	}
@@ -1000,10 +1000,11 @@ index f43945e6..fefff471 100644
 +	log_debug("UTF-8 %.*s, wcwidth() %d", (int)ud->size, ud->data, *width);
 +	if (*width >= 0 && *width <= 0xff)
 +		return (UTF8_DONE);
++#else
  #ifdef HAVE_UTF8PROC
  	*width = utf8proc_wcwidth(wc);
  #else
-@@ -237,6 +654,7 @@ utf8_width(struct utf8_data *ud, int *width)
+@@ -237,6 +655,7 @@ utf8_width(struct utf8_data *ud, int *width)
  	if (*width >= 0 && *width <= 0xff)
  		return (UTF8_DONE);
  	log_debug("UTF-8 %.*s, wcwidth() %d", (int)ud->size, ud->data, *width);
