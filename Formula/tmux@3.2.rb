@@ -3,9 +3,9 @@ class TmuxAT32 < Formula
   homepage "https://tmux.github.io/"
   license "ISC"
 
-  tmux_version = "3.2-rc3"
+  tmux_version = "3.2-rc4"
   url "https://github.com/tmux/tmux/releases/download/3.2-rc/tmux-#{tmux_version}.tar.gz"
-  sha256 "724d787895fc94556488560e03726ac803b7720ea1e302bc52b11acfca72aa61"
+  sha256 "a93b6abea888215253c4d6b91cb6f1c1ae4f233ad3431a568bdda3ec495ab381"
   version tmux_version
   revision 7
 
@@ -89,10 +89,10 @@ end
 
 __END__
 diff --git a/options-table.c b/options-table.c
-index 873f8d6..5688613 100644
+index a6f07cf..7e07eb6 100644
 --- a/options-table.c
 +++ b/options-table.c
-@@ -1076,6 +1076,38 @@ const struct options_table_entry options_table[] = {
+@@ -1084,6 +1084,38 @@ const struct options_table_entry options_table[] = {
  	          "This option is no longer used."
  	},
  
@@ -132,20 +132,21 @@ index 873f8d6..5688613 100644
  	OPTIONS_TABLE_HOOK("after-bind-key", ""),
  	OPTIONS_TABLE_HOOK("after-capture-pane", ""),
 diff --git a/tmux.c b/tmux.c
-index 066714d..40b5bd5 100644
+index 3a49c80..70733fc 100644
 --- a/tmux.c
 +++ b/tmux.c
-@@ -321,19 +321,28 @@ main(int argc, char **argv)
+@@ -327,20 +327,29 @@ main(int argc, char **argv)
  {
  	char					*path = NULL, *label = NULL;
  	char					*cause, **var;
 +#ifndef NO_USE_UTF8CJK
 +	char					*ctype;
 +#endif
- 	const char				*s, *shell, *cwd;
+ 	const char				*s, *cwd;
  	int					 opt, keys, feat = 0;
  	uint64_t				 flags = 0;
  	const struct options_table_entry	*oe;
+ 	u_int					 i;
  
 +#ifdef NO_USE_UTF8CJK
  	if (setlocale(LC_CTYPE, "en_US.UTF-8") == NULL &&
@@ -164,7 +165,7 @@ index 066714d..40b5bd5 100644
  
  	setlocale(LC_TIME, "");
  	tzset();
-@@ -464,6 +473,19 @@ main(int argc, char **argv)
+@@ -479,6 +488,19 @@ main(int argc, char **argv)
  		options_set_number(global_w_options, "mode-keys", keys);
  	}
  
@@ -184,7 +185,7 @@ index 066714d..40b5bd5 100644
  	/*
  	 * If socket is specified on the command-line with -S or -L, it is
  	 * used. Otherwise, $TMUX is checked and if that fails "default" is
-@@ -489,6 +511,13 @@ main(int argc, char **argv)
+@@ -504,6 +526,13 @@ main(int argc, char **argv)
  	socket_path = path;
  	free(label);
  
@@ -199,10 +200,10 @@ index 066714d..40b5bd5 100644
  	exit(client_main(osdep_event_init(), argc, argv, flags, feat));
  }
 diff --git a/tmux.h b/tmux.h
-index 44ba53f..9560e08 100644
+index 6961094..9c10ac9 100644
 --- a/tmux.h
 +++ b/tmux.h
-@@ -77,6 +77,17 @@ struct winlink;
+@@ -76,6 +76,17 @@ struct winlink;
  #define TMUX_SOCK "$TMUX_TMPDIR:" _PATH_TMP
  #endif
  
@@ -510,10 +511,10 @@ index 63eccb9..7729eca 100644
 +#endif
  }
 diff --git a/tty-term.c b/tty-term.c
-index ec8302a..7287664 100644
+index 1d9b36d..20f4850 100644
 --- a/tty-term.c
 +++ b/tty-term.c
-@@ -610,6 +610,15 @@ tty_term_create(struct tty *tty, char *name, int *feat, int fd, char **cause)
+@@ -592,6 +592,15 @@ tty_term_create(struct tty *tty, char *name, char **caps, u_int ncaps,
  	if (!tty_term_flag(term, TTYC_AM))
  		term->flags |= TERM_NOAM;
  
@@ -529,7 +530,7 @@ index ec8302a..7287664 100644
  	/* Generate ACS table. If none is present, use nearest ASCII. */
  	memset(term->acs, 0, sizeof term->acs);
  	if (tty_term_has(term, TTYC_ACSC))
-@@ -618,6 +627,7 @@ tty_term_create(struct tty *tty, char *name, int *feat, int fd, char **cause)
+@@ -600,6 +609,7 @@ tty_term_create(struct tty *tty, char *name, char **caps, u_int ncaps,
  		acs = "a#j+k+l+m+n+o-p-q-r-s-t+u+v+w+x|y<z>~.";
  	for (; acs[0] != '\0' && acs[1] != '\0'; acs += 2)
  		term->acs[(u_char) acs[0]][0] = acs[1];
@@ -538,7 +539,7 @@ index ec8302a..7287664 100644
  	/* Log the capabilities. */
  	for (i = 0; i < tty_term_ncodes(); i++)
 diff --git a/utf8.c b/utf8.c
-index 458363b..f8780f1 100644
+index f43945e..6fdda8c 100644
 --- a/utf8.c
 +++ b/utf8.c
 @@ -26,6 +26,407 @@
@@ -949,7 +950,7 @@ index 458363b..f8780f1 100644
  struct utf8_item {
  	RB_ENTRY(utf8_item)	index_entry;
  	u_int			index;
-@@ -225,10 +626,28 @@ utf8_width(struct utf8_data *ud, int *width)
+@@ -229,6 +630,23 @@ utf8_width(struct utf8_data *ud, int *width)
  	case 0:
  		return (UTF8_ERROR);
  	}
@@ -970,7 +971,10 @@ index 458363b..f8780f1 100644
 +	if (*width >= 0 && *width <= 0xff)
 +		return (UTF8_DONE);
 +#else
- 	*width = wcwidth(wc);
+ #ifdef HAVE_UTF8PROC
+ 	*width = utf8proc_wcwidth(wc);
+ #else
+@@ -237,6 +655,7 @@ utf8_width(struct utf8_data *ud, int *width)
  	if (*width >= 0 && *width <= 0xff)
  		return (UTF8_DONE);
  	log_debug("UTF-8 %.*s, wcwidth() %d", (int)ud->size, ud->data, *width);
