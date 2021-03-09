@@ -24,7 +24,6 @@ class Tmux < Formula
 
 
   head do
-    tmux_commit = "11e404ca"
     url "https://github.com/tmux/tmux.git"
 
     patch :p1, :DATA
@@ -96,6 +95,8 @@ class Tmux < Formula
   end
 
   def fix_rpath(binname, append_list, delete_list)
+    return if OS.mac?
+
     delete_list_hash = {}
     rpath = %x{#{Formula["patchelf"].opt_bin}/patchelf --print-rpath #{binname}}.chomp.split(":")
 
