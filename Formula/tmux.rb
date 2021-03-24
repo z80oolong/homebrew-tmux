@@ -120,7 +120,7 @@ end
 
 __END__
 diff --git a/options-table.c b/options-table.c
-index a6f07cf9..7e07eb6d 100644
+index b185969c..56a6f9e7 100644
 --- a/options-table.c
 +++ b/options-table.c
 @@ -1084,6 +1084,38 @@ const struct options_table_entry options_table[] = {
@@ -231,7 +231,7 @@ index 3a49c803..70733fc9 100644
  	exit(client_main(osdep_event_init(), argc, argv, flags, feat));
  }
 diff --git a/tmux.h b/tmux.h
-index 401bf82f..c114e0da 100644
+index fbc78d2f..98c95ddd 100644
 --- a/tmux.h
 +++ b/tmux.h
 @@ -76,6 +76,17 @@ struct winlink;
