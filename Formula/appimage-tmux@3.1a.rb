@@ -3,11 +3,11 @@ class AppimageTmuxAT31a < Formula
   homepage "https://tmux.github.io/"
 
   tmux_version = "3.1a"
-  appimage_version = "v3.1c-eaw-appimage-0.1.8"
+  appimage_version = "v3.1c-eaw-appimage-0.1.9"
   url "https://github.com/z80oolong/tmux-eaw-appimage/releases/download/#{appimage_version}/tmux-eaw-#{tmux_version}-x86_64.AppImage"
-  sha256 "6c9c86d5901c5eff1b847ed9a053e0ddd43cb80ca458baffb4bfde287091b311"
+  sha256 "a41239d1289fd86f5cc114505f8dd3cc7c3134e63c019560e0d0f642b50ea88d"
   version tmux_version
-  revision 16
+  revision 17
 
   keg_only :versioned_formula
 
