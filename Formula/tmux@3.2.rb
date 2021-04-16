@@ -3,9 +3,9 @@ class TmuxAT32 < Formula
   homepage "https://tmux.github.io/"
   license "ISC"
 
-  tmux_version = "3.2-rc4"
-  url "https://github.com/tmux/tmux/releases/download/3.2-rc/tmux-#{tmux_version}.tar.gz"
-  sha256 "a93b6abea888215253c4d6b91cb6f1c1ae4f233ad3431a568bdda3ec495ab381"
+  tmux_version = "3.2"
+  url "https://github.com/tmux/tmux/releases/download/#{tmux_version}/tmux-#{tmux_version}.tar.gz"
+  sha256 "664d345338c11cbe429d7ff939b92a5191e231a7c1ef42f381cebacb1e08a399"
   version tmux_version
   revision 7
 
@@ -13,8 +13,8 @@ class TmuxAT32 < Formula
 
   depends_on "pkg-config" => :build
   depends_on "z80oolong/tmux/tmux-libevent@2.2"
-  depends_on "utf8proc" => :optional
   depends_on "z80oolong/tmux/tmux-ncurses@6.2"
+  depends_on "utf8proc" => :optional
 
   on_linux do
     depends_on "patchelf" => :build
@@ -23,6 +23,7 @@ class TmuxAT32 < Formula
   option "without-utf8-cjk", "Build without using East asian Ambiguous Width Character in tmux."
   option "without-utf8-emoji", "Build without using Emoji Character in tmux."
   option "without-pane-border-acs-ascii", "Build without using ACS ASCII as pane border in tmux."
+  option "with-static-link", "Build tmux with static link."
 
   resource "completion" do
     url "https://raw.githubusercontent.com/imomaliev/tmux-bash-completion/homebrew_1.0.0/completions/tmux"
@@ -37,7 +38,7 @@ class TmuxAT32 < Formula
     ENV.append "LDFLAGS",  "-L#{Formula["z80oolong/tmux/tmux-libevent@2.2"].opt_lib}"
     ENV.append "CFLAGS",   "-I#{Formula["z80oolong/tmux/tmux-ncurses@6.2"].opt_include}"
     ENV.append "CPPFLAGS", "-I#{Formula["z80oolong/tmux/tmux-ncurses@6.2"].opt_include}"
-    ENV.append "LDFLAGS",  "-L#{Formula["z80oolong/tmux/tmux-ncurses@6.2"].opt_lib}"
+    ENV.append "LDFLAGS", "-L#{Formula["z80oolong/tmux/tmux-ncurses@6.2"].opt_lib}"
 
     ENV.append "CPPFLAGS", "-DNO_USE_UTF8CJK" if build.without?("utf8-cjk")
     ENV.append "CPPFLAGS", "-DNO_USE_UTF8CJK_EMOJI" if build.without?("utf8-emoji")
@@ -89,7 +90,7 @@ end
 
 __END__
 diff --git a/options-table.c b/options-table.c
-index a6f07cf..7e07eb6 100644
+index b185969..56a6f9e 100644
 --- a/options-table.c
 +++ b/options-table.c
 @@ -1084,6 +1084,38 @@ const struct options_table_entry options_table[] = {
@@ -200,7 +201,7 @@ index 3a49c80..70733fc 100644
  	exit(client_main(osdep_event_init(), argc, argv, flags, feat));
  }
 diff --git a/tmux.h b/tmux.h
-index 6961094..9c10ac9 100644
+index 6be5b30..809f78a 100644
 --- a/tmux.h
 +++ b/tmux.h
 @@ -76,6 +76,17 @@ struct winlink;
