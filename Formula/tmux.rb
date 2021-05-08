@@ -120,10 +120,10 @@ end
 
 __END__
 diff --git a/options-table.c b/options-table.c
-index b185969c..56a6f9e7 100644
+index 91b4d747..585b6754 100644
 --- a/options-table.c
 +++ b/options-table.c
-@@ -1084,6 +1084,38 @@ const struct options_table_entry options_table[] = {
+@@ -1097,6 +1097,38 @@ const struct options_table_entry options_table[] = {
  	          "This option is no longer used."
  	},
  
@@ -231,7 +231,7 @@ index 3a49c803..70733fc9 100644
  	exit(client_main(osdep_event_init(), argc, argv, flags, feat));
  }
 diff --git a/tmux.h b/tmux.h
-index 6be5b302..809f78aa 100644
+index e7cd205a..d7689e4e 100644
 --- a/tmux.h
 +++ b/tmux.h
 @@ -76,6 +76,17 @@ struct winlink;
@@ -542,13 +542,31 @@ index 63eccb93..7729eca5 100644
 +#endif
  }
 diff --git a/tty-term.c b/tty-term.c
-index 1d9b36da..20f48506 100644
+index add71d89..e4de2f66 100644
 --- a/tty-term.c
 +++ b/tty-term.c
-@@ -592,6 +592,15 @@ tty_term_create(struct tty *tty, char *name, char **caps, u_int ncaps,
- 	if (!tty_term_flag(term, TTYC_AM))
- 		term->flags |= TERM_NOAM;
+@@ -631,6 +631,43 @@ tty_term_create(struct tty *tty, char *name, char **caps, u_int ncaps,
+ 	if (tty_apply_features(term, *feat))
+ 		tty_term_apply_overrides(term);
  
++	/*
++	 * Terminals without am (auto right margin) wrap at at $COLUMNS - 1
++	 * rather than $COLUMNS (the cursor can never be beyond $COLUMNS - 1).
++	 *
++	 * Terminals without xenl (eat newline glitch) ignore a newline beyond
++	 * the right edge of the terminal, but tmux doesn't care about this -
++	 * it always uses absolute only moves the cursor with a newline when
++	 * also sending a linefeed.
++	 *
++	 * This is irritating, most notably because it is painful to write to
++	 * the very bottom-right of the screen without scrolling.
++	 *
++	 * Flag the terminal here and apply some workarounds in other places to
++	 * do the best possible.
++	 */
++	if (!tty_term_flag(term, TTYC_AM))
++		term->flags |= TERM_NOAM;
++
 +#ifndef NO_USE_PANE_BORDER_ACS_ASCII
 +	/* Generate ACS table. */
 +	memset(term->acs, 0, sizeof term->acs);
@@ -558,17 +576,19 @@ index 1d9b36da..20f48506 100644
 +			term->acs[(u_char) acs[0]][0] = acs[1];
 +	}
 +#else
- 	/* Generate ACS table. If none is present, use nearest ASCII. */
- 	memset(term->acs, 0, sizeof term->acs);
- 	if (tty_term_has(term, TTYC_ACSC))
-@@ -600,6 +609,7 @@ tty_term_create(struct tty *tty, char *name, char **caps, u_int ncaps,
- 		acs = "a#j+k+l+m+n+o-p-q-r-s-t+u+v+w+x|y<z>~.";
- 	for (; acs[0] != '\0' && acs[1] != '\0'; acs += 2)
- 		term->acs[(u_char) acs[0]][0] = acs[1];
++	/* Generate ACS table. If none is present, use nearest ASCII. */
++	memset(term->acs, 0, sizeof term->acs);
++	if (tty_term_has(term, TTYC_ACSC))
++		acs = tty_term_string(term, TTYC_ACSC);
++	else
++		acs = "a#j+k+l+m+n+o-p-q-r-s-t+u+v+w+x|y<z>~.";
++	for (; acs[0] != '\0' && acs[1] != '\0'; acs += 2)
++		term->acs[(u_char) acs[0]][0] = acs[1];
 +#endif
- 
++
  	/* Log the capabilities. */
  	for (i = 0; i < tty_term_ncodes(); i++)
+ 		log_debug("%s%s", name, tty_term_describe(term, i));
 diff --git a/utf8.c b/utf8.c
 index f43945e6..6fdda8cd 100644
 --- a/utf8.c
