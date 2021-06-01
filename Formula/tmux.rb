@@ -120,10 +120,10 @@ end
 
 __END__
 diff --git a/options-table.c b/options-table.c
-index 91b4d747..585b6754 100644
+index 101490e7..d3af557c 100644
 --- a/options-table.c
 +++ b/options-table.c
-@@ -1097,6 +1097,38 @@ const struct options_table_entry options_table[] = {
+@@ -1101,6 +1101,38 @@ const struct options_table_entry options_table[] = {
  	          "This option is no longer used."
  	},
  
@@ -163,7 +163,7 @@ index 91b4d747..585b6754 100644
  	OPTIONS_TABLE_HOOK("after-bind-key", ""),
  	OPTIONS_TABLE_HOOK("after-capture-pane", ""),
 diff --git a/tmux.c b/tmux.c
-index 3a49c803..70733fc9 100644
+index 29921781..4394dd35 100644
 --- a/tmux.c
 +++ b/tmux.c
 @@ -327,20 +327,29 @@ main(int argc, char **argv)
@@ -174,7 +174,7 @@ index 3a49c803..70733fc9 100644
 +	char					*ctype;
 +#endif
  	const char				*s, *cwd;
- 	int					 opt, keys, feat = 0;
+ 	int					 opt, keys, feat = 0, fflag = 0;
  	uint64_t				 flags = 0;
  	const struct options_table_entry	*oe;
  	u_int					 i;
@@ -196,7 +196,7 @@ index 3a49c803..70733fc9 100644
  
  	setlocale(LC_TIME, "");
  	tzset();
-@@ -479,6 +488,19 @@ main(int argc, char **argv)
+@@ -484,6 +493,19 @@ main(int argc, char **argv)
  		options_set_number(global_w_options, "mode-keys", keys);
  	}
  
@@ -216,7 +216,7 @@ index 3a49c803..70733fc9 100644
  	/*
  	 * If socket is specified on the command-line with -S or -L, it is
  	 * used. Otherwise, $TMUX is checked and if that fails "default" is
-@@ -504,6 +526,13 @@ main(int argc, char **argv)
+@@ -509,6 +531,13 @@ main(int argc, char **argv)
  	socket_path = path;
  	free(label);
  
@@ -231,7 +231,7 @@ index 3a49c803..70733fc9 100644
  	exit(client_main(osdep_event_init(), argc, argv, flags, feat));
  }
 diff --git a/tmux.h b/tmux.h
-index e7cd205a..d7689e4e 100644
+index b775c219..96155978 100644
 --- a/tmux.h
 +++ b/tmux.h
 @@ -76,6 +76,17 @@ struct winlink;
@@ -570,7 +570,7 @@ index add71d89..4e36c8ea 100644
  
  struct tty_term *
 diff --git a/utf8.c b/utf8.c
-index f43945e6..6fdda8cd 100644
+index 56f20cbb..e59cc72d 100644
 --- a/utf8.c
 +++ b/utf8.c
 @@ -26,6 +26,407 @@
