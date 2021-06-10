@@ -1,47 +1,25 @@
-class Tmux < Formula
+class TmuxAT32a < Formula
   desc "Terminal multiplexer"
   homepage "https://tmux.github.io/"
   license "ISC"
+
+  tmux_version = "3.2a"
+  url "https://github.com/tmux/tmux/releases/download/#{tmux_version}/tmux-#{tmux_version}.tar.gz"
+  sha256 "551553a4f82beaa8dadc9256800bcc284d7c000081e47aa6ecbb6ff36eacd05f"
+  version tmux_version
   revision 7
 
-  stable do
-    tmux_version = "3.2a"
-    url "https://github.com/tmux/tmux/releases/download/#{tmux_version}/tmux-#{tmux_version}.tar.gz"
-    sha256 "551553a4f82beaa8dadc9256800bcc284d7c000081e47aa6ecbb6ff36eacd05f"
-    version tmux_version
+  keg_only :versioned_formula
 
-    def pick_diff(formula_path)
-      lines = formula_path.each_line.to_a.inject([]) do |result, line|
-        result.push(line) if ((/^__END__/ === line) || result.first)
-        result
-      end
-      lines.shift
-      return lines.join("")
-    end
-
-    patch :p1, pick_diff(Formula["z80oolong/tmux/tmux@3.2"].path)
-   end
-
-
-  head do
-    url "https://github.com/tmux/tmux.git"
-
-    patch :p1, :DATA
-
-    depends_on "automake" => :build
-    depends_on "autoconf" => :build
-    depends_on "bison" => :build
-  end
-
+  depends_on "pkg-config" => :build
   depends_on "z80oolong/tmux/tmux-libevent@2.2"
-  depends_on "utf8proc" => :optional
   depends_on "z80oolong/tmux/tmux-ncurses@6.2"
+  depends_on "utf8proc" => :optional
 
   on_linux do
     depends_on "patchelf" => :build
   end
 
-  option "with-version-master", "In head build, set the version of tmux as `master`."
   option "without-utf8-cjk", "Build without using East asian Ambiguous Width Character in tmux."
   option "without-utf8-emoji", "Build without using Emoji Character in tmux."
   option "without-pane-border-acs-ascii", "Build without using ACS ASCII as pane border in tmux."
@@ -52,25 +30,19 @@ class Tmux < Formula
     sha256 "05e79fc1ecb27637dc9d6a52c315b8f207cf010cdcee9928805525076c9020ae"
   end
 
+  patch :p1, :DATA
+
   def install
     ENV.append "CFLAGS",   "-I#{Formula["z80oolong/tmux/tmux-libevent@2.2"].opt_include}"
     ENV.append "CPPFLAGS", "-I#{Formula["z80oolong/tmux/tmux-libevent@2.2"].opt_include}"
     ENV.append "LDFLAGS",  "-L#{Formula["z80oolong/tmux/tmux-libevent@2.2"].opt_lib}"
     ENV.append "CFLAGS",   "-I#{Formula["z80oolong/tmux/tmux-ncurses@6.2"].opt_include}"
     ENV.append "CPPFLAGS", "-I#{Formula["z80oolong/tmux/tmux-ncurses@6.2"].opt_include}"
-    ENV.append "LDFLAGS",  "-L#{Formula["z80oolong/tmux/tmux-ncurses@6.2"].opt_lib}"
-
-    if build.head? && build.with?("version-master") then
-      inreplace "configure.ac" do |s|
-        s.gsub!(/AC_INIT\(\[tmux\],[^)]*\)/, "AC_INIT([tmux], master)")
-      end
-    end
+    ENV.append "LDFLAGS", "-L#{Formula["z80oolong/tmux/tmux-ncurses@6.2"].opt_lib}"
 
     ENV.append "CPPFLAGS", "-DNO_USE_UTF8CJK" if build.without?("utf8-cjk")
     ENV.append "CPPFLAGS", "-DNO_USE_UTF8CJK_EMOJI" if build.without?("utf8-emoji")
     ENV.append "CPPFLAGS", "-DNO_USE_PANE_BORDER_ACS_ASCII" if build.without?("pane-border-acs-ascii")
-
-    system "sh", "autogen.sh" if build.head?
 
     args = %W[
       --disable-Dependency-tracking
@@ -95,8 +67,6 @@ class Tmux < Formula
   end
 
   def fix_rpath(binname, append_list, delete_list)
-    return if OS.mac?
-
     delete_list_hash = {}
     rpath = %x{#{Formula["patchelf"].opt_bin}/patchelf --print-rpath #{binname}}.chomp.split(":")
 
@@ -120,10 +90,10 @@ end
 
 __END__
 diff --git a/options-table.c b/options-table.c
-index 101490e7..d3af557c 100644
+index 8264d1b..d6451c8 100644
 --- a/options-table.c
 +++ b/options-table.c
-@@ -1101,6 +1101,38 @@ const struct options_table_entry options_table[] = {
+@@ -1088,6 +1088,38 @@ const struct options_table_entry options_table[] = {
  	          "This option is no longer used."
  	},
  
@@ -163,7 +133,7 @@ index 101490e7..d3af557c 100644
  	OPTIONS_TABLE_HOOK("after-bind-key", ""),
  	OPTIONS_TABLE_HOOK("after-capture-pane", ""),
 diff --git a/tmux.c b/tmux.c
-index 29921781..4394dd35 100644
+index 2992178..4394dd3 100644
 --- a/tmux.c
 +++ b/tmux.c
 @@ -327,20 +327,29 @@ main(int argc, char **argv)
@@ -231,7 +201,7 @@ index 29921781..4394dd35 100644
  	exit(client_main(osdep_event_init(), argc, argv, flags, feat));
  }
 diff --git a/tmux.h b/tmux.h
-index b775c219..96155978 100644
+index 735f4e6..23791bb 100644
 --- a/tmux.h
 +++ b/tmux.h
 @@ -76,6 +76,17 @@ struct winlink;
@@ -253,7 +223,7 @@ index b775c219..96155978 100644
  #define PANE_MINIMUM 1
  
 diff --git a/tty-acs.c b/tty-acs.c
-index 63eccb93..7729eca5 100644
+index 63eccb9..7729eca 100644
 --- a/tty-acs.c
 +++ b/tty-acs.c
 @@ -23,6 +23,130 @@
@@ -542,7 +512,7 @@ index 63eccb93..7729eca5 100644
 +#endif
  }
 diff --git a/tty-term.c b/tty-term.c
-index add71d89..4e36c8ea 100644
+index add71d8..4e36c8e 100644
 --- a/tty-term.c
 +++ b/tty-term.c
 @@ -502,6 +502,15 @@ tty_term_apply_overrides(struct tty_term *term)
@@ -570,7 +540,7 @@ index add71d89..4e36c8ea 100644
  
  struct tty_term *
 diff --git a/utf8.c b/utf8.c
-index 56f20cbb..e59cc72d 100644
+index f43945e..6fdda8c 100644
 --- a/utf8.c
 +++ b/utf8.c
 @@ -26,6 +26,407 @@

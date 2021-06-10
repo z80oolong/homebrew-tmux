@@ -18,7 +18,7 @@ Unicode の規格における東アジア圏の各種文字のうち、いわゆ
 
 ### z80oolong/tmux/tmux@2.6
 
-この Formula は、旧安定版である [tmux 2.6][TMUX] に、 "[East Asian Ambiguous Character を全角文字の幅で表示する差分ファイル][GST1]" を適用したものを導入します。
+この Formula は、安定版である [tmux 2.6][TMUX] に、 "[East Asian Ambiguous Character を全角文字の幅で表示する差分ファイル][GST1]" を適用したものを導入します。
 
 なお、 [tmux][TMUX] において East Asian Ambiguous Character の全角文字幅での表示を無効化する場合は、オプション ```--without-utf8-cjk``` を指定して下さい。そして、 [tmux][TMUX] において、画面分割におけるボーダーラインの罫線文字を判別し、適切に描画するための修正を無効化するには、オプション ```--without-pane-border-acs-ascii``` を指定して下さい。
 
@@ -28,7 +28,7 @@ Unicode の規格における東アジア圏の各種文字のうち、いわゆ
 
 ### z80oolong/tmux/tmux@2.7
 
-この Formula は、旧安定版である [tmux 2.7][TMUX] に、 "[East Asian Ambiguous Character を全角文字の幅で表示する差分ファイル][GST1]" を適用したものを導入します。
+この Formula は、安定版である [tmux 2.7][TMUX] に、 "[East Asian Ambiguous Character を全角文字の幅で表示する差分ファイル][GST1]" を適用したものを導入します。
 
 なお、 [tmux][TMUX] において East Asian Ambiguous Character の全角文字幅での表示を無効化する場合は、オプション ```--without-utf8-cjk``` を指定して下さい。そして、 [tmux][TMUX] において、画面分割におけるボーダーラインの罫線文字を判別し、適切に描画するための修正を無効化するには、オプション ```--without-pane-border-acs-ascii``` を指定して下さい。
 
@@ -38,7 +38,7 @@ Unicode の規格における東アジア圏の各種文字のうち、いわゆ
 
 ### z80oolong/tmux/tmux@2.8
 
-この Formula は、旧安定版である [tmux 2.8][TMUX] に、 "[East Asian Ambiguous Character を全角文字の幅で表示する差分ファイル][GST1]" を適用したものを導入します。
+この Formula は、安定版である [tmux 2.8][TMUX] に、 "[East Asian Ambiguous Character を全角文字の幅で表示する差分ファイル][GST1]" を適用したものを導入します。
 
 なお、 [tmux][TMUX] において East Asian Ambiguous Character の全角文字幅での表示を無効化する場合は、オプション ```--without-utf8-cjk``` を指定して下さい。そして、 [tmux][TMUX] において、画面分割におけるボーダーラインの罫線文字を判別し、適切に描画するための修正を無効化するには、オプション ```--without-pane-border-acs-ascii``` を指定して下さい。
 
@@ -48,7 +48,7 @@ Unicode の規格における東アジア圏の各種文字のうち、いわゆ
 
 ### z80oolong/tmux/tmux@2.9
 
-この Formula は、旧安定版である [tmux 2.9][TMUX] に、 "[East Asian Ambiguous Character を全角文字の幅で表示する差分ファイル][GST1]" を適用したものを導入します。
+この Formula は、安定版である [tmux 2.9][TMUX] に、 "[East Asian Ambiguous Character を全角文字の幅で表示する差分ファイル][GST1]" を適用したものを導入します。
 
 なお、 [tmux][TMUX] において East Asian Ambiguous Character の全角文字幅での表示を無効化する場合は、オプション ```--without-utf8-cjk``` を指定して下さい。そして、 [tmux][TMUX] において、画面分割におけるボーダーラインの罫線文字を判別し、適切に描画するための修正を無効化するには、オプション ```--without-pane-border-acs-ascii``` を指定して下さい。
 
@@ -58,7 +58,7 @@ Unicode の規格における東アジア圏の各種文字のうち、いわゆ
 
 ### z80oolong/tmux/tmux@2.9a
 
-この Formula は、旧安定版である [tmux 2.9a][TMUX] に、 "[East Asian Ambiguous Character を全角文字の幅で表示する差分ファイル][GST1]" を適用したものを導入します。
+この Formula は、安定版である [tmux 2.9a][TMUX] に、 "[East Asian Ambiguous Character を全角文字の幅で表示する差分ファイル][GST1]" を適用したものを導入します。
 
 なお、 [tmux][TMUX] において East Asian Ambiguous Character の全角文字幅での表示を無効化する場合は、オプション ```--without-utf8-cjk``` を指定して下さい。そして、 [tmux][TMUX] において、画面分割におけるボーダーラインの罫線文字を判別し、適切に描画するための修正を無効化するには、オプション ```--without-pane-border-acs-ascii``` を指定して下さい。
 
@@ -68,7 +68,7 @@ Unicode の規格における東アジア圏の各種文字のうち、いわゆ
 
 ### z80oolong/tmux/tmux@3.0
 
-この Formula は、旧安定版である [tmux 3.0][TMUX] に、 "[East Asian Ambiguous Character を全角文字の幅で表示する差分ファイル][GST1]" を適用したものを導入します。
+この Formula は、安定版である [tmux 3.0][TMUX] に、 "[East Asian Ambiguous Character を全角文字の幅で表示する差分ファイル][GST1]" を適用したものを導入します。
 
 なお、 [tmux][TMUX] において East Asian Ambiguous Character の全角文字幅での表示を無効化する場合は、オプション ```--without-utf8-cjk``` を指定して下さい。そして、 [tmux][TMUX] において、画面分割におけるボーダーラインの罫線文字を判別し、適切に描画するための修正を無効化するには、オプション ```--without-pane-border-acs-ascii``` を指定して下さい。
 
@@ -78,7 +78,7 @@ Unicode の規格における東アジア圏の各種文字のうち、いわゆ
 
 ### z80oolong/tmux/tmux@3.0a
 
-この Formula は、旧安定版のバグフィックス版である [tmux 3.0a][TMUX] に、 "[East Asian Ambiguous Character を全角文字の幅で表示する差分ファイル][GST1]" を適用したものを導入します。
+この Formula は、安定版のバグフィックス版である [tmux 3.0a][TMUX] に、 "[East Asian Ambiguous Character を全角文字の幅で表示する差分ファイル][GST1]" を適用したものを導入します。
 
 なお、 [tmux][TMUX] において East Asian Ambiguous Character の全角文字幅での表示を無効化する場合は、オプション ```--without-utf8-cjk``` を指定して下さい。そして、 [tmux][TMUX] において、画面分割におけるボーダーラインの罫線文字を判別し、適切に描画するための修正を無効化するには、オプション ```--without-pane-border-acs-ascii``` を指定して下さい。
 
@@ -88,7 +88,7 @@ Unicode の規格における東アジア圏の各種文字のうち、いわゆ
 
 ### z80oolong/tmux/tmux@3.1
 
-この Formula は、旧安定版である [tmux 3.1][TMUX] に、 "[East Asian Ambiguous Character を全角文字の幅で表示する差分ファイル][GST1]" を適用したものを導入します。
+この Formula は、安定版である [tmux 3.1][TMUX] に、 "[East Asian Ambiguous Character を全角文字の幅で表示する差分ファイル][GST1]" を適用したものを導入します。
 
 なお、 [tmux][TMUX] において East Asian Ambiguous Character の全角文字幅での表示を無効化する場合は、オプション ```--without-utf8-cjk``` を指定して下さい。そして、 [tmux][TMUX] において、画面分割におけるボーダーラインの罫線文字を判別し、適切に描画するための修正を無効化するには、オプション ```--without-pane-border-acs-ascii``` を指定して下さい。
 
@@ -98,7 +98,7 @@ Unicode の規格における東アジア圏の各種文字のうち、いわゆ
 
 ### z80oolong/tmux/tmux@3.1a
 
-この Formula は、旧安定版のバグフィックス版である [tmux 3.1a][TMUX] に、 "[East Asian Ambiguous Character を全角文字の幅で表示する差分ファイル][GST1]" を適用したものを導入します。
+この Formula は、安定版のバグフィックス版である [tmux 3.1a][TMUX] に、 "[East Asian Ambiguous Character を全角文字の幅で表示する差分ファイル][GST1]" を適用したものを導入します。
 
 なお、 [tmux][TMUX] において East Asian Ambiguous Character の全角文字幅での表示を無効化する場合は、オプション ```--without-utf8-cjk``` を指定して下さい。そして、 [tmux][TMUX] において、画面分割におけるボーダーラインの罫線文字を判別し、適切に描画するための修正を無効化するには、オプション ```--without-pane-border-acs-ascii``` を指定して下さい。
 
@@ -108,7 +108,7 @@ Unicode の規格における東アジア圏の各種文字のうち、いわゆ
 
 ### z80oolong/tmux/tmux@3.1b
 
-この Formula は、旧安定版のバグフィックス版である [tmux 3.1b][TMUX] に、 "[East Asian Ambiguous Character を全角文字の幅で表示する差分ファイル][GST1]" を適用したものを導入します。
+この Formula は、安定版のバグフィックス版である [tmux 3.1b][TMUX] に、 "[East Asian Ambiguous Character を全角文字の幅で表示する差分ファイル][GST1]" を適用したものを導入します。
 
 なお、 [tmux][TMUX] において East Asian Ambiguous Character の全角文字幅での表示を無効化する場合は、オプション ```--without-utf8-cjk``` を指定して下さい。そして、 [tmux][TMUX] において、画面分割におけるボーダーラインの罫線文字を判別し、適切に描画するための修正を無効化するには、オプション ```--without-pane-border-acs-ascii``` を指定して下さい。
 
@@ -118,7 +118,7 @@ Unicode の規格における東アジア圏の各種文字のうち、いわゆ
 
 ### z80oolong/tmux/tmux@3.1c
 
-この Formula は、旧安定版のバグフィックス版である [tmux 3.1c][TMUX] に、 "[East Asian Ambiguous Character を全角文字の幅で表示する差分ファイル][GST1]" を適用したものを導入します。
+この Formula は、安定版のバグフィックス版である [tmux 3.1c][TMUX] に、 "[East Asian Ambiguous Character を全角文字の幅で表示する差分ファイル][GST1]" を適用したものを導入します。
 
 なお、 [tmux][TMUX] において East Asian Ambiguous Character の全角文字幅での表示を無効化する場合は、オプション ```--without-utf8-cjk``` を指定して下さい。そして、 [tmux][TMUX] において、画面分割におけるボーダーラインの罫線文字を判別し、適切に描画するための修正を無効化するには、オプション ```--without-pane-border-acs-ascii``` を指定して下さい。
 
@@ -128,13 +128,23 @@ Unicode の規格における東アジア圏の各種文字のうち、いわゆ
 
 ### z80oolong/tmux/tmux@3.2
 
-この Formula は、最新の安定版である [tmux 3.2][TMUX] に、 "[East Asian Ambiguous Character を全角文字の幅で表示する差分ファイル][GST1]" を適用したものを導入します。
+この Formula は、安定版である [tmux 3.2][TMUX] に、 "[East Asian Ambiguous Character を全角文字の幅で表示する差分ファイル][GST1]" を適用したものを導入します。
 
 なお、 [tmux][TMUX] において East Asian Ambiguous Character の全角文字幅での表示を無効化する場合は、オプション ```--without-utf8-cjk``` を指定して下さい。そして、 [tmux][TMUX] において、画面分割におけるボーダーラインの罫線文字を判別し、適切に描画するための修正を無効化するには、オプション ```--without-pane-border-acs-ascii``` を指定して下さい。
 
 **この Formula は、 versioned formula であるため、この Formula によって導入される [tmux][TMUX] は、 keg only で導入されることに留意して下さい。**
 
 この Formula によって導入される [tmux][TMUX] を使用するには、 ```brew link --force z80oolong/tmux/tmux@3.2``` コマンドを実行する必要があります。
+
+### z80oolong/tmux/tmux@3.2a
+
+この Formula は、安定版のバグフィックス版である [tmux 3.2a][TMUX] に、 "[East Asian Ambiguous Character を全角文字の幅で表示する差分ファイル][GST1]" を適用したものを導入します。
+
+なお、 [tmux][TMUX] において East Asian Ambiguous Character の全角文字幅での表示を無効化する場合は、オプション ```--without-utf8-cjk``` を指定して下さい。そして、 [tmux][TMUX] において、画面分割におけるボーダーラインの罫線文字を判別し、適切に描画するための修正を無効化するには、オプション ```--without-pane-border-acs-ascii``` を指定して下さい。
+
+**この Formula は、 versioned formula であるため、この Formula によって導入される [tmux][TMUX] は、 keg only で導入されることに留意して下さい。**
+
+この Formula によって導入される [tmux][TMUX] を使用するには、 ```brew link --force z80oolong/tmux/tmux@3.2a``` コマンドを実行する必要があります。
 
 ### z80oolong/tmux/appimage-tmux
 
@@ -150,7 +160,7 @@ Unicode の規格における東アジア圏の各種文字のうち、 [East As
 
 ### z80oolong/tmux/appimage-tmux@2.6
 
-この Formula は、"[East Asian Ambiguous Character を全角文字の幅で表示する差分ファイル][GST1]" を適用した旧安定版 [tmux 2.6][TMUX] の AppImage パッケージを導入します。
+この Formula は、"[East Asian Ambiguous Character を全角文字の幅で表示する差分ファイル][GST1]" を適用した安定版 [tmux 2.6][TMUX] の AppImage パッケージを導入します。
 
 なお、 AppImage パッケージが正常に機能しない環境において、この Formula によって [tmux][TMUX] を導入する場合は、オプション ```--with-extract``` を指定して、 AppImage パッケージの内容を展開して下さい。
 
@@ -160,7 +170,7 @@ Unicode の規格における東アジア圏の各種文字のうち、 [East As
 
 ### z80oolong/tmux/appimage-tmux@2.7
 
-この Formula は、"[East Asian Ambiguous Character を全角文字の幅で表示する差分ファイル][GST1]" を適用した旧安定版 [tmux 2.7][TMUX] の AppImage パッケージを導入します。
+この Formula は、"[East Asian Ambiguous Character を全角文字の幅で表示する差分ファイル][GST1]" を適用した安定版 [tmux 2.7][TMUX] の AppImage パッケージを導入します。
 
 なお、 AppImage パッケージが正常に機能しない環境において、この Formula によって [tmux][TMUX] を導入する場合は、オプション ```--with-extract``` を指定して、 AppImage パッケージの内容を展開して下さい。
 
@@ -170,7 +180,7 @@ Unicode の規格における東アジア圏の各種文字のうち、 [East As
 
 ### z80oolong/tmux/appimage-tmux@2.8
 
-この Formula は、"[East Asian Ambiguous Character を全角文字の幅で表示する差分ファイル][GST1]" を適用した旧安定版 [tmux 2.8][TMUX] の AppImage パッケージを導入します。
+この Formula は、"[East Asian Ambiguous Character を全角文字の幅で表示する差分ファイル][GST1]" を適用した安定版 [tmux 2.8][TMUX] の AppImage パッケージを導入します。
 
 なお、 AppImage パッケージが正常に機能しない環境において、この Formula によって [tmux][TMUX] を導入する場合は、オプション ```--with-extract``` を指定して、 AppImage パッケージの内容を展開して下さい。
 
@@ -180,7 +190,7 @@ Unicode の規格における東アジア圏の各種文字のうち、 [East As
 
 ### z80oolong/tmux/appimage-tmux@2.9
 
-この Formula は、"[East Asian Ambiguous Character を全角文字の幅で表示する差分ファイル][GST1]" を適用した旧安定版 [tmux 2.9][TMUX] の AppImage パッケージを導入します。
+この Formula は、"[East Asian Ambiguous Character を全角文字の幅で表示する差分ファイル][GST1]" を適用した安定版 [tmux 2.9][TMUX] の AppImage パッケージを導入します。
 
 なお、 AppImage パッケージが正常に機能しない環境において、この Formula によって [tmux][TMUX] を導入する場合は、オプション ```--with-extract``` を指定して、 AppImage パッケージの内容を展開して下さい。
 
@@ -190,7 +200,7 @@ Unicode の規格における東アジア圏の各種文字のうち、 [East As
 
 ### z80oolong/tmux/appimage-tmux@2.9a
 
-この Formula は、"[East Asian Ambiguous Character を全角文字の幅で表示する差分ファイル][GST1]" を適用した旧安定版 [tmux 2.9a][TMUX] の AppImage パッケージを導入します。
+この Formula は、"[East Asian Ambiguous Character を全角文字の幅で表示する差分ファイル][GST1]" を適用した安定版 [tmux 2.9a][TMUX] の AppImage パッケージを導入します。
 
 なお、 AppImage パッケージが正常に機能しない環境において、この Formula によって [tmux][TMUX] を導入する場合は、オプション ```--with-extract``` を指定して、 AppImage パッケージの内容を展開して下さい。
 
@@ -200,7 +210,7 @@ Unicode の規格における東アジア圏の各種文字のうち、 [East As
 
 ### z80oolong/tmux/appimage-tmux@3.0
 
-この Formula は、"[East Asian Ambiguous Character を全角文字の幅で表示する差分ファイル][GST1]" を適用した旧安定版 [tmux 3.0][TMUX] の AppImage パッケージを導入します。
+この Formula は、"[East Asian Ambiguous Character を全角文字の幅で表示する差分ファイル][GST1]" を適用した安定版 [tmux 3.0][TMUX] の AppImage パッケージを導入します。
 
 なお、 AppImage パッケージが正常に機能しない環境において、この Formula によって [tmux][TMUX] を導入する場合は、オプション ```--with-extract``` を指定して、 AppImage パッケージの内容を展開して下さい。
 
@@ -210,7 +220,7 @@ Unicode の規格における東アジア圏の各種文字のうち、 [East As
 
 ### z80oolong/tmux/appimage-tmux@3.0a
 
-この Formula は、"[East Asian Ambiguous Character を全角文字の幅で表示する差分ファイル][GST1]" を適用した旧安定版 [tmux 3.0a][TMUX] の AppImage パッケージを導入します。
+この Formula は、"[East Asian Ambiguous Character を全角文字の幅で表示する差分ファイル][GST1]" を適用した安定版 [tmux 3.0a][TMUX] の AppImage パッケージを導入します。
 
 なお、 AppImage パッケージが正常に機能しない環境において、この Formula によって [tmux][TMUX] を導入する場合は、オプション ```--with-extract``` を指定して、 AppImage パッケージの内容を展開して下さい。
 
@@ -220,7 +230,7 @@ Unicode の規格における東アジア圏の各種文字のうち、 [East As
 
 ### z80oolong/tmux/appimage-tmux@3.1
 
-この Formula は、"[East Asian Ambiguous Character を全角文字の幅で表示する差分ファイル][GST1]" を適用した旧安定版 [tmux 3.1][TMUX] の AppImage パッケージを導入します。
+この Formula は、"[East Asian Ambiguous Character を全角文字の幅で表示する差分ファイル][GST1]" を適用した安定版 [tmux 3.1][TMUX] の AppImage パッケージを導入します。
 
 なお、 AppImage パッケージが正常に機能しない環境において、この Formula によって [tmux][TMUX] を導入する場合は、オプション ```--with-extract``` を指定して、 AppImage パッケージの内容を展開して下さい。
 
@@ -230,7 +240,7 @@ Unicode の規格における東アジア圏の各種文字のうち、 [East As
 
 ### z80oolong/tmux/appimage-tmux@3.1a
 
-この Formula は、"[East Asian Ambiguous Character を全角文字の幅で表示する差分ファイル][GST1]" を適用した旧安定版のバグフィックス版 [tmux 3.1a][TMUX] の AppImage パッケージを導入します。
+この Formula は、"[East Asian Ambiguous Character を全角文字の幅で表示する差分ファイル][GST1]" を適用した安定版のバグフィックス版 [tmux 3.1a][TMUX] の AppImage パッケージを導入します。
 
 なお、 AppImage パッケージが正常に機能しない環境において、この Formula によって [tmux][TMUX] を導入する場合は、オプション ```--with-extract``` を指定して、 AppImage パッケージの内容を展開して下さい。
 
