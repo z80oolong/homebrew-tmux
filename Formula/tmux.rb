@@ -19,7 +19,7 @@ class Tmux < Formula
       return lines.join("")
     end
 
-    patch :p1, pick_diff(Formula["z80oolong/tmux/tmux@3.2"].path)
+    patch :p1, pick_diff(Formula["z80oolong/tmux/tmux@3.2a"].path)
    end
 
 
