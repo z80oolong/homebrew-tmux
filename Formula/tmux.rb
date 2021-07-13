@@ -120,10 +120,10 @@ end
 
 __END__
 diff --git a/options-table.c b/options-table.c
-index 101490e7..d3af557c 100644
+index 2555147a..f13a5f6f 100644
 --- a/options-table.c
 +++ b/options-table.c
-@@ -1101,6 +1101,38 @@ const struct options_table_entry options_table[] = {
+@@ -1102,6 +1102,38 @@ const struct options_table_entry options_table[] = {
  	          "This option is no longer used."
  	},
  
@@ -163,10 +163,10 @@ index 101490e7..d3af557c 100644
  	OPTIONS_TABLE_HOOK("after-bind-key", ""),
  	OPTIONS_TABLE_HOOK("after-capture-pane", ""),
 diff --git a/tmux.c b/tmux.c
-index 29921781..4394dd35 100644
+index 1fdba727..afe76d88 100644
 --- a/tmux.c
 +++ b/tmux.c
-@@ -327,20 +327,29 @@ main(int argc, char **argv)
+@@ -332,20 +332,29 @@ main(int argc, char **argv)
  {
  	char					*path = NULL, *label = NULL;
  	char					*cause, **var;
@@ -196,7 +196,7 @@ index 29921781..4394dd35 100644
  
  	setlocale(LC_TIME, "");
  	tzset();
-@@ -484,6 +493,19 @@ main(int argc, char **argv)
+@@ -489,6 +498,19 @@ main(int argc, char **argv)
  		options_set_number(global_w_options, "mode-keys", keys);
  	}
  
@@ -216,7 +216,7 @@ index 29921781..4394dd35 100644
  	/*
  	 * If socket is specified on the command-line with -S or -L, it is
  	 * used. Otherwise, $TMUX is checked and if that fails "default" is
-@@ -509,6 +531,13 @@ main(int argc, char **argv)
+@@ -514,6 +536,13 @@ main(int argc, char **argv)
  	socket_path = path;
  	free(label);
  
