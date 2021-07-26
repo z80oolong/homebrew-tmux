@@ -120,7 +120,7 @@ end
 
 __END__
 diff --git a/options-table.c b/options-table.c
-index 2555147a..f13a5f6f 100644
+index 724f3af0..94a56d56 100644
 --- a/options-table.c
 +++ b/options-table.c
 @@ -1102,6 +1102,38 @@ const struct options_table_entry options_table[] = {
@@ -231,11 +231,11 @@ index 1fdba727..afe76d88 100644
  	exit(client_main(osdep_event_init(), argc, argv, flags, feat));
  }
 diff --git a/tmux.h b/tmux.h
-index b775c219..96155978 100644
+index e23044ba..5c52aee7 100644
 --- a/tmux.h
 +++ b/tmux.h
-@@ -76,6 +76,17 @@ struct winlink;
- #define TMUX_SOCK "$TMUX_TMPDIR:" _PATH_TMP
+@@ -79,6 +79,17 @@ struct winlink;
+ #define TMUX_TERM "screen"
  #endif
  
 +/* If "pane-border-ascii" is not used, "utf8-cjk" is not used too. */
