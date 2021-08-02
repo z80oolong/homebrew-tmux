@@ -120,7 +120,7 @@ end
 
 __END__
 diff --git a/options-table.c b/options-table.c
-index 724f3af0..94a56d56 100644
+index 6244fb3a..b8f3ee84 100644
 --- a/options-table.c
 +++ b/options-table.c
 @@ -1102,6 +1102,38 @@ const struct options_table_entry options_table[] = {
