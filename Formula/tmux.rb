@@ -120,10 +120,10 @@ end
 
 __END__
 diff --git a/options-table.c b/options-table.c
-index 6244fb3a..b8f3ee84 100644
+index 76c2b053..41e2b228 100644
 --- a/options-table.c
 +++ b/options-table.c
-@@ -1102,6 +1102,38 @@ const struct options_table_entry options_table[] = {
+@@ -1111,6 +1111,38 @@ const struct options_table_entry options_table[] = {
  	          "This option is no longer used."
  	},
  
@@ -163,10 +163,10 @@ index 6244fb3a..b8f3ee84 100644
  	OPTIONS_TABLE_HOOK("after-bind-key", ""),
  	OPTIONS_TABLE_HOOK("after-capture-pane", ""),
 diff --git a/tmux.c b/tmux.c
-index 1fdba727..afe76d88 100644
+index 11c368ff..89ce685e 100644
 --- a/tmux.c
 +++ b/tmux.c
-@@ -332,20 +332,29 @@ main(int argc, char **argv)
+@@ -333,20 +333,29 @@ main(int argc, char **argv)
  {
  	char					*path = NULL, *label = NULL;
  	char					*cause, **var;
@@ -196,7 +196,7 @@ index 1fdba727..afe76d88 100644
  
  	setlocale(LC_TIME, "");
  	tzset();
-@@ -489,6 +498,19 @@ main(int argc, char **argv)
+@@ -490,6 +499,19 @@ main(int argc, char **argv)
  		options_set_number(global_w_options, "mode-keys", keys);
  	}
  
@@ -216,7 +216,7 @@ index 1fdba727..afe76d88 100644
  	/*
  	 * If socket is specified on the command-line with -S or -L, it is
  	 * used. Otherwise, $TMUX is checked and if that fails "default" is
-@@ -514,6 +536,13 @@ main(int argc, char **argv)
+@@ -515,6 +537,13 @@ main(int argc, char **argv)
  	socket_path = path;
  	free(label);
  
@@ -231,10 +231,10 @@ index 1fdba727..afe76d88 100644
  	exit(client_main(osdep_event_init(), argc, argv, flags, feat));
  }
 diff --git a/tmux.h b/tmux.h
-index e23044ba..5c52aee7 100644
+index c95daa46..ad9ad0b1 100644
 --- a/tmux.h
 +++ b/tmux.h
-@@ -79,6 +79,17 @@ struct winlink;
+@@ -80,6 +80,17 @@ struct winlink;
  #define TMUX_TERM "screen"
  #endif
  
@@ -542,7 +542,7 @@ index 63eccb93..7729eca5 100644
 +#endif
  }
 diff --git a/tty-term.c b/tty-term.c
-index add71d89..4e36c8ea 100644
+index 8e07da05..2d059c7f 100644
 --- a/tty-term.c
 +++ b/tty-term.c
 @@ -502,6 +502,15 @@ tty_term_apply_overrides(struct tty_term *term)
