@@ -146,6 +146,16 @@ Unicode の規格における東アジア圏の各種文字のうち、いわゆ
 
 この Formula によって導入される [tmux][TMUX] を使用するには、 ```brew link --force z80oolong/tmux/tmux@3.2a``` コマンドを実行する必要があります。
 
+### z80oolong/tmux/tmux@3.3
+
+この Formula は、安定版のプレリリース版である [tmux 3.3-rc*][TMUX] に、 "[East Asian Ambiguous Character を全角文字の幅で表示する差分ファイル][GST1]" を適用したものを導入します。
+
+なお、 [tmux][TMUX] において East Asian Ambiguous Character の全角文字幅での表示を無効化する場合は、オプション ```--without-utf8-cjk``` を指定して下さい。そして、 [tmux][TMUX] において、画面分割におけるボーダーラインの罫線文字を判別し、適切に描画するための修正を無効化するには、オプション ```--without-pane-border-acs-ascii``` を指定して下さい。
+
+**この Formula は、 versioned formula であるため、この Formula によって導入される [tmux][TMUX] は、 keg only で導入されることに留意して下さい。**
+
+この Formula によって導入される [tmux][TMUX] を使用するには、 ```brew link --force z80oolong/tmux/tmux@3.3``` コマンドを実行する必要があります。
+
 ### z80oolong/tmux/appimage-tmux
 
 Unicode の規格における東アジア圏の各種文字のうち、 [East Asian Ambiguous Character][EAWA] が、日本語環境で文字幅を適切に扱うことが出来ずに表示が乱れる問題を修正した [tmux][TMUX] のうち、最新の安定版及び HEAD 版の AppImage パッケージを導入するための Formula です。
@@ -260,7 +270,27 @@ Unicode の規格における東アジア圏の各種文字のうち、 [East As
 
 ### z80oolong/tmux/appimage-tmux@3.2
 
-この Formula は、"[East Asian Ambiguous Character を全角文字の幅で表示する差分ファイル][GST1]" を適用した安定版のプレリリース版 [tmux 3.2-rc*][TMUX] の AppImage パッケージを導入します。
+この Formula は、"[East Asian Ambiguous Character を全角文字の幅で表示する差分ファイル][GST1]" を適用した安定版 [tmux 3.2][TMUX] の AppImage パッケージを導入します。
+
+なお、 AppImage パッケージが正常に機能しない環境において、この Formula によって [tmux][TMUX] を導入する場合は、オプション ```--with-extract``` を指定して、 AppImage パッケージの内容を展開して下さい。
+
+**この Formula は、 versioned formula であるため、この Formula によって導入される [tmux][TMUX] は、 keg only で導入されることに留意して下さい。**
+
+この Formula によって導入される [tmux][TMUX] を使用するには、 ```brew link --force z80oolong/tmux/appimage-tmux@3.2``` コマンドを実行する必要があります。
+
+### z80oolong/tmux/appimage-tmux@3.2a
+
+この Formula は、"[East Asian Ambiguous Character を全角文字の幅で表示する差分ファイル][GST1]" を適用した安定版のバグフィックス版 [tmux 3.2a][TMUX] の AppImage パッケージを導入します。
+
+なお、 AppImage パッケージが正常に機能しない環境において、この Formula によって [tmux][TMUX] を導入する場合は、オプション ```--with-extract``` を指定して、 AppImage パッケージの内容を展開して下さい。
+
+**この Formula は、 versioned formula であるため、この Formula によって導入される [tmux][TMUX] は、 keg only で導入されることに留意して下さい。**
+
+この Formula によって導入される [tmux][TMUX] を使用するには、 ```brew link --force z80oolong/tmux/appimage-tmux@3.2a``` コマンドを実行する必要があります。
+
+### z80oolong/tmux/appimage-tmux@3.3
+
+この Formula は、"[East Asian Ambiguous Character を全角文字の幅で表示する差分ファイル][GST1]" を適用した安定版のプレリリース版 [tmux 3.3-rc*][TMUX] の AppImage パッケージを導入します。
 
 なお、 AppImage パッケージが正常に機能しない環境において、この Formula によって [tmux][TMUX] を導入する場合は、オプション ```--with-extract``` を指定して、 AppImage パッケージの内容を展開して下さい。
 

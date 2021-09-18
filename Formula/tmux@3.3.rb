@@ -1,47 +1,25 @@
-class Tmux < Formula
+class TmuxAT33 < Formula
   desc "Terminal multiplexer"
   homepage "https://tmux.github.io/"
   license "ISC"
+
+  tmux_version = "3.3-rc"
+  url "https://github.com/tmux/tmux/releases/download/#{tmux_version}/tmux-#{tmux_version}.tar.gz"
+  sha256 "c2f2314feab0d10868d15c5cb2eb6f4b0c30973fa98782b678e8ae94cf6ca268"
+  version tmux_version
   revision 7
 
-  stable do
-    tmux_version = "3.2a"
-    url "https://github.com/tmux/tmux/releases/download/#{tmux_version}/tmux-#{tmux_version}.tar.gz"
-    sha256 "551553a4f82beaa8dadc9256800bcc284d7c000081e47aa6ecbb6ff36eacd05f"
-    version tmux_version
+  keg_only :versioned_formula
 
-    def pick_diff(formula_path)
-      lines = formula_path.each_line.to_a.inject([]) do |result, line|
-        result.push(line) if ((/^__END__/ === line) || result.first)
-        result
-      end
-      lines.shift
-      return lines.join("")
-    end
-
-    patch :p1, pick_diff(Formula["z80oolong/tmux/tmux@3.2a"].path)
-   end
-
-
-  head do
-    url "https://github.com/tmux/tmux.git"
-
-    patch :p1, :DATA
-
-    depends_on "automake" => :build
-    depends_on "autoconf" => :build
-    depends_on "bison" => :build
-  end
-
+  depends_on "pkg-config" => :build
   depends_on "z80oolong/tmux/tmux-libevent@2.2"
-  depends_on "utf8proc" => :optional
   depends_on "z80oolong/tmux/tmux-ncurses@6.2"
+  depends_on "utf8proc" => :optional
 
   on_linux do
     depends_on "patchelf" => :build
   end
 
-  option "with-version-master", "In head build, set the version of tmux as `master`."
   option "without-utf8-cjk", "Build without using East asian Ambiguous Width Character in tmux."
   option "without-utf8-emoji", "Build without using Emoji Character in tmux."
   option "without-pane-border-acs-ascii", "Build without using ACS ASCII as pane border in tmux."
@@ -52,25 +30,19 @@ class Tmux < Formula
     sha256 "05e79fc1ecb27637dc9d6a52c315b8f207cf010cdcee9928805525076c9020ae"
   end
 
+  patch :p1, :DATA
+
   def install
     ENV.append "CFLAGS",   "-I#{Formula["z80oolong/tmux/tmux-libevent@2.2"].opt_include}"
     ENV.append "CPPFLAGS", "-I#{Formula["z80oolong/tmux/tmux-libevent@2.2"].opt_include}"
     ENV.append "LDFLAGS",  "-L#{Formula["z80oolong/tmux/tmux-libevent@2.2"].opt_lib}"
     ENV.append "CFLAGS",   "-I#{Formula["z80oolong/tmux/tmux-ncurses@6.2"].opt_include}"
     ENV.append "CPPFLAGS", "-I#{Formula["z80oolong/tmux/tmux-ncurses@6.2"].opt_include}"
-    ENV.append "LDFLAGS",  "-L#{Formula["z80oolong/tmux/tmux-ncurses@6.2"].opt_lib}"
-
-    if build.head? && build.with?("version-master") then
-      inreplace "configure.ac" do |s|
-        s.gsub!(/AC_INIT\(\[tmux\],[^)]*\)/, "AC_INIT([tmux], master)")
-      end
-    end
+    ENV.append "LDFLAGS", "-L#{Formula["z80oolong/tmux/tmux-ncurses@6.2"].opt_lib}"
 
     ENV.append "CPPFLAGS", "-DNO_USE_UTF8CJK" if build.without?("utf8-cjk")
     ENV.append "CPPFLAGS", "-DNO_USE_UTF8CJK_EMOJI" if build.without?("utf8-emoji")
     ENV.append "CPPFLAGS", "-DNO_USE_PANE_BORDER_ACS_ASCII" if build.without?("pane-border-acs-ascii")
-
-    system "sh", "autogen.sh" if build.head?
 
     args = %W[
       --disable-Dependency-tracking
@@ -95,8 +67,6 @@ class Tmux < Formula
   end
 
   def fix_rpath(binname, append_list, delete_list)
-    return if OS.mac?
-
     delete_list_hash = {}
     rpath = %x{#{Formula["patchelf"].opt_bin}/patchelf --print-rpath #{binname}}.chomp.split(":")
 
