@@ -3,9 +3,9 @@ class AppimageTmuxAT32 < Formula
   homepage "https://tmux.github.io/"
 
   tmux_version = "3.2"
-  appimage_version = "v3.2a-eaw-appimage-0.1.3"
+  appimage_version = "v3.2a-eaw-appimage-0.1.4"
   url "https://github.com/z80oolong/tmux-eaw-appimage/releases/download/#{appimage_version}/tmux-eaw-#{tmux_version}-x86_64.AppImage"
-  sha256 "882e4d4ad75eaba5d4a48436a0e974e8bae812b46ff111aae6dbe063063dcde9"
+  sha256 "7ec6dccd206cc2c37ff12b729c282cb2f657b92599d9a2c8f9dc4bb5d19d4486"
   version tmux_version
   revision 25
 
