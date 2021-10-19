@@ -120,10 +120,10 @@ end
 
 __END__
 diff --git a/options-table.c b/options-table.c
-index 3acbfcaf..20cc5267 100644
+index 76c2b053..41e2b228 100644
 --- a/options-table.c
 +++ b/options-table.c
-@@ -1141,6 +1141,38 @@ const struct options_table_entry options_table[] = {
+@@ -1111,6 +1111,38 @@ const struct options_table_entry options_table[] = {
  	          "This option is no longer used."
  	},
  
@@ -231,7 +231,7 @@ index 11c368ff..89ce685e 100644
  	exit(client_main(osdep_event_init(), argc, argv, flags, feat));
  }
 diff --git a/tmux.h b/tmux.h
-index 5699ee0f..33a8b297 100644
+index 74ea3517..0c3ec886 100644
 --- a/tmux.h
 +++ b/tmux.h
 @@ -80,6 +80,17 @@ struct winlink;
@@ -253,7 +253,7 @@ index 5699ee0f..33a8b297 100644
  #define PANE_MINIMUM 1
  
 diff --git a/tty-acs.c b/tty-acs.c
-index 64ba367e..0d39dcb0 100644
+index 63eccb93..7729eca5 100644
 --- a/tty-acs.c
 +++ b/tty-acs.c
 @@ -23,6 +23,130 @@
@@ -386,8 +386,8 @@ index 64ba367e..0d39dcb0 100644
 +#else
  /* Table mapping ACS entries to UTF-8. */
  struct tty_acs_entry {
- 	u_char		 key;
-@@ -199,11 +323,91 @@ tty_acs_reverse_cmp(const void *key, const void *value)
+ 	u_char	 	 key;
+@@ -127,11 +251,91 @@ tty_acs_reverse_cmp(const void *key, const void *value)
  
  	return (strcmp(test, entry->string));
  }
@@ -479,7 +479,7 @@ index 64ba367e..0d39dcb0 100644
  	if (tty == NULL)
  		return (0);
  
-@@ -224,12 +428,31 @@ tty_acs_needed(struct tty *tty)
+@@ -152,12 +356,31 @@ tty_acs_needed(struct tty *tty)
  	if (tty->client->flags & CLIENT_UTF8)
  		return (0);
  	return (1);
@@ -511,7 +511,7 @@ index 64ba367e..0d39dcb0 100644
  	const struct tty_acs_entry	*entry;
  
  	/* Use the ACS set instead of UTF-8 if needed. */
-@@ -245,12 +468,23 @@ tty_acs_get(struct tty *tty, u_char ch)
+@@ -173,12 +396,23 @@ tty_acs_get(struct tty *tty, u_char ch)
  	if (entry == NULL)
  		return (NULL);
  	return (entry->string);
@@ -535,7 +535,7 @@ index 64ba367e..0d39dcb0 100644
  	const struct tty_acs_reverse_entry	*table, *entry;
  	u_int					 items;
  
-@@ -266,4 +500,5 @@ tty_acs_reverse_get(__unused struct tty *tty, const char *s, size_t slen)
+@@ -194,4 +428,5 @@ tty_acs_reverse_get(__unused struct tty *tty, const char *s, size_t slen)
  	if (entry == NULL)
  		return (-1);
  	return (entry->key);
