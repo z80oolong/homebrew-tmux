@@ -120,10 +120,10 @@ end
 
 __END__
 diff --git a/options-table.c b/options-table.c
-index 76c2b053..41e2b228 100644
+index 3acbfcaf..20cc5267 100644
 --- a/options-table.c
 +++ b/options-table.c
-@@ -1111,6 +1111,38 @@ const struct options_table_entry options_table[] = {
+@@ -1141,6 +1141,38 @@ const struct options_table_entry options_table[] = {
  	          "This option is no longer used."
  	},
  
@@ -231,7 +231,7 @@ index 11c368ff..89ce685e 100644
  	exit(client_main(osdep_event_init(), argc, argv, flags, feat));
  }
 diff --git a/tmux.h b/tmux.h
-index 74ea3517..0c3ec886 100644
+index 5699ee0f..33a8b297 100644
 --- a/tmux.h
 +++ b/tmux.h
 @@ -80,6 +80,17 @@ struct winlink;
@@ -253,15 +253,21 @@ index 74ea3517..0c3ec886 100644
  #define PANE_MINIMUM 1
  
 diff --git a/tty-acs.c b/tty-acs.c
-index 63eccb93..7729eca5 100644
+index 64ba367e..143cb4af 100644
 --- a/tty-acs.c
 +++ b/tty-acs.c
-@@ -23,6 +23,130 @@
+@@ -23,6 +23,223 @@
  
  #include "tmux.h"
  
 +#ifndef NO_USE_PANE_BORDER_ACS_ASCII
 +#include <string.h>
++
++enum acs_type {
++	ACST_UTF8,
++	ACST_ACS,
++	ACST_ASCII,
++};
 +
 +static const char tty_acs_table[UCHAR_MAX][4] = {
 +	['+'] = "\342\206\222",	/* arrow pointing right */
@@ -383,11 +389,98 @@ index 63eccb93..7729eca5 100644
 +
 +	return (result & 0xffff);
 +}
++
++/* UTF-8 double borders. */
++static const struct utf8_data tty_acs_double_borders_list[][2] = {
++	{ { "", 0, 0, 0 }, { "", 0, 0, 0 } },
++	{ { "\342\225\221", 0, 3, 1 }, { "|", 0, 1, 1 } }, /* U+2551 */
++	{ { "\342\225\220", 0, 3, 1 }, { "+", 0, 1, 1 } }, /* U+2550 */
++	{ { "\342\225\224", 0, 3, 1 }, { "+", 0, 1, 1 } }, /* U+2554 */
++	{ { "\342\225\227", 0, 3, 1 }, { "+", 0, 1, 1 } }, /* U+2557 */
++	{ { "\342\225\232", 0, 3, 1 }, { "+", 0, 1, 1 } }, /* U+255A */
++	{ { "\342\225\235", 0, 3, 1 }, { "+", 0, 1, 1 } }, /* U+255D */
++	{ { "\342\225\246", 0, 3, 1 }, { "+", 0, 1, 1 } }, /* U+2566 */
++	{ { "\342\225\251", 0, 3, 1 }, { "+", 0, 1, 1 } }, /* U+2569 */
++	{ { "\342\225\240", 0, 3, 1 }, { "+", 0, 1, 1 } }, /* U+2560 */
++	{ { "\342\225\243", 0, 3, 1 }, { "+", 0, 1, 1 } }, /* U+2563 */
++	{ { "\342\225\254", 0, 3, 1 }, { "+", 0, 1, 1 } }, /* U+256C */
++	{ { "\302\267",	0, 2, 1 }, { "o", 0, 1, 1 } }  /* U+00B7 */
++};
++
++/* UTF-8 heavy borders. */
++static const struct utf8_data tty_acs_heavy_borders_list[][2] = {
++	{ { "", 0, 0, 0 }, { "", 0, 0, 0 } },
++	{ { "\342\224\203", 0, 3, 1 }, { "|", 0, 1, 1 } }, /* U+2503 */
++	{ { "\342\224\201", 0, 3, 1 }, { "+", 0, 1, 1 } }, /* U+2501 */
++	{ { "\342\224\217", 0, 3, 1 }, { "+", 0, 1, 1 } }, /* U+250F */
++	{ { "\342\224\223", 0, 3, 1 }, { "+", 0, 1, 1 } }, /* U+2513 */
++	{ { "\342\224\227", 0, 3, 1 }, { "+", 0, 1, 1 } }, /* U+2517 */
++	{ { "\342\224\233", 0, 3, 1 }, { "+", 0, 1, 1 } }, /* U+251B */
++	{ { "\342\224\263", 0, 3, 1 }, { "+", 0, 1, 1 } }, /* U+2533 */
++	{ { "\342\224\273", 0, 3, 1 }, { "+", 0, 1, 1 } }, /* U+253B */
++	{ { "\342\224\243", 0, 3, 1 }, { "+", 0, 1, 1 } }, /* U+2523 */
++	{ { "\342\224\253", 0, 3, 1 }, { "+", 0, 1, 1 } }, /* U+252B */
++	{ { "\342\225\213", 0, 3, 1 }, { "+", 0, 1, 1 } }, /* U+254B */
++	{ { "\302\267", 0, 2, 1 }, { "o", 0, 1, 1 } }  /* U+00B7 */
++};
++
++/* UTF-8 rounded borders. */
++static const struct utf8_data tty_acs_rounded_borders_list[][2] = {
++	{ { "", 0, 0, 0 }, { "", 0, 0, 0 } },
++	{ { "\342\224\202", 0, 3, 1 }, { "|", 0, 1, 1 } },/* U+2502 */
++	{ { "\342\224\200", 0, 3, 1 }, { "+", 0, 1, 1 } },/* U+2500 */
++	{ { "\342\225\255", 0, 3, 1 }, { "+", 0, 1, 1 } },/* U+256D */
++	{ { "\342\225\256", 0, 3, 1 }, { "+", 0, 1, 1 } },/* U+256E */
++	{ { "\342\225\260", 0, 3, 1 }, { "+", 0, 1, 1 } },/* U+2570 */
++	{ { "\342\225\257", 0, 3, 1 }, { "+", 0, 1, 1 } },/* U+256F */
++	{ { "\342\224\263", 0, 3, 1 }, { "+", 0, 1, 1 } },/* U+2533 */
++	{ { "\342\224\273", 0, 3, 1 }, { "+", 0, 1, 1 } },/* U+253B */
++	{ { "\342\224\243", 0, 3, 1 }, { "+", 0, 1, 1 } },/* U+2523 */
++	{ { "\342\224\253", 0, 3, 1 }, { "+", 0, 1, 1 } },/* U+252B */
++	{ { "\342\225\213", 0, 3, 1 }, { "+", 0, 1, 1 } },/* U+254B */
++	{ { "\302\267", 0, 2, 1 }, { "o", 0, 1, 1 } }  /* U+00B7 */
++};
++
++static int
++tty_acs_borders_list_index(void)
++{
++	static int index = -1;
++
++	if (index < 0) {
++		if (options_get_number(global_s_options, "pane-border-acs"))
++			index = 0;
++		else if (options_get_number(global_s_options, "pane-border-ascii"))
++			index = 1;
++	}
++
++	return index;
++}
++
++/* Get cell border character for double style. */
++const struct utf8_data *
++tty_acs_double_borders(int cell_type)
++{
++	return (&tty_acs_double_borders_list[cell_type][tty_acs_borders_list_index()]);
++}
++
++/* Get cell border character for heavy style. */
++const struct utf8_data *
++tty_acs_heavy_borders(int cell_type)
++{
++	return (&tty_acs_heavy_borders_list[cell_type][tty_acs_borders_list_index()]);
++}
++
++/* Get cell border character for rounded style. */
++const struct utf8_data *
++tty_acs_rounded_borders(int cell_type)
++{
++	return (&tty_acs_rounded_borders_list[cell_type][tty_acs_borders_list_index()]);
++}
 +#else
  /* Table mapping ACS entries to UTF-8. */
  struct tty_acs_entry {
- 	u_char	 	 key;
-@@ -127,11 +251,91 @@ tty_acs_reverse_cmp(const void *key, const void *value)
+ 	u_char		 key;
+@@ -199,11 +416,85 @@ tty_acs_reverse_cmp(const void *key, const void *value)
  
  	return (strcmp(test, entry->string));
  }
@@ -408,12 +501,6 @@ index 63eccb93..7729eca5 100644
 +	log_debug("%s width is %d", s, ud.width);
 +	return ud.width;
 +}
-+
-+enum acs_type {
-+	ACST_UTF8,
-+	ACST_ACS,
-+	ACST_ASCII,
-+};
 +
 +static enum acs_type
 +tty_acs_type(struct tty *tty)
@@ -479,7 +566,7 @@ index 63eccb93..7729eca5 100644
  	if (tty == NULL)
  		return (0);
  
-@@ -152,12 +356,31 @@ tty_acs_needed(struct tty *tty)
+@@ -224,12 +515,31 @@ tty_acs_needed(struct tty *tty)
  	if (tty->client->flags & CLIENT_UTF8)
  		return (0);
  	return (1);
@@ -511,7 +598,7 @@ index 63eccb93..7729eca5 100644
  	const struct tty_acs_entry	*entry;
  
  	/* Use the ACS set instead of UTF-8 if needed. */
-@@ -173,12 +396,23 @@ tty_acs_get(struct tty *tty, u_char ch)
+@@ -245,12 +555,23 @@ tty_acs_get(struct tty *tty, u_char ch)
  	if (entry == NULL)
  		return (NULL);
  	return (entry->string);
@@ -535,7 +622,7 @@ index 63eccb93..7729eca5 100644
  	const struct tty_acs_reverse_entry	*table, *entry;
  	u_int					 items;
  
-@@ -194,4 +428,5 @@ tty_acs_reverse_get(__unused struct tty *tty, const char *s, size_t slen)
+@@ -266,4 +587,5 @@ tty_acs_reverse_get(__unused struct tty *tty, const char *s, size_t slen)
  	if (entry == NULL)
  		return (-1);
  	return (entry->key);
