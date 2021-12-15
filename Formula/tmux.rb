@@ -120,7 +120,7 @@ end
 
 __END__
 diff --git a/options-table.c b/options-table.c
-index 3e0ff198..cc617297 100644
+index 3be04399..98abe3f8 100644
 --- a/options-table.c
 +++ b/options-table.c
 @@ -1161,6 +1161,38 @@ const struct options_table_entry options_table[] = {
@@ -231,7 +231,7 @@ index 11c368ff..89ce685e 100644
  	exit(client_main(osdep_event_init(), argc, argv, flags, feat));
  }
 diff --git a/tmux.h b/tmux.h
-index f080264b..0b21ea69 100644
+index 9cf60ecb..08caeba9 100644
 --- a/tmux.h
 +++ b/tmux.h
 @@ -80,6 +80,17 @@ struct winlink;
@@ -657,7 +657,7 @@ index 8e07da05..2d059c7f 100644
  
  struct tty_term *
 diff --git a/utf8.c b/utf8.c
-index 56f20cbb..e59cc72d 100644
+index df75a769..7d5e0124 100644
 --- a/utf8.c
 +++ b/utf8.c
 @@ -26,6 +26,407 @@
@@ -1097,6 +1097,6 @@ index 56f20cbb..e59cc72d 100644
  		return (UTF8_DONE);
  	log_debug("UTF-8 %.*s, wcwidth() %d", (int)ud->size, ud->data, *width);
 +#endif
+ 	return (UTF8_ERROR);
+ }
  
- #ifndef __OpenBSD__
- 	/*
