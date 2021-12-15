@@ -5,9 +5,9 @@ class AppimageTmuxAT26 < Formula
   tmux_version = "2.6"
   appimage_version = "v3.2a-eaw-appimage-0.1.6"
   url "https://github.com/z80oolong/tmux-eaw-appimage/releases/download/#{appimage_version}/tmux-eaw-#{tmux_version}-x86_64.AppImage"
-  sha256 "d1be637c5694fc62edeadeeb25c8d743bc723dcea28a67f493def4486c917f98"
+  sha256 "f0d16a4a633faaae9eb2c3ad3078e0fac93d1b13ba660b58d7dc66a299700f06"
   version tmux_version
-  revision 27
+  revision 28
 
   keg_only :versioned_formula
 
