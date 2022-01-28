@@ -340,14 +340,6 @@ Unicode の規格における東アジア圏の各種文字のうち、 [East As
 
 また、 HEAD 版の [tmux][TMUX] 上で [powerline][POWE] が正常に動作しない不具合を修正せずに [powerline][POWE] を導入する場合は、オプション ```--without-fix-powerline``` を指定して下さい。
 
-### z80oolong/tmux/powerline-fonts
-
-[tmux][TMUX] のステータスラインを機能的に装飾するためのツールである [powerline][POWE] において使用するフォントを導入するための Formula です。
-
-なお、この Formula は、デフォルトでは ```z80oolong/tmux/powerline-status``` に依存しています。 ```z80oolong/tmux/powerline-status``` の導入を回避するには、オプション ```--without-powerline-status``` を指定して下さい。
-
-**なお、この formula によって導入されたフォントは、同時にディレクトリ ```$HOME/.local/share/fonts/powerline-fonts``` 以下にシンボリックリンクが張られることに留意して下さい。**
-
 ### z80oolong/tmux/python@3.9
 
 上述の Formula によって導入される [powerline][POWE] に依存する 3.9 系の Python 処理系を導入するための Formula です。
