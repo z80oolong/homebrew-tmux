@@ -20,8 +20,7 @@ class Tmux < Formula
     end
 
     patch :p1, pick_diff(Formula["z80oolong/tmux/tmux@3.2a"].path)
-   end
-
+  end
 
   head do
     url "https://github.com/tmux/tmux.git"
@@ -120,10 +119,10 @@ end
 
 __END__
 diff --git a/options-table.c b/options-table.c
-index 3be04399..98abe3f8 100644
+index 94f8701e..c58a4a4b 100644
 --- a/options-table.c
 +++ b/options-table.c
-@@ -1161,6 +1161,38 @@ const struct options_table_entry options_table[] = {
+@@ -1173,6 +1173,38 @@ const struct options_table_entry options_table[] = {
  	          "This option is no longer used."
  	},
  
@@ -231,7 +230,7 @@ index 11c368ff..89ce685e 100644
  	exit(client_main(osdep_event_init(), argc, argv, flags, feat));
  }
 diff --git a/tmux.h b/tmux.h
-index 8a6dec18..43a0137e 100644
+index a4f484eb..b4d13d87 100644
 --- a/tmux.h
 +++ b/tmux.h
 @@ -80,6 +80,17 @@ struct winlink;
