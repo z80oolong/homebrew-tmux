@@ -112,6 +112,27 @@ class Tmux < Formula
     EOS
   end
 
+  # For brew appimage-build
+  def apprun; <<~EOS
+    #!/bin/sh
+    #export APPDIR="/tmp/.mount-tmuxXXXXXX"
+    if [ "x${APPDIR}" = "x" ]; then
+      export APPDIR="$(dirname "$(readlink -f "${0}")")"
+    fi
+    export PATH="${APPDIR}/usr/bin/:${PATH:+:$PATH}"
+    export LD_LIBRARY_PATH="${APPDIR}/usr/lib/:${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+    export XDG_DATA_DIRS="${APPDIR}/usr/share/${XDG_DATA_DIRS:+:$XDG_DATA_DIRS}"
+    export TERMINFO="${APPDIR}/usr/share/terminfo"
+    unset ARGV0
+
+    exec "tmux" "$@"
+    EOS
+  end
+
+  def exec_path_list
+    [opt_bin/"tmux"]
+  end
+
   test do
     system "#{bin}/tmux", "-V"
   end
@@ -119,11 +140,11 @@ end
 
 __END__
 diff --git a/options-table.c b/options-table.c
-index 94f8701e..c58a4a4b 100644
+index b8a5ccbb..15dc7550 100644
 --- a/options-table.c
 +++ b/options-table.c
-@@ -1173,6 +1173,38 @@ const struct options_table_entry options_table[] = {
- 	          "This option is no longer used."
+@@ -1181,6 +1181,38 @@ const struct options_table_entry options_table[] = {
+ 		  "This option is no longer used."
  	},
  
 +#ifndef NO_USE_UTF8CJK
@@ -230,7 +251,7 @@ index 11c368ff..89ce685e 100644
  	exit(client_main(osdep_event_init(), argc, argv, flags, feat));
  }
 diff --git a/tmux.h b/tmux.h
-index a4f484eb..b4d13d87 100644
+index 7eccaa55..4626c374 100644
 --- a/tmux.h
 +++ b/tmux.h
 @@ -80,6 +80,17 @@ struct winlink;
