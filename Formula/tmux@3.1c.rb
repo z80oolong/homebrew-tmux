@@ -100,6 +100,10 @@ class TmuxAT31c < Formula
     EOS
   end
 
+  def pre_build_appimage(appdirpath, verbose)
+    system("cp -pRv #{Formula["z80oolong/tmux/tmux-ncurses@6.2"].opt_share}/terminfo #{appdirpath}/usr/share")
+  end
+
   def exec_path_list
     [opt_bin/"tmux"]
   end
