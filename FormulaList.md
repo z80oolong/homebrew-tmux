@@ -156,18 +156,6 @@ Unicode の規格における東アジア圏の各種文字のうち、いわゆ
 
 この Formula によって導入される [tmux][TMUX] を使用するには、 ```brew link --force z80oolong/tmux/tmux@3.3``` コマンドを実行する必要があります。
 
-### z80oolong/tmux/appimage-tmux
-
-Unicode の規格における東アジア圏の各種文字のうち、 [East Asian Ambiguous Character][EAWA] が、日本語環境で文字幅を適切に扱うことが出来ずに表示が乱れる問題を修正した [tmux][TMUX] のうち、最新の安定版及び HEAD 版の AppImage パッケージを導入するための Formula です。
-
-即ち、この Formula は、差分ファイル "[East Asian Ambiguous Character を全角文字の幅で表示する差分ファイル][GST1]" を適用した最新版及び HEAD 版の [tmux][TMUX] の AppImage パッケージを導入します。
-
-なお、 AppImage パッケージが正常に機能しない環境において、この Formula によって [tmux][TMUX] を導入する場合は、オプション ```--with-extract``` を指定して、 AppImage パッケージの内容を展開して下さい。
-
-**この Formula は、 ```z80oolong/tmux/tmux``` と競合するため、この Formula によって導入される [tmux][TMUX] は、 keg only で導入されることに留意して下さい。**
-
-この Formula によって導入される [tmux][TMUX] を使用するには、 ```brew link --force z80oolong/tmux/appimage-tmux``` コマンドを実行する必要があります。
-
 ### z80oolong/tmux/appimage-tmux@2.6
 
 この Formula は、"[East Asian Ambiguous Character を全角文字の幅で表示する差分ファイル][GST1]" を適用した安定版 [tmux 2.6][TMUX] の AppImage パッケージを導入します。
@@ -297,6 +285,16 @@ Unicode の規格における東アジア圏の各種文字のうち、 [East As
 **この Formula は、 versioned formula であるため、この Formula によって導入される [tmux][TMUX] は、 keg only で導入されることに留意して下さい。**
 
 この Formula によって導入される [tmux][TMUX] を使用するには、 ```brew link --force z80oolong/tmux/appimage-tmux@3.2``` コマンドを実行する必要があります。
+
+### z80oolong/tmux/appimage-tmux@3.4-next
+
+Unicode の規格における東アジア圏の各種文字のうち、 [East Asian Ambiguous Character][EAWA] が、日本語環境で文字幅を適切に扱うことが出来ずに表示が乱れる問題を修正した [tmux][TMUX] のうち、最新の HEAD 版の AppImage パッケージを導入するための Formula です。
+
+なお、 AppImage パッケージが正常に機能しない環境において、この Formula によって [tmux][TMUX] を導入する場合は、オプション ```--with-extract``` を指定して、 AppImage パッケージの内容を展開して下さい。
+
+**この Formula は、 ```z80oolong/tmux/tmux``` と競合するため、この Formula によって導入される [tmux][TMUX] は、 keg only で導入されることに留意して下さい。**
+
+この Formula によって導入される [tmux][TMUX] を使用するには、 ```brew link --force z80oolong/tmux/appimage-tmux@3.4-next``` コマンドを実行する必要があります。
 
 ### z80oolong/tmux/tmux-libevent@2.2
 
