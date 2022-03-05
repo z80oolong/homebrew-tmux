@@ -2,42 +2,28 @@ class AppimageTmuxAT31 < Formula
   desc "AppImage package of Terminal multiplexer"
   homepage "https://tmux.github.io/"
 
-  tmux_version = "3.1"
-  appimage_version = "v3.2a-eaw-appimage-0.1.9"
-  url "https://github.com/z80oolong/tmux-eaw-appimage/releases/download/#{appimage_version}/tmux-eaw-#{tmux_version}-x86_64.AppImage"
-  sha256 "efce110650df458a9e291bb7f296498dd59f6b62421d2301280cfcf554be0bf7"
-  version tmux_version
-  revision 30
+  url "https://github.com/z80oolong/tmux-eaw-appimage/releases/download/v3.2a-eaw-appimage-0.5.0/tmux-eaw-3.1-x86_64.AppImage"
+  sha256 "35e62429773214177116df288f6d286e3793e467e07609086f3b8288217d004a"
+  version "3.1"
+  revision 31
 
   keg_only :versioned_formula
 
-  option "with-extract", "Extract tmux AppImage."
-
-  resource "completion" do
-    url "https://raw.githubusercontent.com/imomaliev/tmux-bash-completion/homebrew_1.0.0/completions/tmux"
-    sha256 "05e79fc1ecb27637dc9d6a52c315b8f207cf010cdcee9928805525076c9020ae"
-  end
+  option "with-extract", "Extract appimagetool AppImage."
 
   def install
-    (buildpath/"tmux-eaw-#{version}-x86_64.AppImage").chmod(0755)
+    (buildpath/"tmux-eaw-3.1-x86_64.AppImage").chmod(0755)
     bin.mkdir; libexec.mkdir
 
     if build.with?("extract") then
       libexec.cd do
-        system "#{buildpath}/tmux-eaw-#{version}-x86_64.AppImage", "--appimage-extract"
+        system "#{buildpath}/tmux-eaw-3.1-x86_64.AppImage", "--appimage-extract"
       end
-      inreplace (libexec/"squashfs-root/AppRun").to_s, /^#export APPDIR=.*$/, %{export APPDIR="#{libexec}/squashfs-root"}
-
-      (bin/"tmux").make_symlink (libexec/"squashfs-root/AppRun")
+      bin.install_symlink (libexec/"squashfs-root/AppRun") => "tmux"
     else
-      libexec.install "#{buildpath}/tmux-eaw-#{version}-x86_64.AppImage"
-      (bin/"tmux").make_symlink (libexec/"tmux-eaw-#{version}-x86_64.AppImage")
+      (libexec/"bin").mkpath
+      (libexec/"bin").install "#{buildpath}/tmux-eaw-3.1-x86_64.AppImage"
+      bin.install_symlink (libexec/"bin/tmux-eaw-3.1-x86_64.AppImage") => "tmux"
     end
-
-    bash_completion.install resource("completion")
-  end
-
-  test do
-    system "#{bin}/tmux", "-V"
   end
 end
