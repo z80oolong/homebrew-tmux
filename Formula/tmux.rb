@@ -10,16 +10,7 @@ class Tmux < Formula
     sha256 "551553a4f82beaa8dadc9256800bcc284d7c000081e47aa6ecbb6ff36eacd05f"
     version tmux_version
 
-    def pick_diff(formula_path)
-      lines = formula_path.each_line.to_a.inject([]) do |result, line|
-        result.push(line) if ((/^__END__/ === line) || result.first)
-        result
-      end
-      lines.shift
-      return lines.join("")
-    end
-
-    patch :p1, pick_diff(Formula["z80oolong/tmux/tmux@3.2a"].path)
+    patch :p1, Formula["z80oolong/tmux/tmux@3.2a"].diff_data
   end
 
   head do
@@ -85,7 +76,7 @@ class Tmux < Formula
 
     system "make", "install"
 
-    if OS.linux? && !build.with?("static-link") then
+    if !build.with?("static-link") then
       fix_rpath "#{bin}/tmux", ["z80oolong/tmux/tmux-ncurses@6.2"], ["ncurses"]
     end
 
@@ -94,7 +85,7 @@ class Tmux < Formula
   end
 
   def fix_rpath(binname, append_list, delete_list)
-    return if OS.mac?
+    return unless OS.linux?
 
     delete_list_hash = {}
     rpath = %x{#{Formula["patchelf"].opt_bin}/patchelf --print-rpath #{binname}}.chomp.split(":")
@@ -110,6 +101,15 @@ class Tmux < Formula
     Example configuration has been installed to:
       #{opt_pkgshare}
     EOS
+  end
+
+  def diff_data
+    lines = self.path.each_line.inject([]) do |result, line|
+      result.push(line) if ((/^__END__/ === line) || result.first)
+      result
+    end
+    lines.shift
+    return lines.join("")
   end
 
   test do

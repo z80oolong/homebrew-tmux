@@ -83,6 +83,15 @@ class TmuxAT31a < Formula
     EOS
   end
 
+  def diff_data
+    lines = self.path.each_line.inject([]) do |result, line|
+      result.push(line) if ((/^__END__/ === line) || result.first)
+      result
+    end
+    lines.shift
+    return lines.join("")
+  end
+
   test do
     system "#{bin}/tmux", "-V"
   end
