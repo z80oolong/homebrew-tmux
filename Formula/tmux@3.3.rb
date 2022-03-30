@@ -24,6 +24,7 @@ class TmuxAT33 < Formula
   option "without-utf8-emoji", "Build without using Emoji Character in tmux."
   option "without-pane-border-acs-ascii", "Build without using ACS ASCII as pane border in tmux."
   option "with-static-link", "Build tmux with static link."
+  option "with-build-for-appimage", "Build tmux for AppImage."
 
   resource "completion" do
     url "https://raw.githubusercontent.com/imomaliev/tmux-bash-completion/homebrew_1.0.0/completions/tmux"
@@ -47,8 +48,13 @@ class TmuxAT33 < Formula
     args = %W[
       --disable-Dependency-tracking
       --prefix=#{prefix}
-      --sysconfdir=#{etc}
     ]
+
+    if build.with?("build-for-appimage") then
+      args << %{--sysconfdir=$$APPDIR/etc/tmux.conf:$$HOMEBREW_PREFIX/etc}
+    else
+      args << %{--sysconfdir=#{etc}}
+    end
 
     args << "--enable-utf8proc" if build.with?("utf8proc")
     args << "--enable-static"   if build.with?("static-link")

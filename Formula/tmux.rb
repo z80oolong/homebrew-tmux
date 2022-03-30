@@ -36,6 +36,7 @@ class Tmux < Formula
   option "without-utf8-emoji", "Build without using Emoji Character in tmux."
   option "without-pane-border-acs-ascii", "Build without using ACS ASCII as pane border in tmux."
   option "with-static-link", "Build tmux with static link."
+  option "with-build-for-appimage", "Build tmux for AppImage."
 
   resource "completion" do
     url "https://raw.githubusercontent.com/imomaliev/tmux-bash-completion/homebrew_1.0.0/completions/tmux"
@@ -65,8 +66,13 @@ class Tmux < Formula
     args = %W[
       --disable-Dependency-tracking
       --prefix=#{prefix}
-      --sysconfdir=#{etc}
     ]
+
+    if build.with?("build-for-appimage") then
+      args << %{--sysconfdir=$$APPDIR/etc/tmux.conf:$$HOMEBREW_PREFIX/etc}
+    else
+      args << %{--sysconfdir=#{etc}}
+    end
 
     args << "--enable-utf8proc" if build.with?("utf8proc")
     args << "--enable-static"   if build.with?("static-link")
@@ -119,10 +125,10 @@ end
 
 __END__
 diff --git a/options-table.c b/options-table.c
-index 31b0e372..9f6a3376 100644
+index 17be7ec4..0291a4cb 100644
 --- a/options-table.c
 +++ b/options-table.c
-@@ -1194,6 +1194,38 @@ const struct options_table_entry options_table[] = {
+@@ -1210,6 +1210,38 @@ const struct options_table_entry options_table[] = {
  		  "This option is no longer used."
  	},
  
@@ -230,7 +236,7 @@ index 11c368ff..89ce685e 100644
  	exit(client_main(osdep_event_init(), argc, argv, flags, feat));
  }
 diff --git a/tmux.h b/tmux.h
-index 8a8535dd..e760afe7 100644
+index f16b5250..2f1971e2 100644
 --- a/tmux.h
 +++ b/tmux.h
 @@ -80,6 +80,17 @@ struct winlink;
@@ -628,10 +634,10 @@ index 64ba367e..143cb4af 100644
 +#endif
  }
 diff --git a/tty-term.c b/tty-term.c
-index 8e07da05..2d059c7f 100644
+index fdf0c4fa..9d01e6a5 100644
 --- a/tty-term.c
 +++ b/tty-term.c
-@@ -502,6 +502,15 @@ tty_term_apply_overrides(struct tty_term *term)
+@@ -503,6 +503,15 @@ tty_term_apply_overrides(struct tty_term *term)
  		term->flags &= ~TERM_NOAM;
  	log_debug("NOAM flag is %d", !!(term->flags & TERM_NOAM));
  
@@ -647,7 +653,7 @@ index 8e07da05..2d059c7f 100644
  	/* Generate ACS table. If none is present, use nearest ASCII. */
  	memset(term->acs, 0, sizeof term->acs);
  	if (tty_term_has(term, TTYC_ACSC))
-@@ -510,6 +519,7 @@ tty_term_apply_overrides(struct tty_term *term)
+@@ -511,6 +520,7 @@ tty_term_apply_overrides(struct tty_term *term)
  		acs = "a#j+k+l+m+n+o-p-q-r-s-t+u+v+w+x|y<z>~.";
  	for (; acs[0] != '\0' && acs[1] != '\0'; acs += 2)
  		term->acs[(u_char) acs[0]][0] = acs[1];
