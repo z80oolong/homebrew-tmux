@@ -7,7 +7,7 @@ class TmuxAT32 < Formula
   url "https://github.com/tmux/tmux/releases/download/#{tmux_version}/tmux-#{tmux_version}.tar.gz"
   sha256 "664d345338c11cbe429d7ff939b92a5191e231a7c1ef42f381cebacb1e08a399"
   version tmux_version
-  revision 7
+  revision 8
 
   keg_only :versioned_formula
 
@@ -24,7 +24,6 @@ class TmuxAT32 < Formula
   option "without-utf8-emoji", "Build without using Emoji Character in tmux."
   option "without-pane-border-acs-ascii", "Build without using ACS ASCII as pane border in tmux."
   option "with-static-link", "Build tmux with static link."
-  option "with-build-for-appimage", "Build tmux for AppImage."
 
   resource "completion" do
     url "https://raw.githubusercontent.com/imomaliev/tmux-bash-completion/homebrew_1.0.0/completions/tmux"
@@ -48,13 +47,8 @@ class TmuxAT32 < Formula
     args = %W[
       --disable-Dependency-tracking
       --prefix=#{prefix}
+      --sysconfdir=#{etc}
     ]
-
-    if build.with?("build-for-appimage") then
-      args << %{--sysconfdir=$$APPDIR/etc/tmux.conf:$$HOMEBREW_PREFIX/etc}
-    else
-      args << %{--sysconfdir=#{etc}}
-    end
 
     args << "--enable-utf8proc" if build.with?("utf8proc")
     args << "--enable-static"   if build.with?("static-link")
@@ -105,7 +99,7 @@ end
 
 __END__
 diff --git a/options-table.c b/options-table.c
-index b185969..56a6f9e 100644
+index b185969c..56a6f9e7 100644
 --- a/options-table.c
 +++ b/options-table.c
 @@ -1084,6 +1084,38 @@ const struct options_table_entry options_table[] = {
@@ -148,10 +142,10 @@ index b185969..56a6f9e 100644
  	OPTIONS_TABLE_HOOK("after-bind-key", ""),
  	OPTIONS_TABLE_HOOK("after-capture-pane", ""),
 diff --git a/tmux.c b/tmux.c
-index 3a49c80..70733fc 100644
+index 3a49c803..ed81132e 100644
 --- a/tmux.c
 +++ b/tmux.c
-@@ -327,20 +327,29 @@ main(int argc, char **argv)
+@@ -327,20 +327,33 @@ main(int argc, char **argv)
  {
  	char					*path = NULL, *label = NULL;
  	char					*cause, **var;
@@ -163,6 +157,10 @@ index 3a49c80..70733fc 100644
  	uint64_t				 flags = 0;
  	const struct options_table_entry	*oe;
  	u_int					 i;
++#ifndef NO_USE_ENV_TMUX_CONF
++	struct environ_entry			*tmux_conf_entry;
++	char					*tmux_conf;
++#endif
  
 +#ifdef NO_USE_UTF8CJK
  	if (setlocale(LC_CTYPE, "en_US.UTF-8") == NULL &&
@@ -181,7 +179,24 @@ index 3a49c80..70733fc 100644
  
  	setlocale(LC_TIME, "");
  	tzset();
-@@ -479,6 +488,19 @@ main(int argc, char **argv)
+@@ -353,7 +366,16 @@ main(int argc, char **argv)
+ 		environ_put(global_environ, *var, 0);
+ 	if ((cwd = find_cwd()) != NULL)
+ 		environ_set(global_environ, "PWD", 0, "%s", cwd);
++#ifdef NO_USE_ENV_TMUX_CONF
+ 	expand_paths(TMUX_CONF, &cfg_files, &cfg_nfiles, 1);
++#else
++	if ((tmux_conf_entry = environ_find(global_environ, "TMUX_CONF")) == NULL) {
++		expand_paths(TMUX_CONF, &cfg_files, &cfg_nfiles, 1);
++	} else {
++		tmux_conf = xstrdup(tmux_conf_entry->value);
++		expand_paths(tmux_conf, &cfg_files, &cfg_nfiles, 1);
++	}
++#endif
+ 
+ 	while ((opt = getopt(argc, argv, "2c:CDdf:lL:NqS:T:uUvV")) != -1) {
+ 		switch (opt) {
+@@ -479,6 +501,19 @@ main(int argc, char **argv)
  		options_set_number(global_w_options, "mode-keys", keys);
  	}
  
@@ -201,7 +216,7 @@ index 3a49c80..70733fc 100644
  	/*
  	 * If socket is specified on the command-line with -S or -L, it is
  	 * used. Otherwise, $TMUX is checked and if that fails "default" is
-@@ -504,6 +526,13 @@ main(int argc, char **argv)
+@@ -504,6 +539,13 @@ main(int argc, char **argv)
  	socket_path = path;
  	free(label);
  
@@ -216,7 +231,7 @@ index 3a49c80..70733fc 100644
  	exit(client_main(osdep_event_init(), argc, argv, flags, feat));
  }
 diff --git a/tmux.h b/tmux.h
-index 6be5b30..809f78a 100644
+index 6be5b302..809f78aa 100644
 --- a/tmux.h
 +++ b/tmux.h
 @@ -76,6 +76,17 @@ struct winlink;
@@ -238,7 +253,7 @@ index 6be5b30..809f78a 100644
  #define PANE_MINIMUM 1
  
 diff --git a/tty-acs.c b/tty-acs.c
-index 63eccb9..7729eca 100644
+index 63eccb93..7729eca5 100644
 --- a/tty-acs.c
 +++ b/tty-acs.c
 @@ -23,6 +23,130 @@
@@ -527,7 +542,7 @@ index 63eccb9..7729eca 100644
 +#endif
  }
 diff --git a/tty-term.c b/tty-term.c
-index 1d9b36d..20f4850 100644
+index 1d9b36da..20f48506 100644
 --- a/tty-term.c
 +++ b/tty-term.c
 @@ -592,6 +592,15 @@ tty_term_create(struct tty *tty, char *name, char **caps, u_int ncaps,
@@ -555,7 +570,7 @@ index 1d9b36d..20f4850 100644
  	/* Log the capabilities. */
  	for (i = 0; i < tty_term_ncodes(); i++)
 diff --git a/utf8.c b/utf8.c
-index f43945e..6fdda8c 100644
+index f43945e6..6fdda8cd 100644
 --- a/utf8.c
 +++ b/utf8.c
 @@ -26,6 +26,407 @@

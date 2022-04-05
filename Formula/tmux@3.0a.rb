@@ -7,7 +7,7 @@ class TmuxAT30a < Formula
   url "https://github.com/tmux/tmux/releases/download/#{tmux_version}/tmux-#{tmux_version}.tar.gz"
   sha256 "4ad1df28b4afa969e59c08061b45082fdc49ff512f30fc8e43217d7b0e5f8db9"
   version tmux_version
-  revision 7
+  revision 8
 
   keg_only :versioned_formula
 
@@ -95,6 +95,41 @@ class TmuxAT30a < Formula
 end
 
 __END__
+diff --git a/cfg.c b/cfg.c
+index c29292b..380c530 100644
+--- a/cfg.c
++++ b/cfg.c
+@@ -73,6 +73,10 @@ start_cfg(void)
+ 	int		 flags = 0;
+ 	struct client	*c;
+ 
++#ifndef NO_USE_ENV_TMUX_CONF
++	struct environ_entry	*tmux_conf_entry;
++	char			*tmux_conf;
++#endif
+ 	/*
+ 	 * Configuration files are loaded without a client, so commands are run
+ 	 * in the global queue with item->client NULL.
+@@ -89,8 +93,19 @@ start_cfg(void)
+ 		cmdq_append(c, cfg_item);
+ 	}
+ 
++#ifdef NO_USE_ENV_TMUX_CONF
+ 	if (cfg_file == NULL)
+ 		load_cfg(TMUX_CONF, c, NULL, CMD_PARSE_QUIET, NULL);
++#else
++	if (cfg_file == NULL) {
++		if ((tmux_conf_entry = environ_find(global_environ, "TMUX_CONF")) == NULL) {
++			load_cfg(TMUX_CONF, c, NULL, CMD_PARSE_QUIET, NULL);
++		} else {
++			tmux_conf = xstrdup(tmux_conf_entry->value);
++			load_cfg(tmux_conf, c, NULL, CMD_PARSE_QUIET, NULL);
++		}
++	}
++#endif
+ 
+ 	if (cfg_file == NULL && (home = find_home()) != NULL) {
+ 		xasprintf(&cfg_file, "%s/.tmux.conf", home);
 diff --git a/options-table.c b/options-table.c
 index 67fe553..b164d77 100644
 --- a/options-table.c

@@ -7,7 +7,7 @@ class TmuxAT32a < Formula
   url "https://github.com/tmux/tmux/releases/download/#{tmux_version}/tmux-#{tmux_version}.tar.gz"
   sha256 "551553a4f82beaa8dadc9256800bcc284d7c000081e47aa6ecbb6ff36eacd05f"
   version tmux_version
-  revision 7
+  revision 8
 
   keg_only :versioned_formula
 
@@ -24,7 +24,6 @@ class TmuxAT32a < Formula
   option "without-utf8-emoji", "Build without using Emoji Character in tmux."
   option "without-pane-border-acs-ascii", "Build without using ACS ASCII as pane border in tmux."
   option "with-static-link", "Build tmux with static link."
-  option "with-build-for-appimage", "Build tmux for AppImage."
 
   resource "completion" do
     url "https://raw.githubusercontent.com/imomaliev/tmux-bash-completion/homebrew_1.0.0/completions/tmux"
@@ -48,13 +47,8 @@ class TmuxAT32a < Formula
     args = %W[
       --disable-Dependency-tracking
       --prefix=#{prefix}
+      --sysconfdir=#{etc}
     ]
-
-    if build.with?("build-for-appimage") then
-      args << %{--sysconfdir=$$APPDIR/etc/tmux.conf:$$HOMEBREW_PREFIX/etc}
-    else
-      args << %{--sysconfdir=#{etc}}
-    end
 
     args << "--enable-utf8proc" if build.with?("utf8proc")
     args << "--enable-static"   if build.with?("static-link")
@@ -148,10 +142,10 @@ index 8264d1b..d6451c8 100644
  	OPTIONS_TABLE_HOOK("after-bind-key", ""),
  	OPTIONS_TABLE_HOOK("after-capture-pane", ""),
 diff --git a/tmux.c b/tmux.c
-index 2992178..4394dd3 100644
+index 2992178..736cc23 100644
 --- a/tmux.c
 +++ b/tmux.c
-@@ -327,20 +327,29 @@ main(int argc, char **argv)
+@@ -327,20 +327,33 @@ main(int argc, char **argv)
  {
  	char					*path = NULL, *label = NULL;
  	char					*cause, **var;
@@ -163,6 +157,10 @@ index 2992178..4394dd3 100644
  	uint64_t				 flags = 0;
  	const struct options_table_entry	*oe;
  	u_int					 i;
++#ifndef NO_USE_ENV_TMUX_CONF
++	struct environ_entry			*tmux_conf_entry;
++	char					*tmux_conf;
++#endif
  
 +#ifdef NO_USE_UTF8CJK
  	if (setlocale(LC_CTYPE, "en_US.UTF-8") == NULL &&
@@ -181,7 +179,24 @@ index 2992178..4394dd3 100644
  
  	setlocale(LC_TIME, "");
  	tzset();
-@@ -484,6 +493,19 @@ main(int argc, char **argv)
+@@ -353,7 +366,16 @@ main(int argc, char **argv)
+ 		environ_put(global_environ, *var, 0);
+ 	if ((cwd = find_cwd()) != NULL)
+ 		environ_set(global_environ, "PWD", 0, "%s", cwd);
++#ifdef NO_USE_ENV_TMUX_CONF
+ 	expand_paths(TMUX_CONF, &cfg_files, &cfg_nfiles, 1);
++#else
++	if ((tmux_conf_entry = environ_find(global_environ, "TMUX_CONF")) == NULL) {
++		expand_paths(TMUX_CONF, &cfg_files, &cfg_nfiles, 1);
++	} else {
++		tmux_conf = xstrdup(tmux_conf_entry->value);
++		expand_paths(tmux_conf, &cfg_files, &cfg_nfiles, 1);
++	}
++#endif
+ 
+ 	while ((opt = getopt(argc, argv, "2c:CDdf:lL:NqS:T:uUvV")) != -1) {
+ 		switch (opt) {
+@@ -484,6 +506,19 @@ main(int argc, char **argv)
  		options_set_number(global_w_options, "mode-keys", keys);
  	}
  
@@ -201,7 +216,7 @@ index 2992178..4394dd3 100644
  	/*
  	 * If socket is specified on the command-line with -S or -L, it is
  	 * used. Otherwise, $TMUX is checked and if that fails "default" is
-@@ -509,6 +531,13 @@ main(int argc, char **argv)
+@@ -509,6 +544,13 @@ main(int argc, char **argv)
  	socket_path = path;
  	free(label);
  

@@ -7,7 +7,7 @@ class TmuxAT31b < Formula
   url "https://github.com/tmux/tmux/releases/download/#{tmux_version}/tmux-#{tmux_version}.tar.gz"
   sha256 "d93f351d50af05a75fe6681085670c786d9504a5da2608e481c47cf5e1486db9"
   version tmux_version
-  revision 7
+  revision 8
 
   keg_only :versioned_formula
 
@@ -98,6 +98,38 @@ class TmuxAT31b < Formula
 end
 
 __END__
+diff --git a/cfg.c b/cfg.c
+index 933eda4..3a3342d 100644
+--- a/cfg.c
++++ b/cfg.c
+@@ -105,6 +105,10 @@ start_cfg(void)
+ 	const char	*home = find_home();
+ 	struct client	*c;
+ 	char		*path, *copy, *next, *expanded;
++#ifndef NO_USE_ENV_TMUX_CONF
++	struct environ_entry	*tmux_conf_entry;
++	char			*tmux_conf;
++#endif
+ 
+ 	/*
+ 	 * Configuration files are loaded without a client, so commands are run
+@@ -123,7 +127,16 @@ start_cfg(void)
+ 	}
+ 
+ 	if (cfg_file == NULL) {
++#ifdef NO_USE_ENV_TMUX_CONF
+ 		path = copy = xstrdup(TMUX_CONF);
++#else
++		if ((tmux_conf_entry = environ_find(global_environ, "TMUX_CONF")) == NULL) {
++			path = copy = xstrdup(TMUX_CONF);
++		} else {
++			tmux_conf = xstrdup(tmux_conf_entry->value);
++			path = copy = xstrdup(tmux_conf);
++		}
++#endif
+ 		while ((next = strsep(&path, ":")) != NULL) {
+ 			expanded = expand_cfg_file(next, home);
+ 			if (expanded == NULL) {
 diff --git a/options-table.c b/options-table.c
 index be0d220..b83a994 100644
 --- a/options-table.c
