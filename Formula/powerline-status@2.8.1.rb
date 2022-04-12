@@ -8,12 +8,17 @@ class PowerlineStatusAT281 < Formula
   sha256 "a4f36ad9d88a6c90b82427d574c8b5518b3c8b11b6eaf38acf2336064c63565d"
   version "2.8.1"
 
-  option "with-appimage-python", "Use appimage-python to run powerline-status."
+  keg_only :versioned_formula
+
   option "without-fix-powerline", "Do not fix a problem that causes problems when tmux returns an abnormal version."
 
-  depends_on "z80oolong/tmux/appimage-python@3.8" if build.with?("appimage-python")
-  depends_on "python@3.8"
+  depends_on "python@3.9" => :recommended
   depends_on "z80oolong/tmux/tmux" => :recommended
+
+  resource("appimage-python3.9") do
+    url "https://github.com/niess/python-appimage/releases/download/python3.9/python3.9.12-cp39-cp39-manylinux2014_x86_64.AppImage"
+    sha256 "949427e55791fb91107bdd497a873ad375298445aac3b3d11ec18e10d0dbaf0d"
+  end if build.without?("python@3.9")
 
   patch :p1, :DATA unless build.without?("fix-powerline")
 
@@ -29,13 +34,16 @@ class PowerlineStatusAT281 < Formula
   end
 
   def install
-    if build.with?("appimage-python") then
-      libexec.mkdir; bin.mkdir
-      libexec.cd do
-        system "#{Formula["z80oolong/tmux/appimage-python@3.8"].appimage_python_path}", "--appimage-extract"
+    libexec.mkdir; bin.mkdir
+
+    if build.without?("python@3.9") then
+      resource("appimage-python3.9").stage do
+        (Pathname.pwd/"python3.9.12-cp39-cp39-manylinux2014_x86_64.AppImage").chmod(0755)
+        system "./python3.9.12-cp39-cp39-manylinux2014_x86_64.AppImage", "--appimage-extract"
+        libexec.install "./squashfs-root"
       end
 
-      system libexec/"squashfs-root/usr/bin/python3.8", libexec/"squashfs-root/usr/bin/pip", "install", \
+      system libexec/"squashfs-root/usr/bin/python3.9", libexec/"squashfs-root/usr/bin/pip", "install", \
         "-v", "--no-binary", ":all:", "--ignore-installed", buildpath
     else
       venv = virtualenv_create(libexec, "python3")
@@ -47,15 +55,18 @@ class PowerlineStatusAT281 < Formula
     end
 
     (share/"powerline").mkpath
-    install_symlink_recurse (share/"powerline"), (libexec/"lib/python3.8/site-packages/powerline/bindings")
-    install_symlink_recurse (share/"powerline"), (libexec/"lib/python3.8/site-packages/powerline/config_files")
+    if build.without?("python@3.9") then
+      install_symlink_recurse (share/"powerline"), (libexec/"squashfs-root/opt/python3.9/lib/python3.9/site-packages/powerline/bindings")
+      install_symlink_recurse (share/"powerline"), (libexec/"squashfs-root/opt/python3.9/lib/python3.9/site-packages/powerline/config_files")
 
-    if build.with?("appimage-python") then
-      bin.install_symlink (libexec/"squashfs-root/opt/python3.8/bin/powerline")
-      bin.install_symlink (libexec/"squashfs-root/opt/python3.8/bin/powerline-daemon")
-      bin.install_symlink (libexec/"squashfs-root/opt/python3.8/bin/powerline-config")
-      bin.install_symlink (libexec/"squashfs-root/opt/python3.8/bin/powerline-render")
-      bin.install_symlink (libexec/"squashfs-root/opt/python3.8/bin/powerline-lint")
+      bin.install_symlink (libexec/"squashfs-root/opt/python3.9/bin/powerline")
+      bin.install_symlink (libexec/"squashfs-root/opt/python3.9/bin/powerline-daemon")
+      bin.install_symlink (libexec/"squashfs-root/opt/python3.9/bin/powerline-config")
+      bin.install_symlink (libexec/"squashfs-root/opt/python3.9/bin/powerline-render")
+      bin.install_symlink (libexec/"squashfs-root/opt/python3.9/bin/powerline-lint")
+    else
+      install_symlink_recurse (share/"powerline"), (libexec/"lib/python3.9/site-packages/powerline/bindings")
+      install_symlink_recurse (share/"powerline"), (libexec/"lib/python3.9/site-packages/powerline/config_files")
     end
   end
 
