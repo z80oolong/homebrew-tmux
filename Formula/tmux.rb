@@ -162,7 +162,7 @@ index 17be7ec4..0291a4cb 100644
  	OPTIONS_TABLE_HOOK("after-bind-key", ""),
  	OPTIONS_TABLE_HOOK("after-capture-pane", ""),
 diff --git a/tmux.c b/tmux.c
-index 11c368ff..c385a284 100644
+index b9f2be30..b4c68a6f 100644
 --- a/tmux.c
 +++ b/tmux.c
 @@ -333,20 +333,33 @@ main(int argc, char **argv)
@@ -251,7 +251,7 @@ index 11c368ff..c385a284 100644
  	exit(client_main(osdep_event_init(), argc, argv, flags, feat));
  }
 diff --git a/tmux.h b/tmux.h
-index f16b5250..2f1971e2 100644
+index a893bdb2..d790828c 100644
 --- a/tmux.h
 +++ b/tmux.h
 @@ -80,6 +80,17 @@ struct winlink;
