@@ -251,7 +251,7 @@ index b9f2be30..b4c68a6f 100644
  	exit(client_main(osdep_event_init(), argc, argv, flags, feat));
  }
 diff --git a/tmux.h b/tmux.h
-index a893bdb2..d790828c 100644
+index 53084b8b..0381eb70 100644
 --- a/tmux.h
 +++ b/tmux.h
 @@ -80,6 +80,17 @@ struct winlink;
