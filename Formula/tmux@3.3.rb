@@ -3,9 +3,9 @@ class TmuxAT33 < Formula
   homepage "https://tmux.github.io/"
   license "ISC"
 
-  tmux_version = "3.3-rc"
+  tmux_version = "3.3"
   url "https://github.com/tmux/tmux/releases/download/#{tmux_version}/tmux-#{tmux_version}.tar.gz"
-  sha256 "c2f2314feab0d10868d15c5cb2eb6f4b0c30973fa98782b678e8ae94cf6ca268"
+  sha256 "b2382ac391f6a1c5b93293016cdc9488337d9a04b9d611ae05eac164740351dc"
   version tmux_version
   revision 8
 
@@ -99,11 +99,11 @@ end
 
 __END__
 diff --git a/options-table.c b/options-table.c
-index 76c2b053..41e2b228 100644
+index 17be7ec..0291a4c 100644
 --- a/options-table.c
 +++ b/options-table.c
-@@ -1111,6 +1111,38 @@ const struct options_table_entry options_table[] = {
- 	          "This option is no longer used."
+@@ -1210,6 +1210,38 @@ const struct options_table_entry options_table[] = {
+ 		  "This option is no longer used."
  	},
  
 +#ifndef NO_USE_UTF8CJK
@@ -142,7 +142,7 @@ index 76c2b053..41e2b228 100644
  	OPTIONS_TABLE_HOOK("after-bind-key", ""),
  	OPTIONS_TABLE_HOOK("after-capture-pane", ""),
 diff --git a/tmux.c b/tmux.c
-index 11c368ff..c385a284 100644
+index b9f2be3..b4c68a6 100644
 --- a/tmux.c
 +++ b/tmux.c
 @@ -333,20 +333,33 @@ main(int argc, char **argv)
@@ -231,24 +231,13 @@ index 11c368ff..c385a284 100644
  	exit(client_main(osdep_event_init(), argc, argv, flags, feat));
  }
 diff --git a/tmux.h b/tmux.h
-index 74ea3517..dcf06194 100644
+index 53084b8..0381eb7 100644
 --- a/tmux.h
 +++ b/tmux.h
-@@ -80,6 +80,28 @@ struct winlink;
+@@ -80,6 +80,17 @@ struct winlink;
  #define TMUX_TERM "screen"
  #endif
  
-+/* If "pane-border-ascii" is not used, "utf8-cjk" is not used too. */
-+#ifdef NO_USE_PANE_BORDER_ASCII
-+#ifndef NO_USE_UTF8CJK
-+#define NO_USE_UTF8CJK
-+#endif
-+#endif
-+
-+#ifdef NO_USE_UTF8CJK
-+#define NO_USE_UTF8CJK_EMOJI
-+#endif
-+
 +/* If "pane-border-ascii" is not used, "utf8-cjk" is not used too. */
 +#ifdef NO_USE_PANE_BORDER_ASCII
 +#ifndef NO_USE_UTF8CJK
@@ -264,10 +253,10 @@ index 74ea3517..dcf06194 100644
  #define PANE_MINIMUM 1
  
 diff --git a/tty-acs.c b/tty-acs.c
-index 63eccb93..7729eca5 100644
+index 64ba367..0692c5b 100644
 --- a/tty-acs.c
 +++ b/tty-acs.c
-@@ -23,6 +23,130 @@
+@@ -23,6 +23,217 @@
  
  #include "tmux.h"
  
@@ -394,11 +383,98 @@ index 63eccb93..7729eca5 100644
 +
 +	return (result & 0xffff);
 +}
++
++/* UTF-8 double borders. */
++static const struct utf8_data tty_acs_double_borders_list[][2] = {
++	{ { "", 0, 0, 0 }, { "", 0, 0, 0 } },
++	{ { "\342\225\221", 0, 3, 1 }, { "|", 0, 1, 1 } }, /* U+2551 */
++	{ { "\342\225\220", 0, 3, 1 }, { "+", 0, 1, 1 } }, /* U+2550 */
++	{ { "\342\225\224", 0, 3, 1 }, { "+", 0, 1, 1 } }, /* U+2554 */
++	{ { "\342\225\227", 0, 3, 1 }, { "+", 0, 1, 1 } }, /* U+2557 */
++	{ { "\342\225\232", 0, 3, 1 }, { "+", 0, 1, 1 } }, /* U+255A */
++	{ { "\342\225\235", 0, 3, 1 }, { "+", 0, 1, 1 } }, /* U+255D */
++	{ { "\342\225\246", 0, 3, 1 }, { "+", 0, 1, 1 } }, /* U+2566 */
++	{ { "\342\225\251", 0, 3, 1 }, { "+", 0, 1, 1 } }, /* U+2569 */
++	{ { "\342\225\240", 0, 3, 1 }, { "+", 0, 1, 1 } }, /* U+2560 */
++	{ { "\342\225\243", 0, 3, 1 }, { "+", 0, 1, 1 } }, /* U+2563 */
++	{ { "\342\225\254", 0, 3, 1 }, { "+", 0, 1, 1 } }, /* U+256C */
++	{ { "\302\267",	0, 2, 1 }, { "o", 0, 1, 1 } }  /* U+00B7 */
++};
++
++/* UTF-8 heavy borders. */
++static const struct utf8_data tty_acs_heavy_borders_list[][2] = {
++	{ { "", 0, 0, 0 }, { "", 0, 0, 0 } },
++	{ { "\342\224\203", 0, 3, 1 }, { "|", 0, 1, 1 } }, /* U+2503 */
++	{ { "\342\224\201", 0, 3, 1 }, { "+", 0, 1, 1 } }, /* U+2501 */
++	{ { "\342\224\217", 0, 3, 1 }, { "+", 0, 1, 1 } }, /* U+250F */
++	{ { "\342\224\223", 0, 3, 1 }, { "+", 0, 1, 1 } }, /* U+2513 */
++	{ { "\342\224\227", 0, 3, 1 }, { "+", 0, 1, 1 } }, /* U+2517 */
++	{ { "\342\224\233", 0, 3, 1 }, { "+", 0, 1, 1 } }, /* U+251B */
++	{ { "\342\224\263", 0, 3, 1 }, { "+", 0, 1, 1 } }, /* U+2533 */
++	{ { "\342\224\273", 0, 3, 1 }, { "+", 0, 1, 1 } }, /* U+253B */
++	{ { "\342\224\243", 0, 3, 1 }, { "+", 0, 1, 1 } }, /* U+2523 */
++	{ { "\342\224\253", 0, 3, 1 }, { "+", 0, 1, 1 } }, /* U+252B */
++	{ { "\342\225\213", 0, 3, 1 }, { "+", 0, 1, 1 } }, /* U+254B */
++	{ { "\302\267", 0, 2, 1 }, { "o", 0, 1, 1 } }  /* U+00B7 */
++};
++
++/* UTF-8 rounded borders. */
++static const struct utf8_data tty_acs_rounded_borders_list[][2] = {
++	{ { "", 0, 0, 0 }, { "", 0, 0, 0 } },
++	{ { "\342\224\202", 0, 3, 1 }, { "|", 0, 1, 1 } },/* U+2502 */
++	{ { "\342\224\200", 0, 3, 1 }, { "+", 0, 1, 1 } },/* U+2500 */
++	{ { "\342\225\255", 0, 3, 1 }, { "+", 0, 1, 1 } },/* U+256D */
++	{ { "\342\225\256", 0, 3, 1 }, { "+", 0, 1, 1 } },/* U+256E */
++	{ { "\342\225\260", 0, 3, 1 }, { "+", 0, 1, 1 } },/* U+2570 */
++	{ { "\342\225\257", 0, 3, 1 }, { "+", 0, 1, 1 } },/* U+256F */
++	{ { "\342\224\263", 0, 3, 1 }, { "+", 0, 1, 1 } },/* U+2533 */
++	{ { "\342\224\273", 0, 3, 1 }, { "+", 0, 1, 1 } },/* U+253B */
++	{ { "\342\224\243", 0, 3, 1 }, { "+", 0, 1, 1 } },/* U+2523 */
++	{ { "\342\224\253", 0, 3, 1 }, { "+", 0, 1, 1 } },/* U+252B */
++	{ { "\342\225\213", 0, 3, 1 }, { "+", 0, 1, 1 } },/* U+254B */
++	{ { "\302\267", 0, 2, 1 }, { "o", 0, 1, 1 } }  /* U+00B7 */
++};
++
++static int
++tty_acs_borders_list_index(void)
++{
++	static int index = -1;
++
++	if (index < 0) {
++		if (options_get_number(global_s_options, "pane-border-acs"))
++			index = 0;
++		else if (options_get_number(global_s_options, "pane-border-ascii"))
++			index = 1;
++	}
++
++	return index;
++}
++
++/* Get cell border character for double style. */
++const struct utf8_data *
++tty_acs_double_borders(int cell_type)
++{
++	return (&tty_acs_double_borders_list[cell_type][tty_acs_borders_list_index()]);
++}
++
++/* Get cell border character for heavy style. */
++const struct utf8_data *
++tty_acs_heavy_borders(int cell_type)
++{
++	return (&tty_acs_heavy_borders_list[cell_type][tty_acs_borders_list_index()]);
++}
++
++/* Get cell border character for rounded style. */
++const struct utf8_data *
++tty_acs_rounded_borders(int cell_type)
++{
++	return (&tty_acs_rounded_borders_list[cell_type][tty_acs_borders_list_index()]);
++}
 +#else
  /* Table mapping ACS entries to UTF-8. */
  struct tty_acs_entry {
- 	u_char	 	 key;
-@@ -127,11 +251,91 @@ tty_acs_reverse_cmp(const void *key, const void *value)
+ 	u_char		 key;
+@@ -199,11 +410,91 @@ tty_acs_reverse_cmp(const void *key, const void *value)
  
  	return (strcmp(test, entry->string));
  }
@@ -490,7 +566,7 @@ index 63eccb93..7729eca5 100644
  	if (tty == NULL)
  		return (0);
  
-@@ -152,12 +356,31 @@ tty_acs_needed(struct tty *tty)
+@@ -224,12 +515,31 @@ tty_acs_needed(struct tty *tty)
  	if (tty->client->flags & CLIENT_UTF8)
  		return (0);
  	return (1);
@@ -522,7 +598,7 @@ index 63eccb93..7729eca5 100644
  	const struct tty_acs_entry	*entry;
  
  	/* Use the ACS set instead of UTF-8 if needed. */
-@@ -173,12 +396,23 @@ tty_acs_get(struct tty *tty, u_char ch)
+@@ -245,12 +555,23 @@ tty_acs_get(struct tty *tty, u_char ch)
  	if (entry == NULL)
  		return (NULL);
  	return (entry->string);
@@ -546,17 +622,17 @@ index 63eccb93..7729eca5 100644
  	const struct tty_acs_reverse_entry	*table, *entry;
  	u_int					 items;
  
-@@ -194,4 +428,5 @@ tty_acs_reverse_get(__unused struct tty *tty, const char *s, size_t slen)
+@@ -266,4 +587,5 @@ tty_acs_reverse_get(__unused struct tty *tty, const char *s, size_t slen)
  	if (entry == NULL)
  		return (-1);
  	return (entry->key);
 +#endif
  }
 diff --git a/tty-term.c b/tty-term.c
-index 8e07da05..2d059c7f 100644
+index fdf0c4f..9d01e6a 100644
 --- a/tty-term.c
 +++ b/tty-term.c
-@@ -502,6 +502,15 @@ tty_term_apply_overrides(struct tty_term *term)
+@@ -503,6 +503,15 @@ tty_term_apply_overrides(struct tty_term *term)
  		term->flags &= ~TERM_NOAM;
  	log_debug("NOAM flag is %d", !!(term->flags & TERM_NOAM));
  
@@ -572,7 +648,7 @@ index 8e07da05..2d059c7f 100644
  	/* Generate ACS table. If none is present, use nearest ASCII. */
  	memset(term->acs, 0, sizeof term->acs);
  	if (tty_term_has(term, TTYC_ACSC))
-@@ -510,6 +519,7 @@ tty_term_apply_overrides(struct tty_term *term)
+@@ -511,6 +520,7 @@ tty_term_apply_overrides(struct tty_term *term)
  		acs = "a#j+k+l+m+n+o-p-q-r-s-t+u+v+w+x|y<z>~.";
  	for (; acs[0] != '\0' && acs[1] != '\0'; acs += 2)
  		term->acs[(u_char) acs[0]][0] = acs[1];
@@ -581,7 +657,7 @@ index 8e07da05..2d059c7f 100644
  
  struct tty_term *
 diff --git a/utf8.c b/utf8.c
-index 56f20cbb..e59cc72d 100644
+index df75a76..7d5e012 100644
 --- a/utf8.c
 +++ b/utf8.c
 @@ -26,6 +26,407 @@
@@ -1021,6 +1097,6 @@ index 56f20cbb..e59cc72d 100644
  		return (UTF8_DONE);
  	log_debug("UTF-8 %.*s, wcwidth() %d", (int)ud->size, ud->data, *width);
 +#endif
+ 	return (UTF8_ERROR);
+ }
  
- #ifndef __OpenBSD__
- 	/*
