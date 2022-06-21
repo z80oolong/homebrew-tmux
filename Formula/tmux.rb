@@ -118,11 +118,63 @@ class Tmux < Formula
 end
 
 __END__
+diff --git a/.github/README.md b/.github/README.md
+index 353f10ec..2cccaaf4 100644
+--- a/.github/README.md
++++ b/.github/README.md
+@@ -1,3 +1,28 @@
++# tmux -- tmux において East Asian Ambiguous Character を全角文字の幅で表示する為の修正版
++
++## 概要
++
++[tmux][TMUX] において、 Unicode の規格における東アジア圏の各種文字のうち、いわゆる "◎" や "★" 等の記号文字及び罫線文字等、 [East_Asian_Width 特性の値が A (Ambiguous) となる文字][EAWA] (以下、 [East Asian Ambiguous Character][EAWA]) が、日本語環境で文字幅を適切に扱うことが出来ずに表示が乱れる問題が発生しています。
++
++この git リポジトリに置かれている [tmux][TMUX] のソースコードは、 [tmux][TMUX] において [East Asian Ambiguous Character][EAWA] の幅を漢字や全角カナ文字等と同じ幅 2 で表示するように修正したものです。
++
++また、この [tmux][TMUX] のソースコードには、 [koie 氏][KOIE]によって作成された [tmux][TMUX] の[画面分割におけるボーダーラインの罫線文字を判別し、適切に描画するためのソースコードの修正][PANE]が含まれています。
++
++なお、この git リポジトリに置かれている [tmux][TMUX] のソースコードは、 [git リポジトリ "tmux 2.5 以降において East Asian Ambiguous Character を全角文字の幅で表示する"][DIFF] に置かれた差分ファイルの作成用のリポジトリです。
++
++実際に [East Asian Ambiguous Character][EAWA] に対応した [tmux][TMUX] をビルドする際には、[前述の git リポジトリ][DIFF]を参照して、オリジナルの [tmux][TMUX] のソースコードに差分ファイルを適用してビルドするようにして下さい。
++
++## 使用条件
++
++この git リポジトリに置かれている [tmux][TMUX] のソースコードは、 [Nicholas Marriott 氏][NICM]を始めとする [tmux の開発コミュニティ][TMUX] によるコードを、 [koie 氏][KOIE]及び [Z.OOL. (mailto:zool@zool.jpn.org)][ZOOL] によって、 [East Asian Ambiguous Character][EAWA] の幅を漢字や全角カナ文字等と同じ幅 2 で表示し、また、 [tmux][TMUX] の画面分割におけるボーダーラインの罫線文字を判別し適切に描画するように修正したものです。
++
++従って、本ソースコードは、 [tmux][TMUX] のライセンスと同様である [ISC License][ISCL] に基づいて配布されるものとします。詳細については、本リポジトリに同梱する ```LICENSE``` を参照して下さい。
++
++## 追記
++
++以下に、オリジナルの [tmux][TMUX] のソースコードの [README.md][READ] の原文を示します。
++
++----
+ # Welcome to tmux!
+ 
+ tmux is a terminal multiplexer: it enables a number of terminals to be created,
+@@ -93,3 +118,18 @@ https://groups.google.com/forum/#!forum/tmux-users
+ Subscribe by sending an email to:
+ 
+ tmux-users+subscribe@googlegroups.com
++
++<!-- 外部リンク一覧 -->
++
++[TMUX]:http://tmux.github.io/
++[EAWA]:http://www.unicode.org/reports/tr11/#Ambiguous
++[TMRP]:https://github.com/tmux/tmux.git
++[KOIE]:https://github.com/koie
++[PANE]:https://github.com/koie/tmux/commit/ac6c53ffd6c2987a3a4a5807df7fc6cca5d6ce88
++[DIFF]:https://github.com/z80oolong/tmux-eaw-fix
++[WCWD]:http://www.cl.cam.ac.uk/~mgk25/ucs/wcwidth.c
++[DRMK]:http://www.cl.cam.ac.uk/~mgk25/
++[NICM]:https://github.com/nicm
++[ZOOL]:http://zool.jpn.org/
++[ISCL]:https://www.isc.org/downloads/software-support-policy/isc-license/
++[READ]:https://github.com/tmux/tmux/blob/master/.github/README.md
 diff --git a/options-table.c b/options-table.c
-index 17be7ec4..0291a4cb 100644
+index b442d65e..8ddfac6a 100644
 --- a/options-table.c
 +++ b/options-table.c
-@@ -1210,6 +1210,38 @@ const struct options_table_entry options_table[] = {
+@@ -1211,6 +1211,38 @@ const struct options_table_entry options_table[] = {
  		  "This option is no longer used."
  	},
  
@@ -251,7 +303,7 @@ index b9f2be30..b4c68a6f 100644
  	exit(client_main(osdep_event_init(), argc, argv, flags, feat));
  }
 diff --git a/tmux.h b/tmux.h
-index c8061da5..cb780d3d 100644
+index b21a3066..6f75940d 100644
 --- a/tmux.h
 +++ b/tmux.h
 @@ -80,6 +80,17 @@ struct winlink;
@@ -1119,4 +1171,3 @@ index df75a769..7d5e0124 100644
 +#endif
  	return (UTF8_ERROR);
  }
- 
