@@ -2,10 +2,10 @@ class AppimageTmuxAT33 < Formula
   desc "AppImage package of Terminal multiplexer"
   homepage "https://tmux.github.io/"
 
-  url "https://github.com/z80oolong/tmux-eaw-appimage/releases/download/v3.3a-eaw-appimage-0.1.2/tmux-eaw-3.3-x86_64.AppImage"
-  sha256 "2067662700faceb0687d87ee279fc33772e0d76785e8253a1b68a96c2c2186d8"
+  url "https://github.com/z80oolong/tmux-eaw-appimage/releases/download/v3.3a-eaw-appimage-0.1.4/tmux-eaw-3.3-x86_64.AppImage"
+  sha256 "d9715e8ad6ffc4a70498a1a69d7053f7600c139c3bc8c94734c3a43ab9ca5576"
   version "3.3"
-  revision 39
+  revision 41
 
   keg_only :versioned_formula
 
