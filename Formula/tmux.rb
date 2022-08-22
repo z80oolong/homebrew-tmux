@@ -119,10 +119,10 @@ end
 
 __END__
 diff --git a/options-table.c b/options-table.c
-index b442d65e..8ddfac6a 100644
+index f7e91da1..cef34451 100644
 --- a/options-table.c
 +++ b/options-table.c
-@@ -1211,6 +1211,38 @@ const struct options_table_entry options_table[] = {
+@@ -1217,6 +1217,38 @@ const struct options_table_entry options_table[] = {
  		  "This option is no longer used."
  	},
  
@@ -251,7 +251,7 @@ index b9f2be30..b4c68a6f 100644
  	exit(client_main(osdep_event_init(), argc, argv, flags, feat));
  }
 diff --git a/tmux.h b/tmux.h
-index d097720e..2b22ec95 100644
+index 61eb95d4..98330f66 100644
 --- a/tmux.h
 +++ b/tmux.h
 @@ -82,6 +82,17 @@ struct winlink;
@@ -649,10 +649,10 @@ index 64ba367e..143cb4af 100644
 +#endif
  }
 diff --git a/tty-term.c b/tty-term.c
-index 4b02e2c5..1bc2d262 100644
+index 8c3e8e8d..8682444a 100644
 --- a/tty-term.c
 +++ b/tty-term.c
-@@ -504,6 +504,15 @@ tty_term_apply_overrides(struct tty_term *term)
+@@ -505,6 +505,15 @@ tty_term_apply_overrides(struct tty_term *term)
  		term->flags &= ~TERM_NOAM;
  	log_debug("NOAM flag is %d", !!(term->flags & TERM_NOAM));
  
@@ -668,7 +668,7 @@ index 4b02e2c5..1bc2d262 100644
  	/* Generate ACS table. If none is present, use nearest ASCII. */
  	memset(term->acs, 0, sizeof term->acs);
  	if (tty_term_has(term, TTYC_ACSC))
-@@ -512,6 +521,7 @@ tty_term_apply_overrides(struct tty_term *term)
+@@ -513,6 +522,7 @@ tty_term_apply_overrides(struct tty_term *term)
  		acs = "a#j+k+l+m+n+o-p-q-r-s-t+u+v+w+x|y<z>~.";
  	for (; acs[0] != '\0' && acs[1] != '\0'; acs += 2)
  		term->acs[(u_char) acs[0]][0] = acs[1];
