@@ -16,13 +16,13 @@ class PowerlineStatus < Formula
 
   option "without-fix-powerline", "Do not fix a problem that causes problems when tmux returns an abnormal version."
 
-  depends_on "python@3.9" => :recommended
+  depends_on "python@3.10" => :recommended
   depends_on "z80oolong/tmux/tmux" => :recommended
 
-  resource("appimage-python3.9") do
-    url "https://github.com/niess/python-appimage/releases/download/python3.9/python3.9.12-cp39-cp39-manylinux2014_x86_64.AppImage"
-    sha256 "949427e55791fb91107bdd497a873ad375298445aac3b3d11ec18e10d0dbaf0d"
-  end if build.without?("python@3.9")
+  resource("appimage-python3.10") do
+    url "https://github.com/niess/python-appimage/releases/download/python3.10/python3.10.7-cp310-cp310-manylinux2014_x86_64.AppImage"
+    sah256 "bbed4dbcc465c2930a32cd5fc2f853e632d1ba3b75590e5d0d7c07d30e71d4bf"
+  end if build.without?("python@3.10")
 
   patch :p1, :DATA unless build.without?("fix-powerline")
 
@@ -40,14 +40,14 @@ class PowerlineStatus < Formula
   def install
     libexec.mkdir; bin.mkdir
 
-    if build.without?("python@3.9") then
-      resource("appimage-python3.9").stage do
-        (Pathname.pwd/"python3.9.12-cp39-cp39-manylinux2014_x86_64.AppImage").chmod(0755)
-        system "./python3.9.12-cp39-cp39-manylinux2014_x86_64.AppImage", "--appimage-extract"
+    if build.without?("python@3.10") then
+      resource("appimage-python3.10").stage do
+        (Pathname.pwd/"python3.10.7-cp310-cp310-manylinux2014_x86_64.AppImage").chmod(0755)
+        system "./python3.10.7-cp310-cp310-manylinux2014_x86_64.AppImage", "--appimage-extract"
         libexec.install "./squashfs-root"
       end
 
-      system libexec/"squashfs-root/usr/bin/python3.9", libexec/"squashfs-root/usr/bin/pip", "install", \
+      system libexec/"squashfs-root/usr/bin/python3.10", libexec/"squashfs-root/usr/bin/pip", "install", \
         "-v", "--no-binary", ":all:", "--ignore-installed", buildpath
     else
       venv = virtualenv_create(libexec, "python3")
@@ -59,18 +59,18 @@ class PowerlineStatus < Formula
     end
 
     (share/"powerline").mkpath
-    if build.without?("python@3.9") then
-      install_symlink_recurse (share/"powerline"), (libexec/"squashfs-root/opt/python3.9/lib/python3.9/site-packages/powerline/bindings")
-      install_symlink_recurse (share/"powerline"), (libexec/"squashfs-root/opt/python3.9/lib/python3.9/site-packages/powerline/config_files")
+    if build.without?("python@3.10") then
+      install_symlink_recurse (share/"powerline"), (libexec/"squashfs-root/opt/python3.10/lib/python3.10/site-packages/powerline/bindings")
+      install_symlink_recurse (share/"powerline"), (libexec/"squashfs-root/opt/python3.10/lib/python3.10/site-packages/powerline/config_files")
 
-      bin.install_symlink (libexec/"squashfs-root/opt/python3.9/bin/powerline")
-      bin.install_symlink (libexec/"squashfs-root/opt/python3.9/bin/powerline-daemon")
-      bin.install_symlink (libexec/"squashfs-root/opt/python3.9/bin/powerline-config")
-      bin.install_symlink (libexec/"squashfs-root/opt/python3.9/bin/powerline-render")
-      bin.install_symlink (libexec/"squashfs-root/opt/python3.9/bin/powerline-lint")
+      bin.install_symlink (libexec/"squashfs-root/opt/python3.10/bin/powerline")
+      bin.install_symlink (libexec/"squashfs-root/opt/python3.10/bin/powerline-daemon")
+      bin.install_symlink (libexec/"squashfs-root/opt/python3.10/bin/powerline-config")
+      bin.install_symlink (libexec/"squashfs-root/opt/python3.10/bin/powerline-render")
+      bin.install_symlink (libexec/"squashfs-root/opt/python3.10/bin/powerline-lint")
     else
-      install_symlink_recurse (share/"powerline"), (libexec/"lib/python3.9/site-packages/powerline/bindings")
-      install_symlink_recurse (share/"powerline"), (libexec/"lib/python3.9/site-packages/powerline/config_files")
+      install_symlink_recurse (share/"powerline"), (libexec/"lib/python3.10/site-packages/powerline/bindings")
+      install_symlink_recurse (share/"powerline"), (libexec/"lib/python3.10/site-packages/powerline/config_files")
     end
   end
 
