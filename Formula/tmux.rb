@@ -162,7 +162,7 @@ index d4e7b204..eba9c13c 100644
  	OPTIONS_TABLE_HOOK("after-bind-key", ""),
  	OPTIONS_TABLE_HOOK("after-capture-pane", ""),
 diff --git a/tmux.c b/tmux.c
-index b9f2be30..b4c68a6f 100644
+index ef78e7b4..c8e97bea 100644
 --- a/tmux.c
 +++ b/tmux.c
 @@ -333,20 +333,33 @@ main(int argc, char **argv)
@@ -251,7 +251,7 @@ index b9f2be30..b4c68a6f 100644
  	exit(client_main(osdep_event_init(), argc, argv, flags, feat));
  }
 diff --git a/tmux.h b/tmux.h
-index 2e86e9d4..c8d6e5e6 100644
+index 751e8a99..dcb72235 100644
 --- a/tmux.h
 +++ b/tmux.h
 @@ -82,6 +82,17 @@ struct winlink;
@@ -649,10 +649,10 @@ index 64ba367e..143cb4af 100644
 +#endif
  }
 diff --git a/tty-term.c b/tty-term.c
-index 8c3e8e8d..8682444a 100644
+index 4e9b7799..745c9d89 100644
 --- a/tty-term.c
 +++ b/tty-term.c
-@@ -505,6 +505,15 @@ tty_term_apply_overrides(struct tty_term *term)
+@@ -509,6 +509,15 @@ tty_term_apply_overrides(struct tty_term *term)
  		term->flags &= ~TERM_NOAM;
  	log_debug("NOAM flag is %d", !!(term->flags & TERM_NOAM));
  
@@ -668,7 +668,7 @@ index 8c3e8e8d..8682444a 100644
  	/* Generate ACS table. If none is present, use nearest ASCII. */
  	memset(term->acs, 0, sizeof term->acs);
  	if (tty_term_has(term, TTYC_ACSC))
-@@ -513,6 +522,7 @@ tty_term_apply_overrides(struct tty_term *term)
+@@ -517,6 +526,7 @@ tty_term_apply_overrides(struct tty_term *term)
  		acs = "a#j+k+l+m+n+o-p-q-r-s-t+u+v+w+x|y<z>~.";
  	for (; acs[0] != '\0' && acs[1] != '\0'; acs += 2)
  		term->acs[(u_char) acs[0]][0] = acs[1];
