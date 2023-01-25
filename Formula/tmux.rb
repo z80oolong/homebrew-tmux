@@ -251,7 +251,7 @@ index ef78e7b4..c8e97bea 100644
  	exit(client_main(osdep_event_init(), argc, argv, flags, feat));
  }
 diff --git a/tmux.h b/tmux.h
-index 5a065126..de6ad8a7 100644
+index 11bae046..8ccc4ab4 100644
 --- a/tmux.h
 +++ b/tmux.h
 @@ -82,6 +82,17 @@ struct winlink;
@@ -677,7 +677,7 @@ index 4e9b7799..745c9d89 100644
  
  struct tty_term *
 diff --git a/utf8.c b/utf8.c
-index df75a769..7d5e0124 100644
+index 042ddf89..db429f1e 100644
 --- a/utf8.c
 +++ b/utf8.c
 @@ -26,6 +26,407 @@
@@ -1088,10 +1088,10 @@ index df75a769..7d5e0124 100644
  struct utf8_item {
  	RB_ENTRY(utf8_item)	index_entry;
  	u_int			index;
-@@ -229,6 +630,23 @@ utf8_width(struct utf8_data *ud, int *width)
- 	case 0:
+@@ -230,6 +631,23 @@ utf8_width(struct utf8_data *ud, int *width)
  		return (UTF8_ERROR);
  	}
+ 	log_debug("UTF-8 %.*s is %08X", (int)ud->size, ud->data, (u_int)wc);
 +#ifndef NO_USE_UTF8CJK
 +	if (options_get_number(global_options, "utf8-cjk")) {
 +#ifndef NO_USE_UTF8CJK_EMOJI
@@ -1111,11 +1111,11 @@ index df75a769..7d5e0124 100644
 +#else
  #ifdef HAVE_UTF8PROC
  	*width = utf8proc_wcwidth(wc);
- #else
-@@ -237,6 +655,7 @@ utf8_width(struct utf8_data *ud, int *width)
+ 	log_debug("utf8proc_wcwidth(%08X) returned %d", (u_int)wc, *width);
+@@ -246,6 +664,7 @@ utf8_width(struct utf8_data *ud, int *width)
+ #endif
  	if (*width >= 0 && *width <= 0xff)
  		return (UTF8_DONE);
- 	log_debug("UTF-8 %.*s, wcwidth() %d", (int)ud->size, ud->data, *width);
 +#endif
  	return (UTF8_ERROR);
  }
