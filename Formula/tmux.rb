@@ -119,7 +119,7 @@ end
 
 __END__
 diff --git a/options-table.c b/options-table.c
-index d4e7b204..eba9c13c 100644
+index 6cb724cc..61ef490d 100644
 --- a/options-table.c
 +++ b/options-table.c
 @@ -1228,6 +1228,38 @@ const struct options_table_entry options_table[] = {
@@ -162,7 +162,7 @@ index d4e7b204..eba9c13c 100644
  	OPTIONS_TABLE_HOOK("after-bind-key", ""),
  	OPTIONS_TABLE_HOOK("after-capture-pane", ""),
 diff --git a/tmux.c b/tmux.c
-index ef78e7b4..c8e97bea 100644
+index a01ed423..f640a4a0 100644
 --- a/tmux.c
 +++ b/tmux.c
 @@ -333,20 +333,33 @@ main(int argc, char **argv)
@@ -251,11 +251,11 @@ index ef78e7b4..c8e97bea 100644
  	exit(client_main(osdep_event_init(), argc, argv, flags, feat));
  }
 diff --git a/tmux.h b/tmux.h
-index ff77f780..172c7e39 100644
+index ea734ebd..c5f3d2f4 100644
 --- a/tmux.h
 +++ b/tmux.h
-@@ -82,6 +82,17 @@ struct winlink;
- #define TMUX_TERM "screen"
+@@ -85,6 +85,17 @@ struct winlink;
+ #define TMUX_LOCK_CMD "lock -np"
  #endif
  
 +/* If "pane-border-ascii" is not used, "utf8-cjk" is not used too. */
@@ -649,7 +649,7 @@ index 64ba367e..143cb4af 100644
 +#endif
  }
 diff --git a/tty-term.c b/tty-term.c
-index 4e9b7799..745c9d89 100644
+index e2242269..128cf1fa 100644
 --- a/tty-term.c
 +++ b/tty-term.c
 @@ -509,6 +509,15 @@ tty_term_apply_overrides(struct tty_term *term)
@@ -677,7 +677,7 @@ index 4e9b7799..745c9d89 100644
  
  struct tty_term *
 diff --git a/utf8.c b/utf8.c
-index 042ddf89..db429f1e 100644
+index 38f1a89a..0e66fff7 100644
 --- a/utf8.c
 +++ b/utf8.c
 @@ -26,6 +26,407 @@
