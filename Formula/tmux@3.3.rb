@@ -7,12 +7,12 @@ class TmuxAT33 < Formula
   url "https://github.com/tmux/tmux/releases/download/#{tmux_version}/tmux-#{tmux_version}.tar.gz"
   sha256 "b2382ac391f6a1c5b93293016cdc9488337d9a04b9d611ae05eac164740351dc"
   version tmux_version
-  revision 8
+  revision 9
 
   keg_only :versioned_formula
 
   depends_on "pkg-config" => :build
-  depends_on "z80oolong/tmux/tmux-libevent@2.2"
+  depends_on "libevent"
   depends_on "z80oolong/tmux/tmux-ncurses@6.2"
   depends_on "utf8proc" => :optional
 
@@ -33,13 +33,6 @@ class TmuxAT33 < Formula
   patch :p1, :DATA
 
   def install
-    ENV.append "CFLAGS",   "-I#{Formula["z80oolong/tmux/tmux-libevent@2.2"].opt_include}"
-    ENV.append "CPPFLAGS", "-I#{Formula["z80oolong/tmux/tmux-libevent@2.2"].opt_include}"
-    ENV.append "LDFLAGS",  "-L#{Formula["z80oolong/tmux/tmux-libevent@2.2"].opt_lib}"
-    ENV.append "CFLAGS",   "-I#{Formula["z80oolong/tmux/tmux-ncurses@6.2"].opt_include}"
-    ENV.append "CPPFLAGS", "-I#{Formula["z80oolong/tmux/tmux-ncurses@6.2"].opt_include}"
-    ENV.append "LDFLAGS", "-L#{Formula["z80oolong/tmux/tmux-ncurses@6.2"].opt_lib}"
-
     ENV.append "CPPFLAGS", "-DNO_USE_UTF8CJK" if build.without?("utf8-cjk")
     ENV.append "CPPFLAGS", "-DNO_USE_UTF8CJK_EMOJI" if build.without?("utf8-emoji")
     ENV.append "CPPFLAGS", "-DNO_USE_PANE_BORDER_ACS_ASCII" if build.without?("pane-border-acs-ascii")
