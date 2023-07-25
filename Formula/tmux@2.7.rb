@@ -1,3 +1,10 @@
+#!/usr/bin/env ruby
+
+if $0 == __FILE__ then
+  puts DATA.gets(nil)
+  exit 0
+end
+
 class TmuxAT27 < Formula
   desc "Terminal multiplexer"
   homepage "https://tmux.github.io/"
