@@ -160,10 +160,10 @@ index 0d43485f..ca9b9473 100644
  AC_LINK_IFELSE([AC_LANG_PROGRAM(
 diff --git a/image-sixel.c b/image-sixel.c
 new file mode 100644
-index 00000000..4b02e858
+index 00000000..f51a997c
 --- /dev/null
 +++ b/image-sixel.c
-@@ -0,0 +1,566 @@
+@@ -0,0 +1,581 @@
 +/* $OpenBSD$ */
 +
 +/*
@@ -565,7 +565,14 @@ index 00000000..4b02e858
 +	}
 +
 +	if (colours) {
-+		new->colours = xmalloc(si->ncolours * sizeof *new->colours);
++		if (si->ncolours == 0) {
++			new->colours = xmalloc((size_t)SIXEL_COLOUR_REGISTERS * sizeof *new->colours);
++			log_debug("%s: WARNING; si->ncolours == 0, force %d ncolours.", __func__, SIXEL_COLOUR_REGISTERS);
++		} else {
++			new->colours = xmalloc(si->ncolours * sizeof *new->colours);
++			log_debug("%s: WARNING; si->ncolours == %d.", __func__, si->ncolours);
++		}
++
 +		for (i = 0; i < si->ncolours; i++)
 +			new->colours[i] = si->colours[i];
 +		new->ncolours = si->ncolours;
@@ -617,11 +624,19 @@ index 00000000..4b02e858
 +	if (map != NULL) {
 +		colours = map->colours;
 +		ncolours = map->ncolours;
++		log_debug("%s: map->{colours,ncolours}; colours == %p, ncolours == %d", __func__, colours, ncolours);
 +	} else {
 +		colours = si->colours;
 +		ncolours = si->ncolours;
++		log_debug("%s: si->{colours,ncolours}; colours == %p, ncolours == %d", __func__, colours, ncolours);
 +	}
-+	contains = xcalloc(1, ncolours);
++
++	if (ncolours == 0) {
++		contains = xcalloc(1, (size_t)SIXEL_COLOUR_REGISTERS);
++		log_debug("%s: WARNING; ncolours == 0, force contains = xcalloc(1, (size_t)%d)", __func__, SIXEL_COLOUR_REGISTERS);
++	} else {
++		contains = xcalloc(1, ncolours);
++	}
 +
 +	len = 8192;
 +	buf = xmalloc(len);
