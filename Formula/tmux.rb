@@ -9,7 +9,7 @@ class Tmux < Formula
   desc "Terminal multiplexer"
   homepage "https://tmux.github.io/"
   license "ISC"
-  revision 9 
+  revision 10 
 
   stable do
     tmux_version = "3.3a"
@@ -43,6 +43,7 @@ class Tmux < Formula
   option "without-utf8-cjk", "Build without using East asian Ambiguous Width Character in tmux."
   option "without-utf8-emoji", "Build without using Emoji Character in tmux."
   option "without-pane-border-acs-ascii", "Build without using ACS ASCII as pane border in tmux."
+  option "without-sixel", "Build without enable SIXEL Graphics."
   option "with-static-link", "Build tmux with static link."
 
   resource "completion" do
@@ -72,7 +73,7 @@ class Tmux < Formula
 
     args << "--enable-utf8proc" if build.with?("utf8proc")
     args << "--enable-static"   if build.with?("static-link")
-    args << "--enable-sixel"    if build.head?
+    args << "--enable-sixel"    if build.head? && !build.without?("sixel")
 
     ENV.append "LDFLAGS", "-lresolv"
     system "./configure", *args
@@ -160,10 +161,10 @@ index 0d43485f..ca9b9473 100644
  AC_LINK_IFELSE([AC_LANG_PROGRAM(
 diff --git a/image-sixel.c b/image-sixel.c
 new file mode 100644
-index 00000000..f51a997c
+index 00000000..cc13f767
 --- /dev/null
 +++ b/image-sixel.c
-@@ -0,0 +1,581 @@
+@@ -0,0 +1,619 @@
 +/* $OpenBSD$ */
 +
 +/*
@@ -263,7 +264,7 @@ index 00000000..f51a997c
 +	sl = &si->lines[y];
 +	if (sixel_parse_expand_line(si, sl, x + 1) != 0)
 +		return (1);
-+	sl->data[x] |= c; // For OrMode
++	sl->data[x] = c;
 +
 +	return (0);
 +}
@@ -273,6 +274,7 @@ index 00000000..f51a997c
 +{
 +	struct sixel_line	*sl;
 +	u_int			 i;
++	u_int			 dstdata, srcdata;
 +
 +	if (sixel_parse_expand_lines(si, si->dy + 6) != 0)
 +		return (1);
@@ -281,8 +283,27 @@ index 00000000..f51a997c
 +	for (i = 0; i < 6; i++) {
 +		if (sixel_parse_expand_line(si, sl, si->dx + 1) != 0)
 +			return (1);
-+		if (ch & (1 << i))
-+			sl->data[si->dx] |= si->dc; // For OrMode
++		if (ch & (1 << i)) {
++			if (sl->data[si->dx] == 0) {
++				/* The element of the array for storing pixels, sl->data[si->dx], stores
++				 * si->dc, a value incremented by one from the palette number.
++				 */
++
++				sl->data[si->dx] = si->dc;
++			} else {
++				/* This code is for the ormode of SIXEL Graphics.
++				 * The value obtained by the logical OR of the decremented by 1 value 
++				 * from sl->data[si->dx] and si->dc, which are the elements of the array
++				 * for storing pixel palette numbers, is incremented by 1, and stored
++				 * in sl->data[si-dx].
++				 */
++
++				dstdata = sl->data[si->dx] - 1;
++				srcdata = si->dc - 1;
++				dstdata = dstdata | srcdata;
++				sl->data[si->dx] = dstdata + 1;
++			}
++		}
 +		sl++;
 +	}
 +	return (0);
@@ -566,11 +587,12 @@ index 00000000..f51a997c
 +
 +	if (colours) {
 +		if (si->ncolours == 0) {
-+			new->colours = xmalloc((size_t)SIXEL_COLOUR_REGISTERS * sizeof *new->colours);
-+			log_debug("%s: WARNING; si->ncolours == 0, force %d ncolours.", __func__, SIXEL_COLOUR_REGISTERS);
++			new->colours = xmalloc((size_t)1 * sizeof *new->colours);
++			new->colours[0] = 0;
++			log_debug("%s: WARNING; si->ncolours == 0, force %d ncolour.", __func__, 1);
 +		} else {
 +			new->colours = xmalloc(si->ncolours * sizeof *new->colours);
-+			log_debug("%s: WARNING; si->ncolours == %d.", __func__, si->ncolours);
++			log_debug("%s: si->ncolours == %d.", __func__, si->ncolours);
 +		}
 +
 +		for (i = 0; i < si->ncolours; i++)
@@ -632,7 +654,14 @@ index 00000000..f51a997c
 +	}
 +
 +	if (ncolours == 0) {
++		/* If ncolours, the value of the palette number, is 0, then contains,
++		 * which stores a flag indicating whether a certain palette number is in use,
++		 * should allocate an array of 1024 elements, the upper limit of the palette number.
++		 * The array contains may take the largest possible palette number as a index.
++		 */
++
 +		contains = xcalloc(1, (size_t)SIXEL_COLOUR_REGISTERS);
++		memset(contains, 0, SIXEL_COLOUR_REGISTERS);
 +		log_debug("%s: WARNING; ncolours == 0, force contains = xcalloc(1, (size_t)%d)", __func__, SIXEL_COLOUR_REGISTERS);
 +	} else {
 +		contains = xcalloc(1, ncolours);
@@ -660,8 +689,18 @@ index 00000000..f51a997c
 +				if (y + i >= si->y)
 +					break;
 +				sl = &si->lines[y + i];
-+				if (x < sl->x && sl->data[x] != 0)
-+					contains[sl->data[x] - 1] = 1;
++				if (x < sl->x) {
++					/* For sl->data[x], which is an element of an array for storing the palette number for each pixel,
++					 * if the value of sl->data[x] is 0 except for the bottom pixel with y-coordinate,
++					 * especially if ormode is used, the palette number of sl->data[x] is 1 and The palette number
++					 * in sl->data[x] should be considered to be 1.
++					 */
++
++					if (y < (si->y - 6) && sl->data[x] == 0)
++						sl->data[x] = 1;
++					if (sl->data[x] != 0)
++						contains[sl->data[x] - 1] = 1;
++				}
 +			}
 +		}
 +
