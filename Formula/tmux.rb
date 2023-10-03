@@ -122,167 +122,25 @@ class Tmux < Formula
 end
 
 __END__
-diff --git a/Makefile.am b/Makefile.am
-index a6fbfd7a..d02024c3 100644
---- a/Makefile.am
-+++ b/Makefile.am
-@@ -218,6 +218,11 @@ if HAVE_UTF8PROC
- nodist_tmux_SOURCES += compat/utf8proc.c
- endif
- 
-+# Enable sixel support.
-+if ENABLE_SIXEL
-+dist_tmux_SOURCES += image.c image-sixel.c
-+endif
-+
- if NEED_FUZZING
- check_PROGRAMS = fuzz/input-fuzzer
- fuzz_input_fuzzer_LDFLAGS = $(FUZZING_LIBS)
-diff --git a/configure.ac b/configure.ac
-index 0d43485f..ca9b9473 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -449,6 +449,16 @@ if test "x$enable_cgroups" = xyes; then
- 	fi
- fi
- 
-+# Enable sixel support.
-+AC_ARG_ENABLE(
-+	sixel,
-+	AS_HELP_STRING(--enable-sixel, enable sixel images)
-+)
-+if test "x$enable_sixel" = xyes; then
-+	AC_DEFINE(ENABLE_SIXEL)
-+fi
-+AM_CONDITIONAL(ENABLE_SIXEL, [test "x$enable_sixel" = xyes])
-+
- # Check for b64_ntop. If we have b64_ntop, we assume b64_pton as well.
- AC_MSG_CHECKING(for b64_ntop)
- AC_LINK_IFELSE([AC_LANG_PROGRAM(
 diff --git a/image-sixel.c b/image-sixel.c
-new file mode 100644
-index 00000000..cc13f767
---- /dev/null
+index 2958d20d..9fe2a0e9 100644
+--- a/image-sixel.c
 +++ b/image-sixel.c
-@@ -0,0 +1,619 @@
-+/* $OpenBSD$ */
-+
-+/*
-+ * Copyright (c) 2019 Nicholas Marriott <nicholas.marriott@gmail.com>
-+ *
-+ * Permission to use, copy, modify, and distribute this software for any
-+ * purpose with or without fee is hereby granted, provided that the above
-+ * copyright notice and this permission notice appear in all copies.
-+ *
-+ * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
-+ * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
-+ * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
-+ * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
-+ * WHATSOEVER RESULTING FROM LOSS OF MIND, USE, DATA OR PROFITS, WHETHER
-+ * IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING
-+ * OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-+ */
-+
-+#include <sys/types.h>
-+
-+#include <stdlib.h>
-+#include <string.h>
-+
-+#include "tmux.h"
-+
-+#define SIXEL_COLOUR_REGISTERS 1024
-+#define SIXEL_WIDTH_LIMIT 2016
-+#define SIXEL_HEIGHT_LIMIT 2016
-+
-+struct sixel_line {
-+	u_int		 x;
-+	uint16_t	*data;
-+};
-+
-+struct sixel_image {
-+	u_int			 x;
-+	u_int			 y;
-+	u_int			 xpixel;
-+	u_int			 ypixel;
-+
-+	u_int			*colours;
-+	u_int			 ncolours;
-+
-+	u_int			 dx;
-+	u_int			 dy;
-+	u_int			 dc;
-+
-+	struct sixel_line	*lines;
-+};
-+
-+static int
-+sixel_parse_expand_lines(struct sixel_image *si, u_int y)
-+{
-+	if (y <= si->y)
-+		return (0);
-+	if (y > SIXEL_HEIGHT_LIMIT)
-+		return (1);
-+	si->lines = xrecallocarray(si->lines, si->y, y, sizeof *si->lines);
-+	si->y = y;
-+	return (0);
-+}
-+
-+static int
-+sixel_parse_expand_line(struct sixel_image *si, struct sixel_line *sl, u_int x)
-+{
-+	if (x <= sl->x)
-+		return (0);
-+	if (x > SIXEL_WIDTH_LIMIT)
-+		return (1);
-+	if (x > si->x)
-+		si->x = x;
-+	sl->data = xrecallocarray(sl->data, sl->x, si->x, sizeof *sl->data);
-+	sl->x = si->x;
-+	return (0);
-+}
-+
-+static u_int
-+sixel_get_pixel(struct sixel_image *si, u_int x, u_int y)
-+{
-+	struct sixel_line	*sl;
-+
-+	if (y >= si->y)
-+		return (0);
-+	sl = &si->lines[y];
-+	if (x >= sl->x)
-+		return (0);
-+	return (sl->data[x]);
-+}
-+
-+static int
-+sixel_set_pixel(struct sixel_image *si, u_int x, u_int y, u_int c)
-+{
-+	struct sixel_line	*sl;
-+
-+	if (sixel_parse_expand_lines(si, y + 1) != 0)
-+		return (1);
-+	sl = &si->lines[y];
-+	if (sixel_parse_expand_line(si, sl, x + 1) != 0)
-+		return (1);
-+	sl->data[x] = c;
-+
-+	return (0);
-+}
-+
-+static int
-+sixel_parse_write(struct sixel_image *si, u_int ch)
-+{
-+	struct sixel_line	*sl;
-+	u_int			 i;
+@@ -105,6 +105,9 @@ sixel_parse_write(struct sixel_image *si, u_int ch)
+ {
+ 	struct sixel_line	*sl;
+ 	u_int			 i;
++#ifndef NO_FIX_SIXEL
 +	u_int			 dstdata, srcdata;
-+
-+	if (sixel_parse_expand_lines(si, si->dy + 6) != 0)
-+		return (1);
-+	sl = &si->lines[si->dy];
-+
-+	for (i = 0; i < 6; i++) {
-+		if (sixel_parse_expand_line(si, sl, si->dx + 1) != 0)
-+			return (1);
++#endif
+ 
+ 	if (sixel_parse_expand_lines(si, si->dy + 6) != 0)
+ 		return (1);
+@@ -113,8 +116,32 @@ sixel_parse_write(struct sixel_image *si, u_int ch)
+ 	for (i = 0; i < 6; i++) {
+ 		if (sixel_parse_expand_line(si, sl, si->dx + 1) != 0)
+ 			return (1);
++#ifndef NO_FIX_SIXEL
 +		if (ch & (1 << i)) {
 +			if (sl->data[si->dx] == 0) {
 +				/* The element of the array for storing pixels, sl->data[si->dx], stores
@@ -304,288 +162,19 @@ index 00000000..cc13f767
 +				sl->data[si->dx] = dstdata + 1;
 +			}
 +		}
-+		sl++;
-+	}
-+	return (0);
-+}
-+
-+static const char *
-+sixel_parse_attributes(struct sixel_image *si, const char *cp, const char *end)
-+{
-+	const char	*last;
-+	char		*endptr;
-+	u_int		 x, y;
-+
-+	last = cp;
-+	while (last != end) {
-+		if (*last != ';' && (*last < '0' || *last > '9'))
-+			break;
-+		last++;
-+	}
-+	strtoul(cp, &endptr, 10);
-+	if (endptr == last || *endptr != ';')
-+		return (last);
-+	strtoul(endptr + 1, &endptr, 10);
-+	if (endptr == last || *endptr != ';')
-+		return (NULL);
-+
-+	x = strtoul(endptr + 1, &endptr, 10);
-+	if (endptr == last || *endptr != ';')
-+		return (NULL);
-+	if (x > SIXEL_WIDTH_LIMIT)
-+		return (NULL);
-+	y = strtoul(endptr + 1, &endptr, 10);
-+	if (endptr != last)
-+		return (NULL);
-+	if (y > SIXEL_HEIGHT_LIMIT)
-+		return (NULL);
-+
-+	si->x = x;
-+	sixel_parse_expand_lines(si, y);
-+
-+	return (last);
-+}
-+
-+static const char *
-+sixel_parse_colour(struct sixel_image *si, const char *cp, const char *end)
-+{
-+	const char	*last;
-+	char		*endptr;
-+	u_int		 c, type, r, g, b;
-+
-+	last = cp;
-+	while (last != end) {
-+		if (*last != ';' && (*last < '0' || *last > '9'))
-+			break;
-+		last++;
-+	}
-+
-+	c = strtoul(cp, &endptr, 10);
-+	if (c > SIXEL_COLOUR_REGISTERS)
-+		return (NULL);
-+	si->dc = c + 1;
-+	if (endptr == last || *endptr != ';')
-+		return (last);
-+
-+	type = strtoul(endptr + 1, &endptr, 10);
-+	if (endptr == last || *endptr != ';')
-+		return (NULL);
-+	r = strtoul(endptr + 1, &endptr, 10);
-+	if (endptr == last || *endptr != ';')
-+		return (NULL);
-+	g = strtoul(endptr + 1, &endptr, 10);
-+	if (endptr == last || *endptr != ';')
-+		return (NULL);
-+	b = strtoul(endptr + 1, &endptr, 10);
-+	if (endptr != last)
-+		return (NULL);
-+
-+	if (type != 1 && type != 2)
-+		return (NULL);
-+	if (c + 1 > si->ncolours) {
-+		si->colours = xrecallocarray(si->colours, si->ncolours, c + 1,
-+		    sizeof *si->colours);
-+		si->ncolours = c + 1;
-+	}
-+	si->colours[c] = (type << 24) | (r << 16) | (g << 8) | b;
-+	return (last);
-+}
-+
-+static const char *
-+sixel_parse_repeat(struct sixel_image *si, const char *cp, const char *end)
-+{
-+	const char	*last;
-+	char		 tmp[32], ch;
-+	u_int		 n = 0, i;
-+	const char	*errstr = NULL;
-+
-+	last = cp;
-+	while (last != end) {
-+		if (*last < '0' || *last > '9')
-+			break;
-+		tmp[n++] = *last++;
-+		if (n == (sizeof tmp) - 1)
-+			return (NULL);
-+	}
-+	if (n == 0 || last == end)
-+		return (NULL);
-+	tmp[n] = '\0';
-+
-+	n = strtonum(tmp, 1, SIXEL_WIDTH_LIMIT, &errstr);
-+	if (n == 0 || errstr != NULL)
-+		return (NULL);
-+
-+	ch = (*last++) - 0x3f;
-+	for (i = 0; i < n; i++) {
-+		if (sixel_parse_write(si, ch) != 0)
-+			return (NULL);
-+		si->dx++;
-+	}
-+	return (last);
-+}
-+
-+struct sixel_image *
-+sixel_parse(const char *buf, size_t len, u_int xpixel, u_int ypixel)
-+{
-+	struct sixel_image	*si;
-+	const char		*cp = buf, *end = buf + len;
-+	char			 ch;
-+
-+	if (len == 0 || len == 1 || *cp++ != 'q')
-+		return (NULL);
-+
-+	si = xcalloc (1, sizeof *si);
-+	si->xpixel = xpixel;
-+	si->ypixel = ypixel;
-+
-+	while (cp != end) {
-+		ch = *cp++;
-+		switch (ch) {
-+		case '"':
-+			cp = sixel_parse_attributes(si, cp, end);
-+			if (cp == NULL)
-+				goto bad;
-+			break;
-+		case '#':
-+			cp = sixel_parse_colour(si, cp, end);
-+			if (cp == NULL)
-+				goto bad;
-+			break;
-+		case '!':
-+			cp = sixel_parse_repeat(si, cp, end);
-+			if (cp == NULL)
-+				goto bad;
-+			break;
-+		case '-':
-+			si->dx = 0;
-+			si->dy += 6;
-+			break;
-+		case '$':
-+			si->dx = 0;
-+			break;
-+		default:
-+			if (ch < 0x20)
-+				break;
-+			if (ch < 0x3f || ch > 0x7e)
-+				goto bad;
-+			if (sixel_parse_write(si, ch - 0x3f) != 0)
-+				goto bad;
-+			si->dx++;
-+			break;
-+		}
-+	}
-+
-+	if (si->x == 0 || si->y == 0)
-+		goto bad;
-+	return (si);
-+
-+bad:
-+	free(si);
-+	return (NULL);
-+}
-+
-+void
-+sixel_free(struct sixel_image *si)
-+{
-+	u_int	y;
-+
-+	for (y = 0; y < si->y; y++)
-+		free(si->lines[y].data);
-+	free(si->lines);
-+
-+	free(si->colours);
-+	free(si);
-+}
-+
-+void
-+sixel_log(struct sixel_image *si)
-+{
-+	struct sixel_line	*sl;
-+	char			 s[SIXEL_WIDTH_LIMIT + 1];
-+	u_int			 i, x, y, cx, cy;
-+
-+	sixel_size_in_cells(si, &cx, &cy);
-+	log_debug("%s: image %ux%u (%ux%u)", __func__, si->x, si->y, cx, cy);
-+	for (i = 0; i < si->ncolours; i++)
-+		log_debug("%s: colour %u is %07x", __func__, i, si->colours[i]);
-+	for (y = 0; y < si->y; y++) {
-+		sl = &si->lines[y];
-+		for (x = 0; x < si->x; x++) {
-+			if (x >= sl->x)
-+				s[x] = '_';
-+			else if (sl->data[x] != 0)
-+				s[x] = '0' + (sl->data[x] - 1) % 10;
-+			else
-+				s[x] = '.';
-+			}
-+		s[x] = '\0';
-+		log_debug("%s: %4u: %s", __func__, y, s);
-+	}
-+}
-+
-+void
-+sixel_size_in_cells(struct sixel_image *si, u_int *x, u_int *y)
-+{
-+	if ((si->x % si->xpixel) == 0)
-+		*x = (si->x / si->xpixel);
-+	else
-+		*x = 1 + (si->x / si->xpixel);
-+	if ((si->y % si->ypixel) == 0)
-+		*y = (si->y / si->ypixel);
-+	else
-+		*y = 1 + (si->y / si->ypixel);
-+}
-+
-+struct sixel_image *
-+sixel_scale(struct sixel_image *si, u_int xpixel, u_int ypixel, u_int ox,
-+    u_int oy, u_int sx, u_int sy, int colours)
-+{
-+	struct sixel_image	*new;
-+	u_int			 cx, cy, pox, poy, psx, psy, tsx, tsy, px, py;
-+	u_int			 x, y, i;
-+
-+	/*
-+	 * We want to get the section of the image at ox,oy in image cells and
-+	 * map it onto the same size in terminal cells, remembering that we
-+	 * can only draw vertical sections of six pixels.
-+	 */
-+
-+	sixel_size_in_cells(si, &cx, &cy);
-+	if (ox >= cx)
-+		return (NULL);
-+	if (oy >= cy)
-+		return (NULL);
-+	if (ox + sx >= cx)
-+		sx = cx - ox;
-+	if (oy + sy >= cy)
-+		sy = cy - oy;
-+
-+	if (xpixel == 0)
-+		xpixel = si->xpixel;
-+	if (ypixel == 0)
-+		ypixel = si->ypixel;
-+
-+	pox = ox * si->xpixel;
-+	poy = oy * si->ypixel;
-+	psx = sx * si->xpixel;
-+	psy = sy * si->ypixel;
-+
-+	tsx = sx * xpixel;
-+	tsy = ((sy * ypixel) / 6) * 6;
-+
-+	new = xcalloc (1, sizeof *si);
-+	new->xpixel = xpixel;
-+	new->ypixel = ypixel;
-+
-+	for (y = 0; y < tsy; y++) {
-+		py = poy + ((double)y * psy / tsy);
-+		for (x = 0; x < tsx; x++) {
-+			px = pox + ((double)x * psx / tsx);
-+			sixel_set_pixel(new, x, y, sixel_get_pixel(si, px, py));
-+		}
-+	}
-+
-+	if (colours) {
++#else
+ 		if (ch & (1 << i))
+ 			sl->data[si->dx] = si->dc;
++#endif
+ 		sl++;
+ 	}
+ 	return (0);
+@@ -431,7 +458,19 @@ sixel_scale(struct sixel_image *si, u_int xpixel, u_int ypixel, u_int ox,
+ 	}
+ 
+ 	if (colours) {
++#ifndef NO_FIX_SIXEL
++		/* Code to prevent the function xmalloc() from exiting abnormally if si->ncolors == 0 */
 +		if (si->ncolours == 0) {
 +			new->colours = xmalloc((size_t)1 * sizeof *new->colours);
 +			new->colours[0] = 0;
@@ -594,65 +183,27 @@ index 00000000..cc13f767
 +			new->colours = xmalloc(si->ncolours * sizeof *new->colours);
 +			log_debug("%s: si->ncolours == %d.", __func__, si->ncolours);
 +		}
-+
-+		for (i = 0; i < si->ncolours; i++)
-+			new->colours[i] = si->colours[i];
-+		new->ncolours = si->ncolours;
-+	}
-+	return (new);
-+}
-+
-+static void
-+sixel_print_add(char **buf, size_t *len, size_t *used, const char *s,
-+    size_t slen)
-+{
-+	if (*used + slen >= *len + 1) {
-+		(*len) *= 2;
-+		*buf = xrealloc(*buf, *len);
-+	}
-+	memcpy(*buf + *used, s, slen);
-+	(*used) += slen;
-+}
-+
-+static void
-+sixel_print_repeat(char **buf, size_t *len, size_t *used, u_int count, char ch)
-+{
-+	char	tmp[16];
-+	size_t	tmplen;
-+
-+	if (count == 1)
-+		sixel_print_add(buf, len, used, &ch, 1);
-+	else if (count == 2) {
-+		sixel_print_add(buf, len, used, &ch, 1);
-+		sixel_print_add(buf, len, used, &ch, 1);
-+	} else if (count == 3) {
-+		sixel_print_add(buf, len, used, &ch, 1);
-+		sixel_print_add(buf, len, used, &ch, 1);
-+		sixel_print_add(buf, len, used, &ch, 1);
-+	} else if (count != 0) {
-+		tmplen = xsnprintf(tmp, sizeof tmp, "!%u%c", count, ch);
-+		sixel_print_add(buf, len, used, tmp, tmplen);
-+	}
-+}
-+
-+char *
-+sixel_print(struct sixel_image *si, struct sixel_image *map, size_t *size)
-+{
-+	char			*buf, tmp[64], *contains, data, last = 0;
-+	size_t			 len, used = 0, tmplen;
-+	u_int			*colours, ncolours, i, c, x, y, count;
-+	struct sixel_line	*sl;
-+
-+	if (map != NULL) {
-+		colours = map->colours;
-+		ncolours = map->ncolours;
++#else
+ 		new->colours = xmalloc(si->ncolours * sizeof *new->colours);
++#endif
+ 		for (i = 0; i < si->ncolours; i++)
+ 			new->colours[i] = si->colours[i];
+ 		new->ncolours = si->ncolours;
+@@ -483,11 +522,33 @@ sixel_print(struct sixel_image *si, struct sixel_image *map, size_t *size)
+ 	if (map != NULL) {
+ 		colours = map->colours;
+ 		ncolours = map->ncolours;
++#ifndef NO_FIX_SIXEL
 +		log_debug("%s: map->{colours,ncolours}; colours == %p, ncolours == %d", __func__, colours, ncolours);
-+	} else {
-+		colours = si->colours;
-+		ncolours = si->ncolours;
++#endif
+ 	} else {
+ 		colours = si->colours;
+ 		ncolours = si->ncolours;
++#ifndef NO_FIX_SIXEL
 +		log_debug("%s: si->{colours,ncolours}; colours == %p, ncolours == %d", __func__, colours, ncolours);
-+	}
-+
++#endif
+ 	}
++#ifndef NO_FIX_SIXEL
 +	if (ncolours == 0) {
 +		/* If ncolours, the value of the palette number, is 0, then contains,
 +		 * which stores a flag indicating whether a certain palette number is in use,
@@ -666,29 +217,17 @@ index 00000000..cc13f767
 +	} else {
 +		contains = xcalloc(1, ncolours);
 +	}
-+
-+	len = 8192;
-+	buf = xmalloc(len);
-+
-+	sixel_print_add(&buf, &len, &used, "\033Pq", 3);
-+
-+	tmplen = xsnprintf(tmp, sizeof tmp, "\"1;1;%u;%u", si->x, si->y);
-+	sixel_print_add(&buf, &len, &used, tmp, tmplen);
-+
-+	for (i = 0; i < ncolours; i++) {
-+		c = colours[i];
-+		tmplen = xsnprintf(tmp, sizeof tmp, "#%u;%u;%u;%u;%u",
-+		    i, c >> 24, (c >> 16) & 0xff, (c >> 8) & 0xff, c & 0xff);
-+		sixel_print_add(&buf, &len, &used, tmp, tmplen);
-+	}
-+
-+	for (y = 0; y < si->y; y += 6) {
-+		memset(contains, 0, ncolours);
-+		for (x = 0; x < si->x; x++) {
-+			for (i = 0; i < 6; i++) {
-+				if (y + i >= si->y)
-+					break;
-+				sl = &si->lines[y + i];
++#else
+ 	contains = xcalloc(1, ncolours);
++#endif
+ 
+ 	len = 8192;
+ 	buf = xmalloc(len);
+@@ -511,8 +572,23 @@ sixel_print(struct sixel_image *si, struct sixel_image *map, size_t *size)
+ 				if (y + i >= si->y)
+ 					break;
+ 				sl = &si->lines[y + i];
++#ifndef NO_FIX_SIXEL
 +				if (x < sl->x) {
 +					/* For sl->data[x], which is an element of an array for storing the palette number for each pixel,
 +					 * if the value of sl->data[x] is 0 except for the bottom pixel with y-coordinate,
@@ -701,283 +240,18 @@ index 00000000..cc13f767
 +					if (sl->data[x] != 0)
 +						contains[sl->data[x] - 1] = 1;
 +				}
-+			}
-+		}
-+
-+		for (c = 0; c < ncolours; c++) {
-+			if (!contains[c])
-+				continue;
-+			tmplen = xsnprintf(tmp, sizeof tmp, "#%u", c);
-+			sixel_print_add(&buf, &len, &used, tmp, tmplen);
-+
-+			count = 0;
-+			for (x = 0; x < si->x; x++) {
-+				data = 0;
-+				for (i = 0; i < 6; i++) {
-+					if (y + i >= si->y)
-+						break;
-+					sl = &si->lines[y + i];
-+					if (x < sl->x && sl->data[x] == c + 1)
-+						data |= (1 << i);
-+				}
-+				data += 0x3f;
-+				if (data != last) {
-+					sixel_print_repeat(&buf, &len, &used,
-+					    count, last);
-+					last = data;
-+					count = 1;
-+				} else
-+					count++;
-+			}
-+			sixel_print_repeat(&buf, &len, &used, count, data);
-+			sixel_print_add(&buf, &len, &used, "$", 1);
-+		}
-+
-+		if (buf[used - 1] == '$')
-+			used--;
-+		if (buf[used - 1] != '-')
-+			sixel_print_add(&buf, &len, &used, "-", 1);
-+	}
-+	if (buf[used - 1] == '$' || buf[used - 1] == '-')
-+		used--;
-+
-+	sixel_print_add(&buf, &len, &used, "\033\\", 2);
-+
-+	buf[used] = '\0';
-+	if (size != NULL)
-+		*size = used;
-+
-+	free(contains);
-+	return (buf);
-+}
-+
-+struct screen *
-+sixel_to_screen(struct sixel_image *si)
-+{
-+	struct screen		*s;
-+	struct screen_write_ctx	 ctx;
-+	struct grid_cell	 gc;
-+	u_int			 x, y, sx, sy;
-+
-+	sixel_size_in_cells(si, &sx, &sy);
-+
-+	s = xmalloc(sizeof *s);
-+	screen_init(s, sx, sy, 0);
-+
-+	memcpy(&gc, &grid_default_cell, sizeof gc);
-+	gc.attr |= (GRID_ATTR_CHARSET|GRID_ATTR_DIM);
-+	utf8_set(&gc.data, '~');
-+
-+	screen_write_start(&ctx, s);
-+	if (sx == 1 || sy == 1) {
-+		for (y = 0; y < sy; y++) {
-+			for (x = 0; x < sx; x++)
-+				grid_view_set_cell(s->grid, x, y, &gc);
-+		}
-+	} else {
-+		screen_write_box(&ctx, sx, sy, BOX_LINES_DEFAULT, NULL, NULL);
-+		for (y = 1; y < sy - 1; y++) {
-+			for (x = 1; x < sx - 1; x++)
-+				grid_view_set_cell(s->grid, x, y, &gc);
-+		}
-+	}
-+	screen_write_stop(&ctx);
-+	return (s);
-+}
-diff --git a/image.c b/image.c
-new file mode 100644
-index 00000000..7135c6a3
---- /dev/null
-+++ b/image.c
-@@ -0,0 +1,141 @@
-+/* $OpenBSD$ */
-+
-+/*
-+ * Copyright (c) 2007 Nicholas Marriott <nicholas.marriott@gmail.com>
-+ *
-+ * Permission to use, copy, modify, and distribute this software for any
-+ * purpose with or without fee is hereby granted, provided that the above
-+ * copyright notice and this permission notice appear in all copies.
-+ *
-+ * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
-+ * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
-+ * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
-+ * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
-+ * WHATSOEVER RESULTING FROM LOSS OF MIND, USE, DATA OR PROFITS, WHETHER
-+ * IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING
-+ * OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-+ */
-+
-+#include <sys/types.h>
-+
-+#include <stdlib.h>
-+
-+#include "tmux.h"
-+
-+static struct images	all_images = TAILQ_HEAD_INITIALIZER(all_images);
-+static u_int		all_images_count;
-+
-+static void
-+image_free(struct image *im)
-+{
-+	struct screen	*s = im->s;
-+
-+	TAILQ_REMOVE(&all_images, im, all_entry);
-+	all_images_count--;
-+
-+	TAILQ_REMOVE(&s->images, im, entry);
-+	sixel_free(im->data);
-+	free(im->fallback);
-+	free(im);
-+}
-+
-+int
-+image_free_all(struct screen *s)
-+{
-+	struct image	*im, *im1;
-+	int		 redraw = !TAILQ_EMPTY(&s->images);
-+
-+	TAILQ_FOREACH_SAFE(im, &s->images, entry, im1)
-+		image_free(im);
-+	return (redraw);
-+}
-+
-+struct image*
-+image_store(struct screen *s, struct sixel_image *si)
-+{
-+	struct image	*im;
-+
-+	im = xcalloc(1, sizeof *im);
-+	im->s = s;
-+	im->data = si;
-+
-+	im->px = s->cx;
-+	im->py = s->cy;
-+	sixel_size_in_cells(si, &im->sx, &im->sy);
-+
-+	/* XXX Fallback mode: This can be abstracted further. */
-+	xasprintf(&im->fallback, "Sixel image (%ux%u)\n", im->sx, im->sy);
-+
-+	TAILQ_INSERT_TAIL(&s->images, im, entry);
-+
-+	TAILQ_INSERT_TAIL(&all_images, im, all_entry);
-+	if (++all_images_count == 10/*XXX*/)
-+		image_free(TAILQ_FIRST(&all_images));
-+
-+	return (im);
-+}
-+
-+int
-+image_check_line(struct screen *s, u_int py, u_int ny)
-+{
-+	struct image	*im, *im1;
-+	int		 redraw = 0;
-+
-+	TAILQ_FOREACH_SAFE(im, &s->images, entry, im1) {
-+		if (py + ny > im->py && py < im->py + im->sy) {
-+			image_free(im);
-+			redraw = 1;
-+		}
-+	}
-+	return (redraw);
-+}
-+
-+int
-+image_check_area(struct screen *s, u_int px, u_int py, u_int nx, u_int ny)
-+{
-+	struct image	*im, *im1;
-+	int		 redraw = 0;
-+
-+	TAILQ_FOREACH_SAFE(im, &s->images, entry, im1) {
-+		if (py + ny <= im->py || py >= im->py + im->sy)
-+			continue;
-+		if (px + nx <= im->px || px >= im->px + im->sx)
-+			continue;
-+		image_free(im);
-+		redraw = 1;
-+	}
-+	return (redraw);
-+}
-+
-+int
-+image_scroll_up(struct screen *s, u_int lines)
-+{
-+	struct image		*im, *im1;
-+	int			 redraw = 0;
-+	u_int			 sx, sy;
-+	struct sixel_image	*new;
-+
-+	TAILQ_FOREACH_SAFE(im, &s->images, entry, im1) {
-+		if (im->py >= lines) {
-+			im->py -= lines;
-+			redraw = 1;
-+			continue;
-+		}
-+		if (im->py + im->sy <= lines) {
-+			image_free(im);
-+			redraw = 1;
-+			continue;
-+		}
-+		sx = im->sx;
-+		sy = (im->py + im->sy) - lines;
-+
-+		new = sixel_scale(im->data, 0, 0, 0, im->sy - sy, sx, sy, 1);
-+		sixel_free(im->data);
-+		im->data = new;
-+
-+		im->py = 0;
-+		sixel_size_in_cells(im->data, &im->sx, &im->sy);
-+		redraw = 1;
-+	}
-+	return (redraw);
-+}
-diff --git a/input.c b/input.c
-index 67b5ee66..740d4f80 100644
---- a/input.c
-+++ b/input.c
-@@ -1443,7 +1443,11 @@ input_csi_dispatch(struct input_ctx *ictx)
- 		case -1:
- 			break;
- 		case 0:
-+#ifdef ENABLE_SIXEL
-+			input_reply(ictx, "\033[?1;2;4c");
 +#else
- 			input_reply(ictx, "\033[?1;2c");
+ 				if (x < sl->x && sl->data[x] != 0)
+ 					contains[sl->data[x] - 1] = 1;
 +#endif
- 			break;
- 		default:
- 			log_debug("%s: unknown '%c'", __func__, ictx->ch);
-@@ -2245,11 +2249,25 @@ input_dcs_dispatch(struct input_ctx *ictx)
- 	const char		 prefix[] = "tmux;";
- 	const u_int		 prefixlen = (sizeof prefix) - 1;
- 	long long		 allow_passthrough = 0;
-+#ifdef ENABLE_SIXEL
-+	struct window		*w = wp->window;
-+	struct sixel_image	*si;
-+#endif
+ 			}
+ 		}
  
- 	if (wp == NULL)
- 		return (0);
- 	if (ictx->flags & INPUT_DISCARD)
- 		return (0);
-+
-+#ifdef ENABLE_SIXEL
-+	if (buf[0] == 'q') {
-+		si = sixel_parse(buf, len, w->xpixel, w->ypixel);
-+		if (si != NULL) {
-+			sixel_log(si);
-+			screen_write_sixelimage(sctx, si, ictx->cell.cell.bg);
-+		}
-+	}
-+#endif
- 	allow_passthrough = options_get_number(wp->options,
- 	    "allow-passthrough");
- 	if (!allow_passthrough)
 diff --git a/options-table.c b/options-table.c
-index e746ee34..15dce041 100644
+index 89200b95..c88a1178 100644
 --- a/options-table.c
 +++ b/options-table.c
-@@ -1255,6 +1255,38 @@ const struct options_table_entry options_table[] = {
+@@ -1264,6 +1264,38 @@ const struct options_table_entry options_table[] = {
  		  "This option is no longer used."
  	},
  
@@ -1016,403 +290,15 @@ index e746ee34..15dce041 100644
  	/* Hook options. */
  	OPTIONS_TABLE_HOOK("after-bind-key", ""),
  	OPTIONS_TABLE_HOOK("after-capture-pane", ""),
-diff --git a/screen-redraw.c b/screen-redraw.c
-index 470135cc..ce79b41f 100644
---- a/screen-redraw.c
-+++ b/screen-redraw.c
-@@ -856,4 +856,8 @@ screen_redraw_draw_pane(struct screen_redraw_ctx *ctx, struct window_pane *wp)
- 		tty_default_colours(&defaults, wp);
- 		tty_draw_line(tty, s, i, j, width, x, y, &defaults, palette);
- 	}
-+
-+#ifdef ENABLE_SIXEL
-+	tty_draw_images(c, wp, s);
-+#endif
- }
-diff --git a/screen-write.c b/screen-write.c
-index 25158ee5..2d78bab3 100644
---- a/screen-write.c
-+++ b/screen-write.c
-@@ -1011,6 +1011,11 @@ screen_write_alignmenttest(struct screen_write_ctx *ctx)
- 	memcpy(&gc, &grid_default_cell, sizeof gc);
- 	utf8_set(&gc.data, 'E');
- 
-+#ifdef ENABLE_SIXEL
-+	if (image_free_all(s) && ctx->wp != NULL)
-+		ctx->wp->flags |= PANE_REDRAW;
-+#endif
-+
- 	for (yy = 0; yy < screen_size_y(s); yy++) {
- 		for (xx = 0; xx < screen_size_x(s); xx++)
- 			grid_view_set_cell(s->grid, xx, yy, &gc);
-@@ -1045,6 +1050,11 @@ screen_write_insertcharacter(struct screen_write_ctx *ctx, u_int nx, u_int bg)
- 	if (s->cx > screen_size_x(s) - 1)
- 		return;
- 
-+#ifdef ENABLE_SIXEL
-+	if (image_check_line(s, s->cy, 1) && ctx->wp != NULL)
-+		ctx->wp->flags |= PANE_REDRAW;
-+#endif
-+
- 	screen_write_initctx(ctx, &ttyctx, 0);
- 	ttyctx.bg = bg;
- 
-@@ -1073,6 +1083,11 @@ screen_write_deletecharacter(struct screen_write_ctx *ctx, u_int nx, u_int bg)
- 	if (s->cx > screen_size_x(s) - 1)
- 		return;
- 
-+#ifdef ENABLE_SIXEL
-+	if (image_check_line(s, s->cy, 1) && ctx->wp != NULL)
-+		ctx->wp->flags |= PANE_REDRAW;
-+#endif
-+
- 	screen_write_initctx(ctx, &ttyctx, 0);
- 	ttyctx.bg = bg;
- 
-@@ -1101,6 +1116,11 @@ screen_write_clearcharacter(struct screen_write_ctx *ctx, u_int nx, u_int bg)
- 	if (s->cx > screen_size_x(s) - 1)
- 		return;
- 
-+#ifdef ENABLE_SIXEL
-+	if (image_check_line(s, s->cy, 1) && ctx->wp != NULL)
-+		ctx->wp->flags |= PANE_REDRAW;
-+#endif
-+
- 	screen_write_initctx(ctx, &ttyctx, 0);
- 	ttyctx.bg = bg;
- 
-@@ -1119,9 +1139,18 @@ screen_write_insertline(struct screen_write_ctx *ctx, u_int ny, u_int bg)
- 	struct grid	*gd = s->grid;
- 	struct tty_ctx	 ttyctx;
- 
-+#ifdef ENABLE_SIXEL
-+	u_int		 sy = screen_size_y(s);
-+#endif
-+
- 	if (ny == 0)
- 		ny = 1;
- 
-+#ifdef ENABLE_SIXEL
-+	if (image_check_line(s, s->cy, sy - s->cy) && ctx->wp != NULL)
-+		ctx->wp->flags |= PANE_REDRAW;
-+#endif
-+
- 	if (s->cy < s->rupper || s->cy > s->rlower) {
- 		if (ny > screen_size_y(s) - s->cy)
- 			ny = screen_size_y(s) - s->cy;
-@@ -1166,12 +1195,26 @@ screen_write_deleteline(struct screen_write_ctx *ctx, u_int ny, u_int bg)
- 	struct grid	*gd = s->grid;
- 	struct tty_ctx	 ttyctx;
- 
-+#ifdef ENABLE_SIXEL
-+	u_int		 sy = screen_size_y(s);
-+#endif
-+
- 	if (ny == 0)
- 		ny = 1;
- 
-+#ifdef ENABLE_SIXEL
-+	if (image_check_line(s, s->cy, sy - s->cy) && ctx->wp != NULL)
-+		ctx->wp->flags |= PANE_REDRAW;
-+#endif
-+
- 	if (s->cy < s->rupper || s->cy > s->rlower) {
-+#ifdef ENABLE_SIXEL
-+		if (ny > sy - s->cy)
-+			ny = sy - s->cy;
-+#else
- 		if (ny > screen_size_y(s) - s->cy)
- 			ny = screen_size_y(s) - s->cy;
-+#endif
- 		if (ny == 0)
- 			return;
- 
-@@ -1217,6 +1260,11 @@ screen_write_clearline(struct screen_write_ctx *ctx, u_int bg)
- 	if (gl->cellsize == 0 && COLOUR_DEFAULT(bg))
- 		return;
- 
-+#ifdef ENABLE_SIXEL
-+	if (image_check_line(s, s->cy, 1) && ctx->wp != NULL)
-+		ctx->wp->flags |= PANE_REDRAW;
-+#endif
-+
- 	grid_view_clear(s->grid, 0, s->cy, sx, 1, bg);
- 
- 	screen_write_collect_clear(ctx, s->cy, 1);
-@@ -1246,6 +1294,11 @@ screen_write_clearendofline(struct screen_write_ctx *ctx, u_int bg)
- 	if (s->cx > sx - 1 || (s->cx >= gl->cellsize && COLOUR_DEFAULT(bg)))
- 		return;
- 
-+#ifdef ENABLE_SIXEL
-+	if (image_check_line(s, s->cy, 1) && ctx->wp != NULL)
-+		ctx->wp->flags |= PANE_REDRAW;
-+#endif
-+
- 	grid_view_clear(s->grid, s->cx, s->cy, sx - s->cx, 1, bg);
- 
-  	before = screen_write_collect_trim(ctx, s->cy, s->cx, sx - s->cx, NULL);
-@@ -1273,6 +1326,11 @@ screen_write_clearstartofline(struct screen_write_ctx *ctx, u_int bg)
- 		return;
- 	}
- 
-+#ifdef ENABLE_SIXEL
-+	if (image_check_line(s, s->cy, 1) && ctx->wp != NULL)
-+		ctx->wp->flags |= PANE_REDRAW;
-+#endif
-+
- 	if (s->cx > sx - 1)
- 		grid_view_clear(s->grid, 0, s->cy, sx, 1, bg);
- 	else
-@@ -1320,6 +1378,11 @@ screen_write_reverseindex(struct screen_write_ctx *ctx, u_int bg)
- 	struct screen	*s = ctx->s;
- 	struct tty_ctx	 ttyctx;
- 
-+#ifdef ENABLE_SIXEL
-+	if (image_free_all(s) && ctx->wp != NULL)
-+		ctx->wp->flags |= PANE_REDRAW;
-+#endif
-+
- 	if (s->cy == s->rupper) {
- 		grid_view_scroll_region_down(s->grid, s->rupper, s->rlower, bg);
- 		screen_write_collect_flush(ctx, 0, __func__);
-@@ -1364,12 +1427,22 @@ screen_write_linefeed(struct screen_write_ctx *ctx, int wrapped, u_int bg)
- 	struct grid		*gd = s->grid;
- 	struct grid_line	*gl;
- 
-+#ifdef ENABLE_SIXEL
-+	int			 redraw = 0;
-+	u_int			 rupper = s->rupper, rlower = s->rlower;
-+#endif
-+
- 	gl = grid_get_line(gd, gd->hsize + s->cy);
- 	if (wrapped)
- 		gl->flags |= GRID_LINE_WRAPPED;
- 
-+#ifdef ENABLE_SIXEL
-+	log_debug("%s: at %u,%u (region %u-%u)", __func__, s->cx, s->cy,
-+	    rupper, rlower);
-+#else
- 	log_debug("%s: at %u,%u (region %u-%u)", __func__, s->cx, s->cy,
- 	    s->rupper, s->rlower);
-+#endif
- 
- 	if (bg != ctx->bg) {
- 		screen_write_collect_flush(ctx, 1, __func__);
-@@ -1377,7 +1450,17 @@ screen_write_linefeed(struct screen_write_ctx *ctx, int wrapped, u_int bg)
- 	}
- 
- 	if (s->cy == s->rlower) {
-+#ifdef ENABLE_SIXEL
-+		if (rlower == screen_size_y(s) - 1)
-+			redraw = image_scroll_up(s, 1);
-+		else
-+			redraw = image_check_line(s, rupper, rlower - rupper);
-+		if (redraw && ctx->wp != NULL)
-+			ctx->wp->flags |= PANE_REDRAW;
-+		grid_view_scroll_region_up(gd, rupper, rlower, bg);
-+#else
- 		grid_view_scroll_region_up(gd, s->rupper, s->rlower, bg);
-+#endif
- 		screen_write_collect_scroll(ctx, bg);
- 		ctx->scrolled++;
- 	} else if (s->cy < screen_size_y(s) - 1)
-@@ -1402,6 +1485,11 @@ screen_write_scrollup(struct screen_write_ctx *ctx, u_int lines, u_int bg)
- 		ctx->bg = bg;
- 	}
- 
-+#ifdef ENABLE_SIXEL
-+	if (image_scroll_up(s, lines) && ctx->wp != NULL)
-+		ctx->wp->flags |= PANE_REDRAW;
-+#endif
-+
- 	for (i = 0; i < lines; i++) {
- 		grid_view_scroll_region_up(gd, s->rupper, s->rlower, bg);
- 		screen_write_collect_scroll(ctx, bg);
-@@ -1426,6 +1514,11 @@ screen_write_scrolldown(struct screen_write_ctx *ctx, u_int lines, u_int bg)
- 	else if (lines > s->rlower - s->rupper + 1)
- 		lines = s->rlower - s->rupper + 1;
- 
-+#ifdef ENABLE_SIXEL
-+	if (image_free_all(s) && ctx->wp != NULL)
-+		ctx->wp->flags |= PANE_REDRAW;
-+#endif
-+
- 	for (i = 0; i < lines; i++)
- 		grid_view_scroll_region_down(gd, s->rupper, s->rlower, bg);
- 
-@@ -1450,6 +1543,11 @@ screen_write_clearendofscreen(struct screen_write_ctx *ctx, u_int bg)
- 	struct tty_ctx	 ttyctx;
- 	u_int		 sx = screen_size_x(s), sy = screen_size_y(s);
- 
-+#ifdef ENABLE_SIXEL
-+	if (image_check_line(s, s->cy, sy - s->cy) && ctx->wp != NULL)
-+		ctx->wp->flags |= PANE_REDRAW;
-+#endif
-+
- 	screen_write_initctx(ctx, &ttyctx, 1);
- 	ttyctx.bg = bg;
- 
-@@ -1479,6 +1577,11 @@ screen_write_clearstartofscreen(struct screen_write_ctx *ctx, u_int bg)
- 	struct tty_ctx	 ttyctx;
- 	u_int		 sx = screen_size_x(s);
- 
-+#ifdef ENABLE_SIXEL
-+	if (image_check_line(s, 0, s->cy - 1) && ctx->wp != NULL)
-+		ctx->wp->flags |= PANE_REDRAW;
-+#endif
-+
- 	screen_write_initctx(ctx, &ttyctx, 1);
- 	ttyctx.bg = bg;
- 
-@@ -1502,6 +1605,11 @@ screen_write_clearscreen(struct screen_write_ctx *ctx, u_int bg)
- 	struct tty_ctx	 ttyctx;
- 	u_int		 sx = screen_size_x(s), sy = screen_size_y(s);
- 
-+#ifdef ENABLE_SIXEL
-+	if (image_free_all(s) && ctx->wp != NULL)
-+		ctx->wp->flags |= PANE_REDRAW;
-+#endif
-+
- 	screen_write_initctx(ctx, &ttyctx, 1);
- 	ttyctx.bg = bg;
- 
-@@ -1770,6 +1878,11 @@ screen_write_collect_end(struct screen_write_ctx *ctx)
- 		}
- 	}
- 
-+#ifdef ENABLE_SIXEL
-+	if (image_check_area(s, s->cx, s->cy, ci->used, 1) && ctx->wp != NULL)
-+		ctx->wp->flags |= PANE_REDRAW;
-+#endif
-+
- 	grid_view_set_cells(s->grid, s->cx, s->cy, &ci->gc, cl->data + ci->x,
- 	    ci->used);
- 	screen_write_set_cursor(ctx, s->cx + ci->used, -1);
-@@ -2157,6 +2270,61 @@ screen_write_rawstring(struct screen_write_ctx *ctx, u_char *str, u_int len,
- 	tty_write(tty_cmd_rawstring, &ttyctx);
- }
- 
-+#ifdef ENABLE_SIXEL
-+/* Write a SIXEL image. */
-+void
-+screen_write_sixelimage(struct screen_write_ctx *ctx, struct sixel_image *si,
-+    u_int bg)
-+{
-+	struct screen		*s = ctx->s;
-+	struct grid		*gd = s->grid;
-+	struct tty_ctx		 ttyctx;
-+	u_int			 x, y, sx, sy, cx = s->cx, cy = s->cy, i, lines;
-+	struct sixel_image	*new;
-+
-+	sixel_size_in_cells(si, &x, &y);
-+	if (x > screen_size_x(s) || y > screen_size_y(s)) {
-+		if (x > screen_size_x(s) - cx)
-+			sx = screen_size_x(s) - cx;
-+		else
-+			sx = x;
-+		if (y > screen_size_y(s) - 1)
-+			sy = screen_size_y(s) - 1;
-+		else
-+			sy = y;
-+		new = sixel_scale(si, 0, 0, 0, y - sy, sx, sy, 1);
-+		sixel_free(si);
-+		si = new;
-+		sixel_size_in_cells(si, &x, &y);
-+	}
-+
-+	sy = screen_size_y(s) - cy;
-+	if (sy < y) {
-+		lines = y - sy + 1;
-+		if (image_scroll_up(s, lines) && ctx->wp != NULL)
-+			ctx->wp->flags |= PANE_REDRAW;
-+		for (i = 0; i < lines; i++) {
-+			grid_view_scroll_region_up(gd, 0, screen_size_y(s) - 1,
-+			    bg);
-+			screen_write_collect_scroll(ctx, bg);
-+		}
-+		ctx->scrolled += lines;
-+		if (lines > cy)
-+			screen_write_cursormove(ctx, -1, 0, 0);
-+		else
-+			screen_write_cursormove(ctx, -1, cy - lines, 0);
-+	}
-+	screen_write_collect_flush(ctx, 0, __func__);
-+
-+	screen_write_initctx(ctx, &ttyctx, 0);
-+	ttyctx.ptr = image_store(s, si);
-+
-+	tty_write(tty_cmd_sixelimage, &ttyctx);
-+
-+	screen_write_cursormove(ctx, 0, cy + y, 0);
-+}
-+#endif
-+
- /* Turn alternate screen on. */
- void
- screen_write_alternateon(struct screen_write_ctx *ctx, struct grid_cell *gc,
-diff --git a/screen.c b/screen.c
-index a9b7d40e..6f5d5876 100644
---- a/screen.c
-+++ b/screen.c
-@@ -88,6 +88,10 @@ screen_init(struct screen *s, u_int sx, u_int sy, u_int hlimit)
- 	s->tabs = NULL;
- 	s->sel = NULL;
- 
-+#ifdef ENABLE_SIXEL
-+	TAILQ_INIT(&s->images);
-+#endif
-+
- 	s->write_list = NULL;
- 	s->hyperlinks = NULL;
- 
-@@ -119,6 +123,11 @@ screen_reinit(struct screen *s)
- 
- 	screen_clear_selection(s);
- 	screen_free_titles(s);
-+
-+#ifdef ENABLE_SIXEL
-+	image_free_all(s);
-+#endif
-+
- 	screen_reset_hyperlinks(s);
- }
- 
-@@ -151,6 +160,10 @@ screen_free(struct screen *s)
- 	if (s->hyperlinks != NULL)
- 		hyperlinks_free(s->hyperlinks);
- 	screen_free_titles(s);
-+
-+#ifdef ENABLE_SIXEL
-+	image_free_all(s);
-+#endif
- }
- 
- /* Reset tabs to default, eight spaces apart. */
-@@ -294,8 +307,15 @@ screen_resize_cursor(struct screen *s, u_int sx, u_int sy, int reflow,
- 	if (sy != screen_size_y(s))
- 		screen_resize_y(s, sy, eat_empty, &cy);
- 
-+#ifdef ENABLE_SIXEL
-+	if (reflow) {
-+		image_free_all(s);
-+		screen_reflow(s, sx, &cx, &cy, cursor);
-+	}
-+#else
- 	if (reflow)
- 		screen_reflow(s, sx, &cx, &cy, cursor);
-+#endif
- 
- 	if (cy >= s->grid->hsize) {
- 		s->cx = cx;
 diff --git a/server-client.c b/server-client.c
-index 874a3522..ccc794fc 100644
+index e3c1adaa..d6e57291 100644
 --- a/server-client.c
 +++ b/server-client.c
-@@ -2557,7 +2557,11 @@ server_client_check_redraw(struct client *c)
+@@ -2582,7 +2582,11 @@ server_client_check_redraw(struct client *c)
  	 * end up back here.
  	 */
  	needed = 0;
-+#ifdef ENABLE_SIXEL
++#ifndef NO_FIX_SIXEL
 +	if (c->flags & (CLIENT_ALLREDRAWFLAGS & ~CLIENT_REDRAWSTATUS))
 +#else
  	if (c->flags & CLIENT_ALLREDRAWFLAGS)
@@ -1421,14 +307,14 @@ index 874a3522..ccc794fc 100644
  	else {
  		TAILQ_FOREACH(wp, &w->panes, entry) {
 diff --git a/server-fn.c b/server-fn.c
-index 2a79f3e3..509d966f 100644
+index 50f5a8d9..37e9be0a 100644
 --- a/server-fn.c
 +++ b/server-fn.c
-@@ -33,6 +33,12 @@ static void		 server_destroy_session_group(struct session *);
+@@ -32,6 +32,12 @@ static void	server_destroy_session_group(struct session *);
  void
  server_redraw_client(struct client *c)
  {
-+#ifdef ENABLE_SIXEL
++#ifndef NO_FIX_SIXEL
 +	/* tty features might have changed since the first draw during attach.
 +	 * For example, this happens when DA responses are received.
 +	 */
@@ -1527,22 +413,10 @@ index a01ed423..f640a4a0 100644
  	exit(client_main(osdep_event_init(), argc, argv, flags, feat));
  }
 diff --git a/tmux.h b/tmux.h
-index 1af4fa9e..e59f672e 100644
+index 53f73b20..43c5dcb4 100644
 --- a/tmux.h
 +++ b/tmux.h
-@@ -64,6 +64,11 @@ struct screen_write_citem;
- struct screen_write_cline;
- struct screen_write_ctx;
- struct session;
-+
-+#ifdef ENABLE_SIXEL
-+struct sixel_image;
-+#endif
-+
- struct tty_ctx;
- struct tty_code;
- struct tty_key;
-@@ -85,6 +90,17 @@ struct winlink;
+@@ -91,6 +91,17 @@ struct winlink;
  #define TMUX_LOCK_CMD "lock -np"
  #endif
  
@@ -1560,125 +434,6 @@ index 1af4fa9e..e59f672e 100644
  /* Minimum layout cell size, NOT including border lines. */
  #define PANE_MINIMUM 1
  
-@@ -834,6 +850,24 @@ struct style {
- 	enum style_default_type	default_type;
- };
- 
-+#ifdef ENABLE_SIXEL
-+/* Image. */
-+struct image {
-+	struct screen		*s;
-+	struct sixel_image	*data;
-+	char			*fallback;
-+
-+	u_int			 px;
-+	u_int			 py;
-+	u_int			 sx;
-+	u_int			 sy;
-+
-+	TAILQ_ENTRY (image)	 all_entry;
-+	TAILQ_ENTRY (image)	 entry;
-+};
-+TAILQ_HEAD(images, image);
-+#endif
-+
- /* Cursor style. */
- enum screen_cursor_style {
- 	SCREEN_CURSOR_DEFAULT,
-@@ -875,6 +909,10 @@ struct screen {
- 	bitstr_t			*tabs;
- 	struct screen_sel		*sel;
- 
-+#ifdef ENABLE_SIXEL
-+	struct images			 images;
-+#endif
-+
- 	struct screen_write_cline	*write_list;
- 
- 	struct hyperlinks		*hyperlinks;
-@@ -1377,6 +1415,9 @@ struct tty {
- 
- 	u_int		 sx;
- 	u_int		 sy;
-+#ifdef ENABLE_SIXEL
-+        /* Cell size in pixels. */
-+#endif
- 	u_int		 xpixel;
- 	u_int		 ypixel;
- 
-@@ -1385,6 +1426,10 @@ struct tty {
- 	enum screen_cursor_style cstyle;
- 	int		 ccolour;
- 
-+#ifdef ENABLE_SIXEL
-+        /* Properties of the area being drawn on. */
-+        /* When true, the drawing area is bigger than the terminal. */
-+#endif
- 	int		 oflag;
- 	u_int		 oox;
- 	u_int		 ooy;
-@@ -2327,6 +2372,11 @@ void	tty_set_path(struct tty *, const char *);
- void	tty_update_mode(struct tty *, int, struct screen *);
- void	tty_draw_line(struct tty *, struct screen *, u_int, u_int, u_int,
- 	    u_int, u_int, const struct grid_cell *, struct colour_palette *);
-+
-+#ifdef ENABLE_SIXEL
-+void	tty_draw_images(struct client *, struct window_pane *, struct screen *);
-+#endif
-+
- void	tty_sync_start(struct tty *);
- void	tty_sync_end(struct tty *);
- int	tty_open(struct tty *, char **);
-@@ -2357,6 +2407,11 @@ void	tty_cmd_scrolldown(struct tty *, const struct tty_ctx *);
- void	tty_cmd_reverseindex(struct tty *, const struct tty_ctx *);
- void	tty_cmd_setselection(struct tty *, const struct tty_ctx *);
- void	tty_cmd_rawstring(struct tty *, const struct tty_ctx *);
-+
-+#ifdef ENABLE_SIXEL
-+void	tty_cmd_sixelimage(struct tty *, const struct tty_ctx *);
-+#endif
-+
- void	tty_cmd_syncstart(struct tty *, const struct tty_ctx *);
- void	tty_default_colours(struct grid_cell *, struct window_pane *);
- 
-@@ -2941,6 +2996,10 @@ void	 screen_write_setselection(struct screen_write_ctx *, const char *,
- 	     u_char *, u_int);
- void	 screen_write_rawstring(struct screen_write_ctx *, u_char *, u_int,
- 	     int);
-+#ifdef ENABLE_SIXEL
-+void	 screen_write_sixelimage(struct screen_write_ctx *,
-+	     struct sixel_image *, u_int);
-+#endif
- void	 screen_write_alternateon(struct screen_write_ctx *,
- 	     struct grid_cell *, int);
- void	 screen_write_alternateoff(struct screen_write_ctx *,
-@@ -3360,6 +3419,26 @@ struct window_pane *spawn_pane(struct spawn_context *, char **);
- /* regsub.c */
- char		*regsub(const char *, const char *, const char *, int);
- 
-+#ifdef ENABLE_SIXEL
-+/* image.c */
-+int		 image_free_all(struct screen *);
-+struct image	*image_store(struct screen *, struct sixel_image *);
-+int		 image_check_line(struct screen *, u_int, u_int);
-+int		 image_check_area(struct screen *, u_int, u_int, u_int, u_int);
-+int		 image_scroll_up(struct screen *, u_int);
-+
-+/* image-sixel.c */
-+struct sixel_image *sixel_parse(const char *, size_t, u_int, u_int);
-+void		 sixel_free(struct sixel_image *);
-+void		 sixel_log(struct sixel_image *);
-+void		 sixel_size_in_cells(struct sixel_image *, u_int *, u_int *);
-+struct sixel_image *sixel_scale(struct sixel_image *, u_int, u_int, u_int,
-+		     u_int, u_int, u_int, int);
-+char		*sixel_print(struct sixel_image *, struct sixel_image *,
-+		     size_t *);
-+struct screen	*sixel_to_screen(struct sixel_image *);
-+#endif
-+
- /* server-acl.c */
- void			 server_acl_init(void);
- struct server_acl_user	*server_acl_user_find(uid_t);
 diff --git a/tty-acs.c b/tty-acs.c
 index 3dab31b6..af80835a 100644
 --- a/tty-acs.c
@@ -2056,10 +811,10 @@ index 3dab31b6..af80835a 100644
 +#endif
  }
 diff --git a/tty-term.c b/tty-term.c
-index e2242269..128cf1fa 100644
+index 67face26..e288d211 100644
 --- a/tty-term.c
 +++ b/tty-term.c
-@@ -509,6 +509,15 @@ tty_term_apply_overrides(struct tty_term *term)
+@@ -510,6 +510,15 @@ tty_term_apply_overrides(struct tty_term *term)
  		term->flags &= ~TERM_NOAM;
  	log_debug("NOAM flag is %d", !!(term->flags & TERM_NOAM));
  
@@ -2075,7 +830,7 @@ index e2242269..128cf1fa 100644
  	/* Generate ACS table. If none is present, use nearest ASCII. */
  	memset(term->acs, 0, sizeof term->acs);
  	if (tty_term_has(term, TTYC_ACSC))
-@@ -517,6 +526,7 @@ tty_term_apply_overrides(struct tty_term *term)
+@@ -518,6 +527,7 @@ tty_term_apply_overrides(struct tty_term *term)
  		acs = "a#j+k+l+m+n+o-p-q-r-s-t+u+v+w+x|y<z>~.";
  	for (; acs[0] != '\0' && acs[1] != '\0'; acs += 2)
  		term->acs[(u_char) acs[0]][0] = acs[1];
@@ -2083,162 +838,8 @@ index e2242269..128cf1fa 100644
  }
  
  struct tty_term *
-diff --git a/tty.c b/tty.c
-index ad4a110a..032bb967 100644
---- a/tty.c
-+++ b/tty.c
-@@ -72,6 +72,11 @@ static int	tty_check_overlay(struct tty *, u_int, u_int);
- static void	tty_check_overlay_range(struct tty *, u_int, u_int, u_int,
- 		    struct overlay_ranges *);
- 
-+#ifdef ENABLE_SIXEL
-+static void	tty_write_one(void (*)(struct tty *, const struct tty_ctx *),
-+		    struct client *, struct tty_ctx *);
-+#endif
-+
- #define tty_use_margin(tty) \
- 	(tty->term->flags & TERM_DECSLRM)
- #define tty_full_width(tty, ctx) \
-@@ -1582,6 +1587,58 @@ tty_draw_line(struct tty *tty, struct screen *s, u_int px, u_int py, u_int nx,
- 	tty_update_mode(tty, tty->mode, s);
- }
- 
-+#ifdef ENABLE_SIXEL
-+/* Update context for client. */
-+static int
-+tty_set_client_cb(struct tty_ctx *ttyctx, struct client *c)
-+{
-+	struct window_pane	*wp = ttyctx->arg;
-+
-+	if (c->session->curw->window != wp->window)
-+		return (0);
-+	if (wp->layout_cell == NULL)
-+		return (0);
-+
-+	/* Set the properties relevant to the current client. */
-+	ttyctx->bigger = tty_window_offset(&c->tty, &ttyctx->wox, &ttyctx->woy,
-+	    &ttyctx->wsx, &ttyctx->wsy);
-+
-+	ttyctx->yoff = ttyctx->ryoff = wp->yoff;
-+	if (status_at_line(c) == 0)
-+		ttyctx->yoff += status_line_size(c);
-+
-+	return (1);
-+}
-+
-+void
-+tty_draw_images(struct client *c, struct window_pane *wp, struct screen *s)
-+{
-+	struct image	*im;
-+	struct tty_ctx	 ttyctx;
-+
-+	TAILQ_FOREACH(im, &s->images, entry) {
-+		memset(&ttyctx, 0, sizeof ttyctx);
-+
-+		/* Set the client independent properties. */
-+		ttyctx.ocx = im->px;
-+		ttyctx.ocy = im->py;
-+
-+		ttyctx.orlower = s->rlower;
-+		ttyctx.orupper = s->rupper;
-+
-+		ttyctx.xoff = ttyctx.rxoff = wp->xoff;
-+		ttyctx.sx = wp->sx;
-+		ttyctx.sy = wp->sy;
-+
-+		ttyctx.ptr = im;
-+		ttyctx.arg = wp;
-+		ttyctx.set_client_cb = tty_set_client_cb;
-+		ttyctx.allow_invisible_panes = 1;
-+		tty_write_one(tty_cmd_sixelimage, c, &ttyctx);
-+	}
-+}
-+#endif
-+
- void
- tty_sync_start(struct tty *tty)
- {
-@@ -1655,6 +1712,19 @@ tty_write(void (*cmdfn)(struct tty *, const struct tty_ctx *),
- 	}
- }
- 
-+#ifdef ENABLE_SIXEL
-+/* Only write to the incoming tty instead of every client. */
-+static void
-+tty_write_one(void (*cmdfn)(struct tty *, const struct tty_ctx *),
-+    struct client *c, struct tty_ctx *ctx)
-+{
-+	if (ctx->set_client_cb == NULL)
-+		return;
-+	if ((ctx->set_client_cb(ctx, c)) == 1)
-+		cmdfn(&c->tty, ctx);
-+}
-+#endif
-+
- void
- tty_cmd_insertcharacter(struct tty *tty, const struct tty_ctx *ctx)
- {
-@@ -2156,6 +2226,58 @@ tty_cmd_rawstring(struct tty *tty, const struct tty_ctx *ctx)
- 	tty_invalidate(tty);
- }
- 
-+#ifdef ENABLE_SIXEL
-+void
-+tty_cmd_sixelimage(struct tty *tty, const struct tty_ctx *ctx)
-+{
-+	struct image		*im = ctx->ptr;
-+	struct sixel_image	*si = im->data;
-+	struct sixel_image	*new;
-+	char			*data;
-+	size_t			 size;
-+	u_int			 cx = ctx->ocx, cy = ctx->ocy, sx, sy;
-+	u_int			 i, j, x, y, rx, ry;
-+	int			 fallback = 0;
-+
-+	if ((~tty->term->flags & TERM_SIXEL) &&
-+            !tty_term_has(tty->term, TTYC_SXL))
-+		fallback = 1;
-+	if (tty->xpixel == 0 || tty->ypixel == 0)
-+		fallback = 1;
-+
-+	sixel_size_in_cells(si, &sx, &sy);
-+	log_debug("%s: image is %ux%u", __func__, sx, sy);
-+	if (!tty_clamp_area(tty, ctx, cx, cy, sx, sy, &i, &j, &x, &y, &rx, &ry))
-+		return;
-+	log_debug("%s: clamping to %u,%u-%u,%u", __func__, i, j, rx, ry);
-+
-+	if (fallback == 1) {
-+		data = xstrdup(im->fallback);
-+		size = strlen(data);
-+	} else {
-+		new = sixel_scale(si, tty->xpixel, tty->ypixel, i, j, rx, ry, 0);
-+		if (new == NULL)
-+			return;
-+
-+		data = sixel_print(new, si, &size);
-+	}
-+	if (data != NULL) {
-+		log_debug("%s: %zu bytes: %s", __func__, size, data);
-+		tty_region_off(tty);
-+		tty_margin_off(tty);
-+		tty_cursor(tty, x, y);
-+
-+		tty->flags |= TTY_NOBLOCK;
-+		tty_add(tty, data, size);
-+		tty_invalidate(tty);
-+		free(data);
-+	}
-+
-+	if (fallback == 0)
-+		sixel_free(new);
-+}
-+#endif
-+
- void
- tty_cmd_syncstart(struct tty *tty, const struct tty_ctx *ctx)
- {
 diff --git a/utf8.c b/utf8.c
-index 38f1a89a..0e66fff7 100644
+index 5053e459..f54e1914 100644
 --- a/utf8.c
 +++ b/utf8.c
 @@ -26,6 +26,407 @@
@@ -2646,13 +1247,13 @@ index 38f1a89a..0e66fff7 100644
 +#endif
 +#endif
 +
- struct utf8_item {
- 	RB_ENTRY(utf8_item)	index_entry;
- 	u_int			index;
-@@ -230,6 +631,23 @@ utf8_width(struct utf8_data *ud, int *width)
- 		return (UTF8_ERROR);
+ static const wchar_t utf8_force_wide[] = {
+ 	0x0261D,
+ 	0x026F9,
+@@ -409,6 +810,23 @@ utf8_width(struct utf8_data *ud, int *width)
+ 		*width = 2;
+ 		return (UTF8_DONE);
  	}
- 	log_debug("UTF-8 %.*s is %08X", (int)ud->size, ud->data, (u_int)wc);
 +#ifndef NO_USE_UTF8CJK
 +	if (options_get_number(global_options, "utf8-cjk")) {
 +#ifndef NO_USE_UTF8CJK_EMOJI
@@ -2672,8 +1273,8 @@ index 38f1a89a..0e66fff7 100644
 +#else
  #ifdef HAVE_UTF8PROC
  	*width = utf8proc_wcwidth(wc);
- 	log_debug("utf8proc_wcwidth(%08X) returned %d", (u_int)wc, *width);
-@@ -246,6 +664,7 @@ utf8_width(struct utf8_data *ud, int *width)
+ 	log_debug("utf8proc_wcwidth(%05X) returned %d", (u_int)wc, *width);
+@@ -425,6 +843,7 @@ utf8_width(struct utf8_data *ud, int *width)
  #endif
  	if (*width >= 0 && *width <= 0xff)
  		return (UTF8_DONE);
