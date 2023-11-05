@@ -123,7 +123,7 @@ end
 
 __END__
 diff --git a/image-sixel.c b/image-sixel.c
-index 2958d20d..9fe2a0e9 100644
+index 3396a22a..de902fe6 100644
 --- a/image-sixel.c
 +++ b/image-sixel.c
 @@ -105,6 +105,9 @@ sixel_parse_write(struct sixel_image *si, u_int ch)
@@ -169,7 +169,7 @@ index 2958d20d..9fe2a0e9 100644
  		sl++;
  	}
  	return (0);
-@@ -431,7 +458,19 @@ sixel_scale(struct sixel_image *si, u_int xpixel, u_int ypixel, u_int ox,
+@@ -433,7 +460,19 @@ sixel_scale(struct sixel_image *si, u_int xpixel, u_int ypixel, u_int ox,
  	}
  
  	if (colours) {
@@ -189,7 +189,7 @@ index 2958d20d..9fe2a0e9 100644
  		for (i = 0; i < si->ncolours; i++)
  			new->colours[i] = si->colours[i];
  		new->ncolours = si->ncolours;
-@@ -483,11 +522,33 @@ sixel_print(struct sixel_image *si, struct sixel_image *map, size_t *size)
+@@ -485,11 +524,33 @@ sixel_print(struct sixel_image *si, struct sixel_image *map, size_t *size)
  	if (map != NULL) {
  		colours = map->colours;
  		ncolours = map->ncolours;
@@ -223,7 +223,7 @@ index 2958d20d..9fe2a0e9 100644
  
  	len = 8192;
  	buf = xmalloc(len);
-@@ -511,8 +572,23 @@ sixel_print(struct sixel_image *si, struct sixel_image *map, size_t *size)
+@@ -513,8 +574,23 @@ sixel_print(struct sixel_image *si, struct sixel_image *map, size_t *size)
  				if (y + i >= si->y)
  					break;
  				sl = &si->lines[y + i];
@@ -290,39 +290,6 @@ index 89200b95..c88a1178 100644
  	/* Hook options. */
  	OPTIONS_TABLE_HOOK("after-bind-key", ""),
  	OPTIONS_TABLE_HOOK("after-capture-pane", ""),
-diff --git a/server-client.c b/server-client.c
-index e3c1adaa..d6e57291 100644
---- a/server-client.c
-+++ b/server-client.c
-@@ -2582,7 +2582,11 @@ server_client_check_redraw(struct client *c)
- 	 * end up back here.
- 	 */
- 	needed = 0;
-+#ifndef NO_FIX_SIXEL
-+	if (c->flags & (CLIENT_ALLREDRAWFLAGS & ~CLIENT_REDRAWSTATUS))
-+#else
- 	if (c->flags & CLIENT_ALLREDRAWFLAGS)
-+#endif
- 		needed = 1;
- 	else {
- 		TAILQ_FOREACH(wp, &w->panes, entry) {
-diff --git a/server-fn.c b/server-fn.c
-index 50f5a8d9..37e9be0a 100644
---- a/server-fn.c
-+++ b/server-fn.c
-@@ -32,6 +32,12 @@ static void	server_destroy_session_group(struct session *);
- void
- server_redraw_client(struct client *c)
- {
-+#ifndef NO_FIX_SIXEL
-+	/* tty features might have changed since the first draw during attach.
-+	 * For example, this happens when DA responses are received.
-+	 */
-+	c->flags |= CLIENT_REDRAWWINDOW;
-+#endif
- 	c->flags |= CLIENT_ALLREDRAWFLAGS;
- }
- 
 diff --git a/tmux.c b/tmux.c
 index a01ed423..f640a4a0 100644
 --- a/tmux.c
