@@ -86,7 +86,7 @@ run-shell -b "HOMEBREW_PREFIX/opt/tpm/libexec/tpm/tpm"
 [BREW]:https://linuxbrew.sh/
 [TMUX]:https://tmux.github.io/
 [EAWA]:http://www.unicode.org/reports/tr11/#Ambiguous
-[GST1]:https://gist.github.com/z80oolong/e65baf0d590f62fab8f4f7c358cbcc34
+[GST1]:https://github.com/z80oolong/tmux-eaw-fix
 [LIBE]:http://libevent.org/
 [DOXY]:http://www.doxygen.org/
 [GLEV]:https://github.com/libevent/libevent
