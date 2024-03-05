@@ -14,7 +14,7 @@
 
 ## 使用法
 
-まず最初に、以下に示す Qiita の投稿及び Web ページの記述に基づいて、手元の端末に [Homebrew for Linux][BREW] を構築し、以下のように  ```brew tap``` コマンドを用いて本リポジトリを導入します。
+まず最初に、以下に示す Qiita の投稿及び Web ページの記述に基づいて、手元の端末に [Homebrew for Linux][BREW] を構築します。
 
 - [thermes 氏][THER]による "[Linuxbrew のススメ][THBR]" の投稿
 - [Homebrew for Linux の公式ページ][BREW]
@@ -72,6 +72,7 @@
 [DRMK]:http://www.cl.cam.ac.uk/~mgk25/
 [NICM]:https://github.com/nicm
 [GORI]:https://qiita.com/gorilla0513
+[KOIE]:https://github.com/koie
 [GOT_]:https://github.com/skanehira/got
 [POWE]:https://powerline.readthedocs.io/en/latest/#
 [BSD2]:https://opensource.org/licenses/BSD-2-Clause
