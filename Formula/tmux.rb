@@ -123,7 +123,7 @@ end
 
 __END__
 diff --git a/image-sixel.c b/image-sixel.c
-index 3396a22a..de902fe6 100644
+index e23d17f9..111760dd 100644
 --- a/image-sixel.c
 +++ b/image-sixel.c
 @@ -105,6 +105,9 @@ sixel_parse_write(struct sixel_image *si, u_int ch)
@@ -149,7 +149,7 @@ index 3396a22a..de902fe6 100644
 +
 +				sl->data[si->dx] = si->dc;
 +			} else {
-+				/* This code is for the ormode of SIXEL Graphics.
++				/* This code is for the ORMODE of SIXEL Graphics.
 +				 * The value obtained by the logical OR of the decremented by 1 value 
 +				 * from sl->data[si->dx] and si->dc, which are the elements of the array
 +				 * for storing pixel palette numbers, is incremented by 1, and stored
@@ -189,7 +189,7 @@ index 3396a22a..de902fe6 100644
  		for (i = 0; i < si->ncolours; i++)
  			new->colours[i] = si->colours[i];
  		new->ncolours = si->ncolours;
-@@ -485,11 +524,33 @@ sixel_print(struct sixel_image *si, struct sixel_image *map, size_t *size)
+@@ -485,9 +524,15 @@ sixel_print(struct sixel_image *si, struct sixel_image *map, size_t *size)
  	if (map != NULL) {
  		colours = map->colours;
  		ncolours = map->ncolours;
@@ -203,27 +203,9 @@ index 3396a22a..de902fe6 100644
 +		log_debug("%s: si->{colours,ncolours}; colours == %p, ncolours == %d", __func__, colours, ncolours);
 +#endif
  	}
-+#ifndef NO_FIX_SIXEL
-+	if (ncolours == 0) {
-+		/* If ncolours, the value of the palette number, is 0, then contains,
-+		 * which stores a flag indicating whether a certain palette number is in use,
-+		 * should allocate an array of 1024 elements, the upper limit of the palette number.
-+		 * The array contains may take the largest possible palette number as a index.
-+		 */
-+
-+		contains = xcalloc(1, (size_t)SIXEL_COLOUR_REGISTERS);
-+		memset(contains, 0, SIXEL_COLOUR_REGISTERS);
-+		log_debug("%s: WARNING; ncolours == 0, force contains = xcalloc(1, (size_t)%d)", __func__, SIXEL_COLOUR_REGISTERS);
-+	} else {
-+		contains = xcalloc(1, ncolours);
-+	}
-+#else
- 	contains = xcalloc(1, ncolours);
-+#endif
  
- 	len = 8192;
- 	buf = xmalloc(len);
-@@ -513,8 +574,23 @@ sixel_print(struct sixel_image *si, struct sixel_image *map, size_t *size)
+ 	if (ncolours == 0)
+@@ -516,8 +561,23 @@ sixel_print(struct sixel_image *si, struct sixel_image *map, size_t *size)
  				if (y + i >= si->y)
  					break;
  				sl = &si->lines[y + i];
@@ -248,7 +230,7 @@ index 3396a22a..de902fe6 100644
  		}
  
 diff --git a/options-table.c b/options-table.c
-index f030f2db..8af7946a 100644
+index 15018226..6c1ba5d4 100644
 --- a/options-table.c
 +++ b/options-table.c
 @@ -1268,6 +1268,38 @@ const struct options_table_entry options_table[] = {
@@ -380,7 +362,7 @@ index a01ed423..f640a4a0 100644
  	exit(client_main(osdep_event_init(), argc, argv, flags, feat));
  }
 diff --git a/tmux.h b/tmux.h
-index a50adbfa..5de80841 100644
+index 7671cca0..72841d48 100644
 --- a/tmux.h
 +++ b/tmux.h
 @@ -91,6 +91,17 @@ struct winlink;
@@ -1248,3 +1230,4 @@ index 5053e459..f54e1914 100644
 +#endif
  	return (UTF8_ERROR);
  }
+ 
