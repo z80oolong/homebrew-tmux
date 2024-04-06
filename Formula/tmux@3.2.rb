@@ -66,6 +66,13 @@ class TmuxAT32 < Formula
     bash_completion.install resource("completion")
   end
 
+  def post_install
+    ohai "Installing locale data for en_US.UTF-8, ja_JP.UTF-8"
+    
+    system Formula["glibc"].opt_bin/"localedef", "-i", "ja_JP", "-f", "UTF-8", "ja_JP.UTF-8"
+    system Formula["glibc"].opt_bin/"localedef", "-i", "en_US", "-f", "UTF-8", "en_US.UTF-8"
+  end
+
   def fix_rpath(binname, append_list, delete_list)
     delete_list_hash = {}
     rpath = %x{#{Formula["patchelf"].opt_bin}/patchelf --print-rpath #{binname}}.chomp.split(":")
