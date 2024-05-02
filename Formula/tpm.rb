@@ -1,9 +1,9 @@
 class Tpm < Formula
   desc "Tmux Plugin Manager"
   homepage "https://github.com/tmux-plugins/tpm"
-  url "https://github.com/tmux-plugins/tpm/archive/v3.0.0.tar.gz"
-  version "3.0.0"
-  sha256 "65093ca3995d9ac3889bc7630e11667e7156051d3da85526e28d53eeb29e7002"
+  url "https://github.com/tmux-plugins/tpm/archive/v3.1.0.tar.gz"
+  version "3.1.0"
+  sha256 "2411fc416c4475d297f61078d0a03afb3a1f5322fff26a13fdb4f20d7e975570"
   head "https://github.com/tmux-plugins/tpm.git"
 
   depends_on "tmux" => :optional

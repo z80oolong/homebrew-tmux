@@ -237,10 +237,10 @@ index e23d17f9..111760dd 100644
  		}
  
 diff --git a/options-table.c b/options-table.c
-index 15018226..6c1ba5d4 100644
+index 782ce17e..d72bb695 100644
 --- a/options-table.c
 +++ b/options-table.c
-@@ -1268,6 +1268,38 @@ const struct options_table_entry options_table[] = {
+@@ -1276,6 +1276,38 @@ const struct options_table_entry options_table[] = {
  		  "This option is no longer used."
  	},
  
@@ -369,7 +369,7 @@ index a01ed423..f640a4a0 100644
  	exit(client_main(osdep_event_init(), argc, argv, flags, feat));
  }
 diff --git a/tmux.h b/tmux.h
-index 7671cca0..72841d48 100644
+index a052b799..b6286fef 100644
 --- a/tmux.h
 +++ b/tmux.h
 @@ -91,6 +91,17 @@ struct winlink;
