@@ -237,7 +237,7 @@ index e23d17f9..111760dd 100644
  		}
  
 diff --git a/options-table.c b/options-table.c
-index 782ce17e..d72bb695 100644
+index 3a9845eb..36ffbab1 100644
 --- a/options-table.c
 +++ b/options-table.c
 @@ -1276,6 +1276,38 @@ const struct options_table_entry options_table[] = {
@@ -280,10 +280,10 @@ index 782ce17e..d72bb695 100644
  	OPTIONS_TABLE_HOOK("after-bind-key", ""),
  	OPTIONS_TABLE_HOOK("after-capture-pane", ""),
 diff --git a/tmux.c b/tmux.c
-index a01ed423..f640a4a0 100644
+index a9619baf..69ae7a8c 100644
 --- a/tmux.c
 +++ b/tmux.c
-@@ -333,20 +333,33 @@ main(int argc, char **argv)
+@@ -351,20 +351,33 @@ main(int argc, char **argv)
  {
  	char					*path = NULL, *label = NULL;
  	char					*cause, **var;
@@ -317,7 +317,7 @@ index a01ed423..f640a4a0 100644
  
  	setlocale(LC_TIME, "");
  	tzset();
-@@ -359,7 +372,16 @@ main(int argc, char **argv)
+@@ -377,7 +390,16 @@ main(int argc, char **argv)
  		environ_put(global_environ, *var, 0);
  	if ((cwd = find_cwd()) != NULL)
  		environ_set(global_environ, "PWD", 0, "%s", cwd);
@@ -334,7 +334,7 @@ index a01ed423..f640a4a0 100644
  
  	while ((opt = getopt(argc, argv, "2c:CDdf:lL:NqS:T:uUvV")) != -1) {
  		switch (opt) {
-@@ -490,6 +512,19 @@ main(int argc, char **argv)
+@@ -508,6 +530,19 @@ main(int argc, char **argv)
  		options_set_number(global_w_options, "mode-keys", keys);
  	}
  
@@ -354,7 +354,7 @@ index a01ed423..f640a4a0 100644
  	/*
  	 * If socket is specified on the command-line with -S or -L, it is
  	 * used. Otherwise, $TMUX is checked and if that fails "default" is
-@@ -515,6 +550,13 @@ main(int argc, char **argv)
+@@ -533,6 +568,13 @@ main(int argc, char **argv)
  	socket_path = path;
  	free(label);
  
@@ -369,7 +369,7 @@ index a01ed423..f640a4a0 100644
  	exit(client_main(osdep_event_init(), argc, argv, flags, feat));
  }
 diff --git a/tmux.h b/tmux.h
-index a052b799..b6286fef 100644
+index 36de238c..6db42f49 100644
 --- a/tmux.h
 +++ b/tmux.h
 @@ -91,6 +91,17 @@ struct winlink;
@@ -795,11 +795,11 @@ index 67face26..e288d211 100644
  
  struct tty_term *
 diff --git a/utf8.c b/utf8.c
-index 5053e459..f54e1914 100644
+index bc7c8fd2..ca3d8ca7 100644
 --- a/utf8.c
 +++ b/utf8.c
-@@ -26,6 +26,407 @@
- 
+@@ -27,6 +27,407 @@
+ #include "compat.h"
  #include "tmux.h"
  
 +#ifndef NO_USE_UTF8CJK
@@ -1206,7 +1206,7 @@ index 5053e459..f54e1914 100644
  static const wchar_t utf8_force_wide[] = {
  	0x0261D,
  	0x026F9,
-@@ -409,6 +810,23 @@ utf8_width(struct utf8_data *ud, int *width)
+@@ -410,6 +811,23 @@ utf8_width(struct utf8_data *ud, int *width)
  		*width = 2;
  		return (UTF8_DONE);
  	}
@@ -1230,7 +1230,7 @@ index 5053e459..f54e1914 100644
  #ifdef HAVE_UTF8PROC
  	*width = utf8proc_wcwidth(wc);
  	log_debug("utf8proc_wcwidth(%05X) returned %d", (u_int)wc, *width);
-@@ -425,6 +843,7 @@ utf8_width(struct utf8_data *ud, int *width)
+@@ -426,6 +844,7 @@ utf8_width(struct utf8_data *ud, int *width)
  #endif
  	if (*width >= 0 && *width <= 0xff)
  		return (UTF8_DONE);
