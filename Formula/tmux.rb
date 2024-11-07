@@ -130,10 +130,10 @@ end
 
 __END__
 diff --git a/image-sixel.c b/image-sixel.c
-index 8fa02a82..c817d690 100644
+index a03c8619..d8be348a 100644
 --- a/image-sixel.c
 +++ b/image-sixel.c
-@@ -110,6 +110,9 @@ sixel_parse_write(struct sixel_image *si, u_int ch)
+@@ -123,6 +123,9 @@ sixel_parse_write(struct sixel_image *si, u_int ch)
  {
  	struct sixel_line	*sl;
  	u_int			 i;
@@ -143,7 +143,7 @@ index 8fa02a82..c817d690 100644
  
  	if (sixel_parse_expand_lines(si, si->dy + 6) != 0)
  		return (1);
-@@ -118,8 +121,32 @@ sixel_parse_write(struct sixel_image *si, u_int ch)
+@@ -131,8 +134,32 @@ sixel_parse_write(struct sixel_image *si, u_int ch)
  	for (i = 0; i < 6; i++) {
  		if (sixel_parse_expand_line(si, sl, si->dx + 1) != 0)
  			return (1);
@@ -176,7 +176,7 @@ index 8fa02a82..c817d690 100644
  		sl++;
  	}
  	return (0);
-@@ -455,7 +482,19 @@ sixel_scale(struct sixel_image *si, u_int xpixel, u_int ypixel, u_int ox,
+@@ -468,7 +495,19 @@ sixel_scale(struct sixel_image *si, u_int xpixel, u_int ypixel, u_int ox,
  	}
  
  	if (colours) {
@@ -196,7 +196,36 @@ index 8fa02a82..c817d690 100644
  		for (i = 0; i < si->ncolours; i++)
  			new->colours[i] = si->colours[i];
  		new->ncolours = si->ncolours;
-@@ -507,9 +546,15 @@ sixel_print(struct sixel_image *si, struct sixel_image *map, size_t *size)
+@@ -522,11 +561,28 @@ sixel_print_compress_colors(struct sixel_image *si, struct sixel_chunk *chunks,
+ 			colors[i] = 0;
+ 			if (y + i < si->y) {
+ 				sl = &si->lines[y + i];
++#ifndef NO_FIX_SIXEL
++				if (x < sl->x) {
++					/* For sl->data[x], which is an element of an array for storing the palette number for each pixel,
++					 * if the value of sl->data[x] is 0 except for the bottom pixel with y-coordinate,
++					 * especially if ormode is used, the palette number of sl->data[x] is 1 and The palette number
++					 * in sl->data[x] should be considered to be 1.
++					 */
++					if (y < (si->y - 6) && sl->data[x] == 0)
++						sl->data[x] = 1;
++					if (sl->data[x] != 0) {
++						colors[i] = sl->data[x];
++						c = sl->data[x] - 1;
++						chunks[c].next_pattern |= 1 << i;
++					}
++				}
++#else
+ 				if (x < sl->x && sl->data[x] != 0) {
+ 					colors[i] = sl->data[x];
+ 					c = sl->data[x] - 1;
+ 					chunks[c].next_pattern |= 1 << i;
+ 				}
++#endif
+ 			}
+ 		}
+ 
+@@ -572,9 +628,15 @@ sixel_print(struct sixel_image *si, struct sixel_image *map, size_t *size)
  	if (map != NULL) {
  		colours = map->colours;
  		ncolours = map->ncolours;
@@ -212,35 +241,11 @@ index 8fa02a82..c817d690 100644
  	}
  
  	if (ncolours == 0)
-@@ -542,8 +587,23 @@ sixel_print(struct sixel_image *si, struct sixel_image *map, size_t *size)
- 				if (y + i >= si->y)
- 					break;
- 				sl = &si->lines[y + i];
-+#ifndef NO_FIX_SIXEL
-+				if (x < sl->x) {
-+					/* For sl->data[x], which is an element of an array for storing the palette number for each pixel,
-+					 * if the value of sl->data[x] is 0 except for the bottom pixel with y-coordinate,
-+					 * especially if ormode is used, the palette number of sl->data[x] is 1 and The palette number
-+					 * in sl->data[x] should be considered to be 1.
-+					 */
-+
-+					if (y < (si->y - 6) && sl->data[x] == 0)
-+						sl->data[x] = 1;
-+					if (sl->data[x] != 0)
-+						contains[sl->data[x] - 1] = 1;
-+				}
-+#else
- 				if (x < sl->x && sl->data[x] != 0)
- 					contains[sl->data[x] - 1] = 1;
-+#endif
- 			}
- 		}
- 
 diff --git a/options-table.c b/options-table.c
-index cfcbfd3f..7969fae3 100644
+index 16e57642..cb9195a2 100644
 --- a/options-table.c
 +++ b/options-table.c
-@@ -1338,6 +1338,38 @@ const struct options_table_entry options_table[] = {
+@@ -1369,6 +1369,38 @@ const struct options_table_entry options_table[] = {
  		  "This option is no longer used."
  	},
  
@@ -369,7 +374,7 @@ index 6659e1c3..002cd7aa 100644
  	exit(client_main(osdep_event_init(), argc, argv, flags, feat));
  }
 diff --git a/tmux.h b/tmux.h
-index f7a7c578..3e1890fc 100644
+index abda6ee6..bab28954 100644
 --- a/tmux.h
 +++ b/tmux.h
 @@ -94,6 +94,17 @@ struct winlink;
@@ -1237,3 +1242,4 @@ index bc7c8fd2..ca3d8ca7 100644
 +#endif
  	return (UTF8_ERROR);
  }
+ 
