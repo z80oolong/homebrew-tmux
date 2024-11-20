@@ -62,7 +62,10 @@ class Tmux < Formula
     ENV.append "CPPFLAGS", "-DNO_USE_UTF8CJK_EMOJI" if build.without?("utf8-emoji")
     ENV.append "CPPFLAGS", "-DNO_USE_PANE_BORDER_ACS_ASCII" if build.without?("pane-border-acs-ascii")
 
-    system "sh", "autogen.sh" if build.head?
+    if build.head?
+      ENV["LC_ALL"] = "C"
+      system "sh", "autogen.sh"
+    end
 
     args = %W[
       --disable-Dependency-tracking

@@ -1,36 +1,31 @@
 #!/usr/bin/env ruby
 
-if $0 == __FILE__ then
+if $PROGRAM_NAME == __FILE__
   puts DATA.gets(nil)
   exit 0
 end
 
+require "macho"
+
 class TmuxAT30a < Formula
   desc "Terminal multiplexer"
   homepage "https://tmux.github.io/"
-  license "ISC"
-
-  tmux_version = "3.0a"
-  url "https://github.com/tmux/tmux/releases/download/#{tmux_version}/tmux-#{tmux_version}.tar.gz"
+  url "https://github.com/tmux/tmux/releases/download/3.0a/tmux-3.0a.tar.gz"
   sha256 "4ad1df28b4afa969e59c08061b45082fdc49ff512f30fc8e43217d7b0e5f8db9"
-  version tmux_version
-  revision 9
+  license "ISC"
+  revision 11
 
   keg_only :versioned_formula
 
   depends_on "pkg-config" => :build
+  depends_on "glibc"
   depends_on "libevent"
-  depends_on "utf8proc" => :optional
   depends_on "z80oolong/tmux/tmux-ncurses@6.2"
+  depends_on "utf8proc" => :optional
 
   on_linux do
     depends_on "patchelf" => :build
   end
-
-  option "without-utf8-cjk", "Build without using East asian Ambiguous Width Character in tmux."
-  option "without-utf8-emoji", "Build without using Emoji Character in tmux."
-  option "without-pane-border-acs-ascii", "Build without using ACS ASCII as pane border in tmux."
-  option "with-static-link", "Build tmux with static link."
 
   resource "completion" do
     url "https://raw.githubusercontent.com/imomaliev/tmux-bash-completion/homebrew_1.0.0/completions/tmux"
@@ -40,63 +35,62 @@ class TmuxAT30a < Formula
   patch :p1, :DATA
 
   def install
-    ENV.append "CPPFLAGS", "-DNO_USE_UTF8CJK" if build.without?("utf8-cjk")
-    ENV.append "CPPFLAGS", "-DNO_USE_UTF8CJK_EMOJI" if build.without?("utf8-emoji")
-    ENV.append "CPPFLAGS", "-DNO_USE_PANE_BORDER_ACS_ASCII" if build.without?("pane-border-acs-ascii")
-
-    args = %W[
-      --disable-Dependency-tracking
-      --prefix=#{prefix}
-      --sysconfdir=#{etc}
-    ]
-
+    args =  std_configure_args
+    args << "--sysconfdir=#{etc}"
+    args << "--with-TERM=tmux-256color"
     args << "--enable-utf8proc" if build.with?("utf8proc")
-    args << "--enable-static"   if build.with?("static-link")
 
     ENV.append "LDFLAGS", "-lresolv"
     system "./configure", *args
 
+    system "make"
     system "make", "install"
-
-    if OS.linux? && !build.with?("static-link") then
-      fix_rpath "#{bin}/tmux", ["z80oolong/tmux/tmux-ncurses@6.2"], ["ncurses"]
-    end
 
     pkgshare.install "example_tmux.conf"
     bash_completion.install resource("completion")
+
+    replace_rpath "#{bin}/tmux", "ncurses" => "z80oolong/tmux/tmux-ncurses@6.2"
   end
 
   def post_install
-    ohai "Installing locale data for en_US.UTF-8, ja_JP.UTF-8"
-    
-    system Formula["glibc"].opt_bin/"localedef", "-i", "ja_JP", "-f", "UTF-8", "ja_JP.UTF-8"
-    system Formula["glibc"].opt_bin/"localedef", "-i", "en_US", "-f", "UTF-8", "en_US.UTF-8"
+    ohai "Installing locale data for {ja_JP, zh_*, ko_*, ...}.UTF-8"
+
+    %w[ja_JP zh_CN zh_HK zh_SG zh_TW ko_KR en_US].each do |lang|
+      system Formula["glibc"].opt_bin/"localedef", "-i", lang, "-f", "UTF-8", "#{lang}.UTF-8"
+    end
   end
 
-  def fix_rpath(binname, append_list, delete_list)
-    delete_list_hash = {}
-    rpath = %x{#{Formula["patchelf"].opt_bin}/patchelf --print-rpath #{binname}}.chomp.split(":")
+  def replace_rpath(binname, **replace_list)
+    replace_list = replace_list.each_with_object({}) do |(old, new), result|
+      result[Formula[old].opt_lib.to_s] = Formula[new].opt_lib.to_s
+      result[Formula[old].lib.to_s] = Formula[new].lib.to_s
+    end
 
-    (append_list + delete_list).each {|name| delete_list_hash["#{Formula[name].opt_lib}"] = true}
-    rpath.delete_if {|path| delete_list_hash[path]}
-    append_list.each {|name| rpath.unshift("#{Formula[name].opt_lib}")}
+    on_linux do
+      rpath = `#{Formula["patchelf"].opt_bin}/patchelf --print-rpath #{binname}`.chomp.split(":")
+      rpath.each_with_index { |i, path| rpath[i] = replace_list[path] if replace_list[path] }
 
-    system "#{Formula["patchelf"].opt_bin}/patchelf", "--set-rpath", "#{rpath.join(":")}", "#{binname}"
-  end
+      system Formula["patchelf"].opt_bin/"patchelf", "--set-rpath", rpath.join(":"), binname
+    end
 
-  def caveats; <<~EOS
-    Example configuration has been installed to:
-      #{opt_pkgshare}
-    EOS
+    on_macos do
+      replace_list.each { |old, new| MachO.change_rpath(binname.to_s, old, new) }
+    end
   end
 
   def diff_data
-    lines = self.path.each_line.inject([]) do |result, line|
-      result.push(line) if ((/^__END__/ === line) || result.first)
-      result
+    lines = path.each_line.with_object([]) do |line, result|
+      result.push(line) if /^__END__/.match?(line) || result.first
     end
     lines.shift
-    return lines.join("")
+    lines.join
+  end
+
+  def caveats
+    <<~EOS
+      Example configuration has been installed to:
+        #{opt_pkgshare}
+    EOS
   end
 
   test do

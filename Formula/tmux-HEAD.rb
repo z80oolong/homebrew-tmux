@@ -7,16 +7,27 @@ end
 
 require "macho"
 
-class TmuxAT27 < Formula
+class TmuxHead < Formula
   desc "Terminal multiplexer"
   homepage "https://tmux.github.io/"
-  url "https://github.com/tmux/tmux/releases/download/2.7/tmux-2.7.tar.gz"
-  sha256 "9ded7d100313f6bc5a87404a4048b3745d61f2332f99ec1400a7c4ed9485d452"
   license "ISC"
   revision 11
+  head "https://github.com/tmux/tmux.git", branch: "master"
 
-  keg_only :versioned_formula
+  stable do
+    current_commit = "1fe30bb2e810fa63692ed61903e8ac6ba494c799"
+    url "https://github.com/tmux/tmux.git",
+      branch:   "master",
+      revision: current_commit
+    version "next-3.6-g#{current_commit[0..7]}"
+  end
 
+  keg_only "this formula conflicts with 'homebrew/core/tmux'"
+
+  depends_on "autoconf" => :build
+  depends_on "automake" => :build
+  depends_on "bison" => :build
+  depends_on "perl" => :build
   depends_on "pkg-config" => :build
   depends_on "glibc"
   depends_on "libevent"
@@ -35,6 +46,9 @@ class TmuxAT27 < Formula
   patch :p1, :DATA
 
   def install
+    ENV["LC_ALL"] = "C"
+    system "sh", "autogen.sh"
+
     args =  std_configure_args
     args << "--sysconfdir=#{etc}"
     args << "--with-TERM=tmux-256color"
@@ -77,6 +91,7 @@ class TmuxAT27 < Formula
       replace_list.each { |old, new| MachO.change_rpath(binname.to_s, old, new) }
     end
   end
+  private :replace_rpath
 
   def diff_data
     lines = path.each_line.with_object([]) do |line, result|
@@ -99,44 +114,124 @@ class TmuxAT27 < Formula
 end
 
 __END__
-diff --git a/cfg.c b/cfg.c
-index 416dbf7..e10e4d3 100644
---- a/cfg.c
-+++ b/cfg.c
-@@ -83,6 +83,10 @@ start_cfg(void)
- 	int		 quiet = 0;
- 	struct client	*c;
- 
-+#ifndef NO_USE_ENV_TMUX_CONF
-+	struct environ_entry	*tmux_conf_entry;
-+	char			*tmux_conf;
+diff --git a/image-sixel.c b/image-sixel.c
+index a03c8619..d8be348a 100644
+--- a/image-sixel.c
++++ b/image-sixel.c
+@@ -123,6 +123,9 @@ sixel_parse_write(struct sixel_image *si, u_int ch)
+ {
+ 	struct sixel_line	*sl;
+ 	u_int			 i;
++#ifndef NO_FIX_SIXEL
++	u_int			 dstdata, srcdata;
 +#endif
- 	/*
- 	 * Configuration files are loaded without a client, so NULL is passed
- 	 * into load_cfg() and commands run in the global queue with
-@@ -100,7 +104,16 @@ start_cfg(void)
- 		cmdq_append(c, cfg_item);
+ 
+ 	if (sixel_parse_expand_lines(si, si->dy + 6) != 0)
+ 		return (1);
+@@ -131,8 +134,32 @@ sixel_parse_write(struct sixel_image *si, u_int ch)
+ 	for (i = 0; i < 6; i++) {
+ 		if (sixel_parse_expand_line(si, sl, si->dx + 1) != 0)
+ 			return (1);
++#ifndef NO_FIX_SIXEL
++		if (ch & (1 << i)) {
++			if (sl->data[si->dx] == 0) {
++				/* The element of the array for storing pixels, sl->data[si->dx], stores
++				 * si->dc, a value incremented by one from the palette number.
++				 */
++
++				sl->data[si->dx] = si->dc;
++			} else {
++				/* This code is for the ORMODE of SIXEL Graphics.
++				 * The value obtained by the logical OR of the decremented by 1 value 
++				 * from sl->data[si->dx] and si->dc, which are the elements of the array
++				 * for storing pixel palette numbers, is incremented by 1, and stored
++				 * in sl->data[si-dx].
++				 */
++
++				dstdata = sl->data[si->dx] - 1;
++				srcdata = si->dc - 1;
++				dstdata = dstdata | srcdata;
++				sl->data[si->dx] = dstdata + 1;
++			}
++		}
++#else
+ 		if (ch & (1 << i))
+ 			sl->data[si->dx] = si->dc;
++#endif
+ 		sl++;
+ 	}
+ 	return (0);
+@@ -468,7 +495,19 @@ sixel_scale(struct sixel_image *si, u_int xpixel, u_int ypixel, u_int ox,
  	}
  
-+#ifdef NO_USE_ENV_TMUX_CONF
- 	load_cfg(TMUX_CONF, NULL, NULL, 1);
+ 	if (colours) {
++#ifndef NO_FIX_SIXEL
++		/* Code to prevent the function xmalloc() from exiting abnormally if si->ncolors == 0 */
++		if (si->ncolours == 0) {
++			new->colours = xmalloc((size_t)1 * sizeof *new->colours);
++			new->colours[0] = 0;
++			log_debug("%s: WARNING; si->ncolours == 0, force %d ncolour.", __func__, 1);
++		} else {
++			new->colours = xmalloc(si->ncolours * sizeof *new->colours);
++			log_debug("%s: si->ncolours == %d.", __func__, si->ncolours);
++		}
 +#else
-+	if ((tmux_conf_entry = environ_find(global_environ, "TMUX_CONF")) == NULL) {
-+		load_cfg(TMUX_CONF, NULL, NULL, 1);
-+	} else {
-+		tmux_conf = xstrdup(tmux_conf_entry->value);
-+		load_cfg(tmux_conf, NULL, NULL, 1);
-+	}
+ 		new->colours = xmalloc(si->ncolours * sizeof *new->colours);
 +#endif
+ 		for (i = 0; i < si->ncolours; i++)
+ 			new->colours[i] = si->colours[i];
+ 		new->ncolours = si->ncolours;
+@@ -522,11 +561,28 @@ sixel_print_compress_colors(struct sixel_image *si, struct sixel_chunk *chunks,
+ 			colors[i] = 0;
+ 			if (y + i < si->y) {
+ 				sl = &si->lines[y + i];
++#ifndef NO_FIX_SIXEL
++				if (x < sl->x) {
++					/* For sl->data[x], which is an element of an array for storing the palette number for each pixel,
++					 * if the value of sl->data[x] is 0 except for the bottom pixel with y-coordinate,
++					 * especially if ormode is used, the palette number of sl->data[x] is 1 and The palette number
++					 * in sl->data[x] should be considered to be 1.
++					 */
++					if (y < (si->y - 6) && sl->data[x] == 0)
++						sl->data[x] = 1;
++					if (sl->data[x] != 0) {
++						colors[i] = sl->data[x];
++						c = sl->data[x] - 1;
++						chunks[c].next_pattern |= 1 << i;
++					}
++				}
++#else
+ 				if (x < sl->x && sl->data[x] != 0) {
+ 					colors[i] = sl->data[x];
+ 					c = sl->data[x] - 1;
+ 					chunks[c].next_pattern |= 1 << i;
+ 				}
++#endif
+ 			}
+ 		}
  
- 	if (cfg_file == NULL && (home = find_home()) != NULL) {
- 		xasprintf(&cfg_file, "%s/.tmux.conf", home);
+@@ -572,9 +628,15 @@ sixel_print(struct sixel_image *si, struct sixel_image *map, size_t *size)
+ 	if (map != NULL) {
+ 		colours = map->colours;
+ 		ncolours = map->ncolours;
++#ifndef NO_FIX_SIXEL
++		log_debug("%s: map->{colours,ncolours}; colours == %p, ncolours == %d", __func__, colours, ncolours);
++#endif
+ 	} else {
+ 		colours = si->colours;
+ 		ncolours = si->ncolours;
++#ifndef NO_FIX_SIXEL
++		log_debug("%s: si->{colours,ncolours}; colours == %p, ncolours == %d", __func__, colours, ncolours);
++#endif
+ 	}
+ 
+ 	if (ncolours == 0)
 diff --git a/options-table.c b/options-table.c
-index f611ba0..dfb8305 100644
+index 16e57642..cb9195a2 100644
 --- a/options-table.c
 +++ b/options-table.c
-@@ -941,5 +941,37 @@ const struct options_table_entry options_table[] = {
- 	  .default_num = 1
+@@ -1369,6 +1369,38 @@ const struct options_table_entry options_table[] = {
+ 		  "This option is no longer used."
  	},
  
 +#ifndef NO_USE_UTF8CJK
@@ -171,22 +266,29 @@ index f611ba0..dfb8305 100644
 +	},
 +#endif
 +
- 	{ .name = NULL }
- };
+ 	/* Hook options. */
+ 	OPTIONS_TABLE_HOOK("after-bind-key", ""),
+ 	OPTIONS_TABLE_HOOK("after-capture-pane", ""),
 diff --git a/tmux.c b/tmux.c
-index 5b73079..be2e2ae 100644
+index 6659e1c3..002cd7aa 100644
 --- a/tmux.c
 +++ b/tmux.c
-@@ -189,18 +189,27 @@ main(int argc, char **argv)
+@@ -351,20 +351,33 @@ main(int argc, char **argv)
  {
- 	char					*path, *label, *cause, **var;
- 	char					 tmp[PATH_MAX];
+ 	char					*path = NULL, *label = NULL;
+ 	char					*cause, **var;
 +#ifndef NO_USE_UTF8CJK
 +	char					*ctype;
 +#endif
- 	const char				*s, *shell, *cwd;
- 	int					 opt, flags, keys;
+ 	const char				*s, *cwd;
+ 	int					 opt, keys, feat = 0, fflag = 0;
+ 	uint64_t				 flags = 0;
  	const struct options_table_entry	*oe;
+ 	u_int					 i;
++#ifndef NO_USE_ENV_TMUX_CONF
++	struct environ_entry			*tmux_conf_entry;
++	char					*tmux_conf;
++#endif
  
 +#ifdef NO_USE_UTF8CJK
  	if (setlocale(LC_CTYPE, "en_US.UTF-8") == NULL &&
@@ -205,7 +307,24 @@ index 5b73079..be2e2ae 100644
  
  	setlocale(LC_TIME, "");
  	tzset();
-@@ -328,6 +337,21 @@ main(int argc, char **argv)
+@@ -377,7 +390,16 @@ main(int argc, char **argv)
+ 		environ_put(global_environ, *var, 0);
+ 	if ((cwd = find_cwd()) != NULL)
+ 		environ_set(global_environ, "PWD", 0, "%s", cwd);
++#ifdef NO_USE_ENV_TMUX_CONF
+ 	expand_paths(TMUX_CONF, &cfg_files, &cfg_nfiles, 1);
++#else
++	if ((tmux_conf_entry = environ_find(global_environ, "TMUX_CONF")) == NULL) {
++		expand_paths(TMUX_CONF, &cfg_files, &cfg_nfiles, 1);
++	} else {
++		tmux_conf = xstrdup(tmux_conf_entry->value);
++		expand_paths(tmux_conf, &cfg_files, &cfg_nfiles, 1);
++	}
++#endif
+ 
+ 	while ((opt = getopt(argc, argv, "2c:CDdf:lL:NqS:T:uUvV")) != -1) {
+ 		switch (opt) {
+@@ -508,6 +530,19 @@ main(int argc, char **argv)
  		options_set_number(global_w_options, "mode-keys", keys);
  	}
  
@@ -215,24 +334,36 @@ index 5b73079..be2e2ae 100644
 +#ifndef NO_USE_UTF8CJK_EMOJI
 +		options_set_number(global_options, "utf8-emoji", 1);
 +#endif
-+		options_set_number(global_s_options, "pane-border-ascii", 1);
 +	} else {
 +		options_set_number(global_options, "utf8-cjk", 0);
 +#ifndef NO_USE_UTF8CJK_EMOJI
 +		options_set_number(global_options, "utf8-emoji", 0);
 +#endif
-+		options_set_number(global_s_options, "pane-border-ascii", 0);
 +	}
 +#endif
  	/*
  	 * If socket is specified on the command-line with -S or -L, it is
  	 * used. Otherwise, $TMUX is checked and if that fails "default" is
+@@ -533,6 +568,13 @@ main(int argc, char **argv)
+ 	socket_path = path;
+ 	free(label);
+ 
++#ifndef NO_USE_FIX_NOEPOLL
++#ifdef __linux__
++	/* Set the environment variable EVENT_NOEPOLL to "1" certainly. */
++	environ_set(global_environ, "EVENT_NOEPOLL", 0, "%d", 1);
++#endif
++#endif
++
+ 	/* Pass control to the client. */
+ 	exit(client_main(osdep_event_init(), argc, argv, flags, feat));
+ }
 diff --git a/tmux.h b/tmux.h
-index 95758a0..3a9fef4 100644
+index abda6ee6..bab28954 100644
 --- a/tmux.h
 +++ b/tmux.h
-@@ -61,6 +61,17 @@ struct tmuxproc;
- #define TMUX_CONF "/etc/tmux.conf"
+@@ -94,6 +94,17 @@ struct winlink;
+ #define TMUX_LOCK_CMD "lock -np"
  #endif
  
 +/* If "pane-border-ascii" is not used, "utf8-cjk" is not used too. */
@@ -246,21 +377,27 @@ index 95758a0..3a9fef4 100644
 +#define NO_USE_UTF8CJK_EMOJI
 +#endif
 +
- /*
-  * Minimum layout cell size, NOT including separator line. The scroll region
-  * cannot be one line in height so this must be at least two.
+ /* Minimum layout cell size, NOT including border lines. */
+ #define PANE_MINIMUM 1
+ 
 diff --git a/tty-acs.c b/tty-acs.c
-index 1f7a2b1..059d0cd 100644
+index 3dab31b6..af80835a 100644
 --- a/tty-acs.c
 +++ b/tty-acs.c
-@@ -22,6 +22,83 @@
+@@ -23,6 +23,223 @@
  
  #include "tmux.h"
  
 +#ifndef NO_USE_PANE_BORDER_ACS_ASCII
 +#include <string.h>
 +
-+static char tty_acs_table[UCHAR_MAX][4] = {
++enum acs_type {
++	ACST_UTF8,
++	ACST_ACS,
++	ACST_ASCII,
++};
++
++static const char tty_acs_table[UCHAR_MAX][4] = {
 +	['+'] = "\342\206\222",	/* arrow pointing right */
 +	[','] = "\342\206\220",	/* arrow pointing left */
 +	['-'] = "\342\206\221",	/* arrow pointing up */
@@ -274,7 +411,7 @@ index 1f7a2b1..059d0cd 100644
 +	['e'] = "\342\220\212",
 +	['f'] = "\302\260",	/* degree symbol */
 +	['g'] = "\302\261",	/* plus/minus */
-+	['h'] = "\342\220\244",	/* board of squares	ACS_BOARD	*/
++	['h'] = "\342\220\244",
 +	['i'] = "\342\220\213",
 +	['j'] = "\342\224\230",	/* lower right corner */
 +	['k'] = "\342\224\220",	/* upper right corner */
@@ -293,10 +430,10 @@ index 1f7a2b1..059d0cd 100644
 +	['x'] = "\342\224\202",	/* vertical line */
 +	['y'] = "\342\211\244",	/* less-than-or-equal-to */
 +	['z'] = "\342\211\245",	/* greater-than-or-equal-to */
-+	['{'] = "\317\200",   	/* greek pi */
++	['{'] = "\317\200",	/* greek pi */
 +	['|'] = "\342\211\240",	/* not-equal */
 +	['}'] = "\302\243",	/* UK pound sign */
-+	['~'] = "\302\267"	/* bullet */
++	['~'] = "\302\267",	/* bullet */
 +};
 +
 +static char tty_acs_ascii_table[UCHAR_MAX][2] = {
@@ -333,13 +470,147 @@ index 1f7a2b1..059d0cd 100644
 +	['k'] = "+",	/* upper right corner		ACS_URCORNER	*/
 +	['x'] = "|",	/* vertical line		ACS_VLINE	*/
 +};
++
++static int tty_acs_reverse_table[USHRT_MAX][1] = {
++       [0xfb1d] = 0x7e,        /* "\302\267"     = '~' */
++       [0xcd2e] = 0x71,        /* "\342\224\200" = 'q' */
++       [0xcd2f] = 0x71,        /* "\342\224\201" = 'q' */
++       [0xcd30] = 0x78,        /* "\342\224\202" = 'x' */
++       [0xcd31] = 0x78,        /* "\342\224\203" = 'x' */
++       [0xcd3a] = 0x6c,        /* "\342\224\214" = 'l' */
++       [0xcd3d] = 0x6b,        /* "\342\224\217" = 'k' */
++       [0xcd3e] = 0x6b,        /* "\342\224\220" = 'k' */
++       [0xcd41] = 0x6c,        /* "\342\224\223" = 'l' */
++       [0xcd42] = 0x6d,        /* "\342\224\224" = 'm' */
++       [0xcd45] = 0x6d,        /* "\342\224\227" = 'm' */
++       [0xcd46] = 0x6a,        /* "\342\224\230" = 'j' */
++       [0xcd49] = 0x6a,        /* "\342\224\233" = 'j' */
++       [0xcd4a] = 0x74,        /* "\342\224\234" = 't' */
++       [0xcd51] = 0x74,        /* "\342\224\243" = 't' */
++       [0xcd52] = 0x75,        /* "\342\224\244" = 'u' */
++       [0xcd59] = 0x75,        /* "\342\224\253" = 'u' */
++       [0xcd61] = 0x77,        /* "\342\224\263" = 'w' */
++       [0xcd62] = 0x76,        /* "\342\224\264" = 'v' */
++       [0xcd69] = 0x76,        /* "\342\224\273" = 'v' */
++       [0xcd6a] = 0x6e,        /* "\342\224\274" = 'n' */
++       [0xcd4c] = 0x6e,        /* "\342\225\213" = 'n' */
++       [0xcd51] = 0x71,        /* "\342\225\220" = 'q' */
++       [0xcd52] = 0x78,        /* "\342\225\221" = 'x' */
++       [0xcd55] = 0x6c,        /* "\342\225\224" = 'l' */
++       [0xcd58] = 0x6b,        /* "\342\225\227" = 'k' */
++       [0xcd5b] = 0x6d,        /* "\342\225\232" = 'm' */
++       [0xcd5e] = 0x6a,        /* "\342\225\235" = 'j' */
++       [0xcd61] = 0x74,        /* "\342\225\240" = 't' */
++       [0xcd64] = 0x75,        /* "\342\225\243" = 'u' */
++       [0xcd67] = 0x77,        /* "\342\225\246" = 'w' */
++       [0xcd6a] = 0x76,        /* "\342\225\251" = 'v' */
++       [0xcd6d] = 0x6e,        /* "\342\225\254" = 'n' */
++};
++
++static int
++acs_reverse_hash(const char *str, size_t strlen)
++{
++	int result;
++
++	for (result = 0; (strlen > 0) || (*str != '\0'); str++, strlen--)
++		result = 19 * result + ((int)*str);
++
++	return (result & 0xffff);
++}
++
++/* UTF-8 double borders. */
++static const struct utf8_data tty_acs_double_borders_list[][2] = {
++	{ { "", 0, 0, 0 }, { "", 0, 0, 0 } },
++	{ { "\342\225\221", 0, 3, 1 }, { "|", 0, 1, 1 } }, /* U+2551 */
++	{ { "\342\225\220", 0, 3, 1 }, { "+", 0, 1, 1 } }, /* U+2550 */
++	{ { "\342\225\224", 0, 3, 1 }, { "+", 0, 1, 1 } }, /* U+2554 */
++	{ { "\342\225\227", 0, 3, 1 }, { "+", 0, 1, 1 } }, /* U+2557 */
++	{ { "\342\225\232", 0, 3, 1 }, { "+", 0, 1, 1 } }, /* U+255A */
++	{ { "\342\225\235", 0, 3, 1 }, { "+", 0, 1, 1 } }, /* U+255D */
++	{ { "\342\225\246", 0, 3, 1 }, { "+", 0, 1, 1 } }, /* U+2566 */
++	{ { "\342\225\251", 0, 3, 1 }, { "+", 0, 1, 1 } }, /* U+2569 */
++	{ { "\342\225\240", 0, 3, 1 }, { "+", 0, 1, 1 } }, /* U+2560 */
++	{ { "\342\225\243", 0, 3, 1 }, { "+", 0, 1, 1 } }, /* U+2563 */
++	{ { "\342\225\254", 0, 3, 1 }, { "+", 0, 1, 1 } }, /* U+256C */
++	{ { "\302\267",	0, 2, 1 }, { "o", 0, 1, 1 } }  /* U+00B7 */
++};
++
++/* UTF-8 heavy borders. */
++static const struct utf8_data tty_acs_heavy_borders_list[][2] = {
++	{ { "", 0, 0, 0 }, { "", 0, 0, 0 } },
++	{ { "\342\224\203", 0, 3, 1 }, { "|", 0, 1, 1 } }, /* U+2503 */
++	{ { "\342\224\201", 0, 3, 1 }, { "+", 0, 1, 1 } }, /* U+2501 */
++	{ { "\342\224\217", 0, 3, 1 }, { "+", 0, 1, 1 } }, /* U+250F */
++	{ { "\342\224\223", 0, 3, 1 }, { "+", 0, 1, 1 } }, /* U+2513 */
++	{ { "\342\224\227", 0, 3, 1 }, { "+", 0, 1, 1 } }, /* U+2517 */
++	{ { "\342\224\233", 0, 3, 1 }, { "+", 0, 1, 1 } }, /* U+251B */
++	{ { "\342\224\263", 0, 3, 1 }, { "+", 0, 1, 1 } }, /* U+2533 */
++	{ { "\342\224\273", 0, 3, 1 }, { "+", 0, 1, 1 } }, /* U+253B */
++	{ { "\342\224\243", 0, 3, 1 }, { "+", 0, 1, 1 } }, /* U+2523 */
++	{ { "\342\224\253", 0, 3, 1 }, { "+", 0, 1, 1 } }, /* U+252B */
++	{ { "\342\225\213", 0, 3, 1 }, { "+", 0, 1, 1 } }, /* U+254B */
++	{ { "\302\267", 0, 2, 1 }, { "o", 0, 1, 1 } }  /* U+00B7 */
++};
++
++/* UTF-8 rounded borders. */
++static const struct utf8_data tty_acs_rounded_borders_list[][2] = {
++	{ { "", 0, 0, 0 }, { "", 0, 0, 0 } },
++	{ { "\342\224\202", 0, 3, 1 }, { "|", 0, 1, 1 } },/* U+2502 */
++	{ { "\342\224\200", 0, 3, 1 }, { "+", 0, 1, 1 } },/* U+2500 */
++	{ { "\342\225\255", 0, 3, 1 }, { "+", 0, 1, 1 } },/* U+256D */
++	{ { "\342\225\256", 0, 3, 1 }, { "+", 0, 1, 1 } },/* U+256E */
++	{ { "\342\225\260", 0, 3, 1 }, { "+", 0, 1, 1 } },/* U+2570 */
++	{ { "\342\225\257", 0, 3, 1 }, { "+", 0, 1, 1 } },/* U+256F */
++	{ { "\342\224\263", 0, 3, 1 }, { "+", 0, 1, 1 } },/* U+2533 */
++	{ { "\342\224\273", 0, 3, 1 }, { "+", 0, 1, 1 } },/* U+253B */
++	{ { "\342\224\243", 0, 3, 1 }, { "+", 0, 1, 1 } },/* U+2523 */
++	{ { "\342\224\253", 0, 3, 1 }, { "+", 0, 1, 1 } },/* U+252B */
++	{ { "\342\225\213", 0, 3, 1 }, { "+", 0, 1, 1 } },/* U+254B */
++	{ { "\302\267", 0, 2, 1 }, { "o", 0, 1, 1 } }  /* U+00B7 */
++};
++
++static int
++tty_acs_borders_list_index(void)
++{
++	static int index = -1;
++
++	if (index < 0) {
++		if (options_get_number(global_s_options, "pane-border-acs"))
++			index = 0;
++		else if (options_get_number(global_s_options, "pane-border-ascii"))
++			index = 1;
++	}
++
++	return index;
++}
++
++/* Get cell border character for double style. */
++const struct utf8_data *
++tty_acs_double_borders(int cell_type)
++{
++	return (&tty_acs_double_borders_list[cell_type][tty_acs_borders_list_index()]);
++}
++
++/* Get cell border character for heavy style. */
++const struct utf8_data *
++tty_acs_heavy_borders(int cell_type)
++{
++	return (&tty_acs_heavy_borders_list[cell_type][tty_acs_borders_list_index()]);
++}
++
++/* Get cell border character for rounded style. */
++const struct utf8_data *
++tty_acs_rounded_borders(int cell_type)
++{
++	return (&tty_acs_rounded_borders_list[cell_type][tty_acs_borders_list_index()]);
++}
 +#else
- static int	tty_acs_cmp(const void *, const void *);
- 
  /* Table mapping ACS entries to UTF-8. */
-@@ -73,11 +150,91 @@ tty_acs_cmp(const void *key, const void *value)
- 	ch = *(u_char *) key;
- 	return (ch - entry->key);
+ struct tty_acs_entry {
+ 	u_char		 key;
+@@ -199,11 +416,85 @@ tty_acs_reverse_cmp(const void *key, const void *value)
+ 
+ 	return (strcmp(test, entry->string));
  }
 +#endif  /* NO_USE_PANE_BORDER_ACS_ASCII */
 +
@@ -358,12 +629,6 @@ index 1f7a2b1..059d0cd 100644
 +	log_debug("%s width is %d", s, ud.width);
 +	return ud.width;
 +}
-+
-+enum acs_type {
-+	ACST_UTF8,
-+	ACST_ACS,
-+	ACST_ASCII,
-+};
 +
 +static enum acs_type
 +tty_acs_type(struct tty *tty)
@@ -399,7 +664,7 @@ index 1f7a2b1..059d0cd 100644
 +	if (options_get_number(global_s_options, "pane-border-ascii"))
 +		return (ACST_ASCII);
 +
-+	if ((tty->flags & TTY_UTF8) &&
++	if ((tty->client->flags & CLIENT_UTF8) &&
 +	    (!tty_term_has(tty->term, TTYC_U8) ||
 +	     tty_term_number(tty->term, TTYC_U8) != 0)) {
 +		static int hline_width = 0;
@@ -429,14 +694,14 @@ index 1f7a2b1..059d0cd 100644
  	if (tty == NULL)
  		return (0);
  
-@@ -98,12 +255,31 @@ tty_acs_needed(struct tty *tty)
- 	if (tty->flags & TTY_UTF8)
+@@ -224,12 +515,31 @@ tty_acs_needed(struct tty *tty)
+ 	if (tty->client->flags & CLIENT_UTF8)
  		return (0);
  	return (1);
 +#endif /* NO_USE_PANE_BORDER_ACS_ASCII */
  }
  
- /* Retrieve ACS to output as a string. */
+ /* Retrieve ACS to output as UTF-8. */
  const char *
  tty_acs_get(struct tty *tty, u_char ch)
  {
@@ -458,22 +723,46 @@ index 1f7a2b1..059d0cd 100644
 +		return (&tty_acs_ascii_table[ch][0]);
 +	return (NULL);
 +#else
- 	struct tty_acs_entry	*entry;
+ 	const struct tty_acs_entry	*entry;
  
  	/* Use the ACS set instead of UTF-8 if needed. */
-@@ -119,4 +295,5 @@ tty_acs_get(struct tty *tty, u_char ch)
+@@ -245,12 +555,23 @@ tty_acs_get(struct tty *tty, u_char ch)
  	if (entry == NULL)
  		return (NULL);
  	return (entry->string);
 +#endif /* NO_USE_PANE_BORDER_ACS_ASCII */
  }
+ 
+ /* Reverse UTF-8 into ACS. */
+ int
+ tty_acs_reverse_get(__unused struct tty *tty, const char *s, size_t slen)
+ {
++#ifndef NO_USE_PANE_BOARDER_ACS_ASCII
++	int ch;
++
++	if (tty_acs_type(tty) == ACST_UTF8) {
++		if ((ch = tty_acs_reverse_table[acs_reverse_hash(s, slen)][0]) != 0)
++			return ch;
++	}
++
++	return (-1);
++#else
+ 	const struct tty_acs_reverse_entry	*table, *entry;
+ 	u_int					 items;
+ 
+@@ -266,4 +587,5 @@ tty_acs_reverse_get(__unused struct tty *tty, const char *s, size_t slen)
+ 	if (entry == NULL)
+ 		return (-1);
+ 	return (entry->key);
++#endif
+ }
 diff --git a/tty-term.c b/tty-term.c
-index 9f0cac5..f92a7b6 100644
+index d4223497..ac01f9ec 100644
 --- a/tty-term.c
 +++ b/tty-term.c
-@@ -511,6 +511,15 @@ tty_term_find(char *name, int fd, char **cause)
- 	if (!tty_term_flag(term, TTYC_XENL))
- 		term->flags |= TERM_EARLYWRAP;
+@@ -510,6 +510,15 @@ tty_term_apply_overrides(struct tty_term *term)
+ 		term->flags &= ~TERM_NOAM;
+ 	log_debug("NOAM flag is %d", !!(term->flags & TERM_NOAM));
  
 +#ifndef NO_USE_PANE_BORDER_ACS_ASCII
 +	/* Generate ACS table. */
@@ -487,20 +776,20 @@ index 9f0cac5..f92a7b6 100644
  	/* Generate ACS table. If none is present, use nearest ASCII. */
  	memset(term->acs, 0, sizeof term->acs);
  	if (tty_term_has(term, TTYC_ACSC))
-@@ -519,6 +528,7 @@ tty_term_find(char *name, int fd, char **cause)
+@@ -518,6 +527,7 @@ tty_term_apply_overrides(struct tty_term *term)
  		acs = "a#j+k+l+m+n+o-p-q-r-s-t+u+v+w+x|y<z>~.";
  	for (; acs[0] != '\0' && acs[1] != '\0'; acs += 2)
  		term->acs[(u_char) acs[0]][0] = acs[1];
 +#endif
+ }
  
- 	/* On terminals with xterm titles (XT), fill in tsl and fsl. */
- 	if (tty_term_flag(term, TTYC_XT) &&
+ struct tty_term *
 diff --git a/utf8.c b/utf8.c
-index a91da36..6810031 100644
+index bc7c8fd2..ca3d8ca7 100644
 --- a/utf8.c
 +++ b/utf8.c
-@@ -25,6 +25,407 @@
- 
+@@ -27,6 +27,407 @@
+ #include "compat.h"
  #include "tmux.h"
  
 +#ifndef NO_USE_UTF8CJK
@@ -904,36 +1193,38 @@ index a91da36..6810031 100644
 +#endif
 +#endif
 +
- static int	utf8_width(wchar_t);
- 
- /* Set a single character. */
-@@ -109,10 +510,29 @@ utf8_width(wchar_t wc)
- {
- 	int	width;
- 
+ static const wchar_t utf8_force_wide[] = {
+ 	0x0261D,
+ 	0x026F9,
+@@ -410,6 +811,23 @@ utf8_width(struct utf8_data *ud, int *width)
+ 		*width = 2;
+ 		return (UTF8_DONE);
+ 	}
 +#ifndef NO_USE_UTF8CJK
 +	if (options_get_number(global_options, "utf8-cjk")) {
 +#ifndef NO_USE_UTF8CJK_EMOJI
 +		if (options_get_number(global_options, "utf8-emoji"))
-+			width = mk_wcwidth_cjk_emoji(wc);
++			*width = mk_wcwidth_cjk_emoji(wc);
 +		else
-+			width = mk_wcwidth_cjk(wc);
++			*width = mk_wcwidth_cjk(wc);
 +#else
-+		width = mk_wcwidth_cjk(wc);
++		*width = mk_wcwidth_cjk(wc);
 +#endif
 +	} else {
-+#ifdef HAVE_UTF8PROC
-+		width = utf8proc_wcwidth(wc);
-+#else
-+		width = wcwidth(wc);
-+#endif
++		*width = mk_wcwidth(wc);
 +	}
++	log_debug("UTF-8 %.*s, wcwidth() %d", (int)ud->size, ud->data, *width);
++	if (*width >= 0 && *width <= 0xff)
++		return (UTF8_DONE);
 +#else
  #ifdef HAVE_UTF8PROC
- 	width = utf8proc_wcwidth(wc);
- #else
- 	width = wcwidth(wc);
-+#endif
+ 	*width = utf8proc_wcwidth(wc);
+ 	log_debug("utf8proc_wcwidth(%05X) returned %d", (u_int)wc, *width);
+@@ -426,6 +844,7 @@ utf8_width(struct utf8_data *ud, int *width)
  #endif
- 	if (width < 0 || width > 0xff) {
- 		log_debug("Unicode %04lx, wcwidth() %d", (long)wc, width);
+ 	if (*width >= 0 && *width <= 0xff)
+ 		return (UTF8_DONE);
++#endif
+ 	return (UTF8_ERROR);
+ }
+ 
