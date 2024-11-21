@@ -6,7 +6,12 @@
 
 また、 [tmux][TMUX] とは、 terminal session を効果的に操作できる端末多重化ソフトウェアです。 [tmux][TMUX] の使用により、複数の仮想 window や pane を同時に表示し、それらの間を切り替えたり terminal session を分割することが可能となります。そして、これにより単一の terminal window 内で複数の task を同時に実行することが可能となります。
 
-しかし、 [tmux][TMUX] において、Unicode の規格における東アジア圏の各種文字のうち、いわゆる "◎" や "★" 等の記号文字及び罫線文字等、 [East_Asian_Width 特性の値が A (Ambiguous) となる文字][EAWA] (以下、 [East Asian Ambiguous Character][EAWA]) が、日本語環境で文字幅を適切に扱うことが出来ずに表示が乱れる問題等、幾つかの問題が発生しています。
+しかし [tmux 2.6][TMUX] 以降において、現在のところ以下のような問題が発生しています。
+
+- Unicode の規格における東アジア圏の各種文字のうち、いわゆる "◎" や "★" 等の記号文字及び罫線文字等、 [East_Asian_Width 特性の値が A (Ambiguous) となる文字][EAWA] (以下、 [East Asian Ambiguous Character][EAWA]) が、日本語環境で文字幅を適切に扱うことが出来ずに表示が乱れる問題が発生する。
+- Unicode 上の絵文字の文字幅も適切に扱われない問題が発生する。
+- [tmux][TMUX] の pane 分割において、画面分割におけるボーダーラインの罫線文字の文字幅が適切に扱われず、画面表示が乱れる問題が発生する。
+- [tmux][TMUX] の新たな HEAD 版より追加された SIXEL による画像表示において、パレット数が 0 となるような画像と表示させようとすると、 [tmux][TMUX] の process が異常終了したり、 ORMODE に対応した SIXEL 画像が正常に表示されない問題が発生する。
 
 この [Homebrew for Linux][BREW] 向け Tap リポジトリは、前述の各種問題を修正するための差分ファイルである "[tmux 2.6 以降において各種問題を修正する野良差分ファイル][GST1]" をソースコードに適用した [tmux][TMUX] を導入するためのリポジトリです。
 
