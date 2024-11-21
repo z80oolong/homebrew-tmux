@@ -10,17 +10,25 @@
 
 この Formula は、最新の安定版若しくは HEAD 版の [tmux][TMUX] に、 "[tmux 2.6 以降において各種問題を修正する野良差分ファイル][GST1]" を適用したものを導入するための Formula です。
 
-なお、[tmux][TMUX] 上で [powerline][POWE] が正常に動作しない不具合を回避するために、 ```-V``` オプションを付与してコマンド ```tmux``` を実行した結果を ```tmux master``` とする場合は、オプション ```--with-version-master``` を指定して下さい。
+**なお、この Formula は近日中に、最新の安定版の [tmux][TMUX] を導入するための Formula である ```z80oolong/tmux/tmux@{current_version} (ここに、 ```{current_version}``` には最新の安定版のバージョン番号が入ります。)``` への alias となる予定です。**
 
-また、 [tmux][TMUX] において East Asian Ambiguous Character の全角文字幅での表示を無効化する場合は、オプション ```--without-utf8-cjk``` を指定して下さい。そして、 [tmux][TMUX] において、画面分割におけるボーダーラインの罫線文字を判別し、適切に描画するための修正を無効化するには、オプション ```--without-pane-border-acs-ascii``` を指定して下さい。
+### z80oolong/tmux/tmux-HEAD
+
+この Formula は、 [github 上の HEAD 版の tmux][TGIT] に、 "[tmux 2.6 以降において各種問題を修正する野良差分ファイル][GST1]" を適用したものを導入するための Formula です。
+
+通常は、 "[tmux 2.6 以降において各種問題を修正する野良差分ファイル][GST1]" のページにおいて、[直近に公開された野良差分ファイルが対応している HEAD 版の commit][GST1] の [tmux][TMUX] が導入されます。
+
+[github 上の HEAD 版の最新の commit の tmux][TGIT] を導入する場合は、オプション ```--HEAD``` を指定して下さい。
+
+**この Formula は、 ```homebrew/core/tmux``` と競合するため、この Formula によって導入される [tmux][TMUX] は、 keg only で導入されることに留意して下さい。**
+
+この Formula によって導入される [tmux][TMUX] を使用するには、 ```brew link --force z80oolong/tmux/tmux-HEAD``` コマンドを実行する必要があります。
 
 ### z80oolong/tmux/tmux@{version}
 
 (注：上記 ```{version}``` には、 [tmux][TMUX] の各バージョン番号が入ります。以下同様。)
 
 この Formula は、安定版の [tmux {version}][TMUX] に、 "[tmux 2.6 以降において各種問題を修正する野良差分ファイル][GST1]" を適用したものを導入します。
-
-なお、 [tmux][TMUX] において East Asian Ambiguous Character の全角文字幅での表示を無効化する場合は、オプション ```--without-utf8-cjk``` を指定して下さい。そして、 [tmux][TMUX] において、画面分割におけるボーダーラインの罫線文字を判別し、適切に描画するための修正を無効化するには、オプション ```--without-pane-border-acs-ascii``` を指定して下さい。
 
 **この Formula は、 versioned formula であるため、この Formula によって導入される [tmux][TMUX] は、 keg only で導入されることに留意して下さい。**
 
@@ -56,9 +64,17 @@
 
 [tmux][TMUX] のステータスラインを機能的に装飾するためのツールである [powerline][POWE] の本体を導入するための Formula です。この Formula で、オリジナルの [powerline][POWE] において発生する HEAD 版上の [tmux][TMUX] 上で [powerline][POWE] が正常に動作しない不具合を修正しています。
 
-なお、この Formula は、デフォルトでは ```z80oolong/tmux/tmux``` に依存しています。 ```z80oolong/tmux/tmux``` の導入を回避するには、オプション ```--without-tmux``` を指定して下さい。
+なお、この Formula で導入される [powerline][POWE] は、この Formula と同時に導入されるフォント ```z80oolong/fonts/umefont, z80oolong/fonts/vlgothic``` にて動作確認しています。
 
-また、 HEAD 版の [tmux][TMUX] 上で [powerline][POWE] が正常に動作しない不具合を修正せずに [powerline][POWE] を導入する場合は、オプション ```--without-fix-powerline``` を指定して下さい。
+また、オプション ```--with-tmux``` を指定することにより、 ```z80oolong/tmux/tmux``` を同時に導入することが出来ます。
+
+この Formula によって導入された [powerline][POWE] を使用する際は、**設定ファイル ```${HOME}/.tmux.conf (または ${HOME}/.config/tmux/tmux.conf 等)``` に以下の設定を記述する必要があることに留意して下さい。**
+
+```
+# ここに、 HOMEBREW_PREFIX は、 Homebrew for Linux が置かれているディレクトリであり、環境に応じて読み替えて設定すること。
+run-shell "HOMEBREW_PREFIX/opt/powerline-status/bin/powerline-daemon -q"
+source HOMEBREW_PREFIX/opt/powerline-status/share/powerline/bindings/tmux/powerline.conf
+```
 
 ### z80oolong/tmux/powerline-status@{version}
 
@@ -66,15 +82,27 @@
 
 [tmux][TMUX] のステータスラインを機能的に装飾するためのツールの安定版である [powerline {version}][POWE] の本体を導入するための Formula です。この Formula で、オリジナルの [powerline][POWE] において発生する HEAD 版上の [tmux][TMUX] 上で [powerline][POWE] が正常に動作しない不具合を修正しています。
 
-なお、この Formula は、デフォルトでは ```z80oolong/tmux/tmux``` に依存しています。 ```z80oolong/tmux/tmux``` の導入を回避するには、オプション ```--without-tmux``` を指定して下さい。
+なお、この Formula で導入される [powerline][POWE] は、この Formula と同時に導入されるフォント ```z80oolong/fonts/umefont, z80oolong/fonts/vlgothic``` にて動作確認しています。
 
-また、 HEAD 版の [tmux][TMUX] 上で [powerline][POWE] が正常に動作しない不具合を修正せずに [powerline][POWE] を導入する場合は、オプション ```--without-fix-powerline``` を指定して下さい。
+また、オプション ```--with-tmux``` を指定することにより、 ```z80oolong/tmux/tmux``` を同時に導入することが出来ます。
+
+この Formula によって導入された [powerline {version}][POWE] を使用する際は、**設定ファイル ```${HOME}/.tmux.conf (または ${HOME}/.config/tmux/tmux.conf 等)``` に以下の設定を記述する必要があることに留意して下さい。**
+
+```
+# ここに、 HOMEBREW_PREFIX は、 Homebrew for Linux が置かれているディレクトリであり、環境に応じて読み替えて設定すること。
+run-shell "HOMEBREW_PREFIX/opt/powerline-status/bin/powerline-daemon -q"
+source HOMEBREW_PREFIX/opt/powerline-status/share/powerline/bindings/tmux/powerline.conf
+```
+
+**この Formula は、 versioned formula であるため、この Formula によって導入される [powerline][POWE] は、 keg only で導入されることに留意して下さい。**
+
+この Formula によって導入される [tmux][TMUX] を使用するには、 ```brew link --force z80oolong/tmux/powerline-status@{version}``` コマンドを実行する必要があります。
 
 ### z80oolong/tmux/tpm
 
 [tmux][TMUX] のプラグインを導入及び管理するためのアプリケーションである [tpm][TPM_] を導入するための Formula です。
 
-この Formula によって導入された [tpm][TPM_] を使用する際は、**設定ファイル ```${HOME}/.tmux.conf``` の末尾に以下の設定を記述する必要があることに留意して下さい。**
+この Formula によって導入された [tpm][TPM_] を使用する際は、**設定ファイル ```${HOME}/.tmux.conf (または ${HOME}/.config/tmux/tmux.conf 等)``` の末尾に以下の設定を記述する必要があることに留意して下さい。**
 
 ```
 # ここに、 HOMEBREW_PREFIX は、 Homebrew for Linux が置かれているディレクトリであり、環境に応じて読み替えて設定すること。
@@ -85,6 +113,7 @@ run-shell -b "HOMEBREW_PREFIX/opt/tpm/libexec/tpm/tpm"
 
 [BREW]:https://linuxbrew.sh/
 [TMUX]:https://tmux.github.io/
+[TGIT]:https://github.com/tmux/tmux
 [EAWA]:http://www.unicode.org/reports/tr11/#Ambiguous
 [GST1]:https://github.com/z80oolong/tmux-eaw-fix
 [LIBE]:http://libevent.org/

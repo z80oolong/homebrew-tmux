@@ -10,7 +10,7 @@ class PowerlineStatus < Formula
   depends_on "z80oolong/fonts/umefont"
   depends_on "z80oolong/fonts/vlgothic"
   depends_on "python@3.10" => :recommended
-  depends_on "z80oolong/tmux/tmux" => :recommended
+  depends_on "z80oolong/tmux/tmux" => :optional
   depends_on "neovim" => :optional
   depends_on "vim" => :optional
 
@@ -52,14 +52,14 @@ class PowerlineStatus < Formula
       install_symlink_recurse (share/"powerline"), \
         (libexec/"squashfs-root/opt/python3.10/lib/python3.10/site-packages/powerline/config_files")
 
-      bin.install_symlink (libexec/"squashfs-root/opt/python3.10/bin/powerline")
-      bin.install_symlink (libexec/"squashfs-root/opt/python3.10/bin/powerline-daemon")
-      bin.install_symlink (libexec/"squashfs-root/opt/python3.10/bin/powerline-config")
-      bin.install_symlink (libexec/"squashfs-root/opt/python3.10/bin/powerline-render")
-      bin.install_symlink (libexec/"squashfs-root/opt/python3.10/bin/powerline-lint")
+      bin.install_symlink libexec/"squashfs-root/opt/python3.10/bin/powerline"
+      bin.install_symlink libexec/"squashfs-root/opt/python3.10/bin/powerline-daemon"
+      bin.install_symlink libexec/"squashfs-root/opt/python3.10/bin/powerline-config"
+      bin.install_symlink libexec/"squashfs-root/opt/python3.10/bin/powerline-render"
+      bin.install_symlink libexec/"squashfs-root/opt/python3.10/bin/powerline-lint"
     else
-      install_symlink_recurse (share/"powerline"), (libexec/"lib/python3.10/site-packages/powerline/bindings")
-      install_symlink_recurse (share/"powerline"), (libexec/"lib/python3.10/site-packages/powerline/config_files")
+      install_symlink_recurse share/"powerline", libexec/"lib/python3.10/site-packages/powerline/bindings"
+      install_symlink_recurse share/"powerline", libexec/"lib/python3.10/site-packages/powerline/config_files"
     end
   end
 
@@ -78,7 +78,7 @@ class PowerlineStatus < Formula
 
   def caveats
     <<~EOS
-      To use #{name} in tmux, add the following line to the configuration file `#{Dir.home}/.tmux.conf, #{Dir.home}/.config/tmux.conf, etc.`.
+      To use #{name} in tmux, add the following line to the configuration file `#{Dir.home}/.tmux.conf, #{Dir.home}/.config/tmux/tmux.conf, etc.`.
 
       ...
       run-shell "#{opt_bin}/powerline-daemon -q"
