@@ -11,9 +11,9 @@ class PowerlineStatusAT284 < Formula
   depends_on "z80oolong/fonts/umefont"
   depends_on "z80oolong/fonts/vlgothic"
   depends_on "python@3.10" => :recommended
-  depends_on "z80oolong/tmux/tmux" => :optional
   depends_on "neovim" => :optional
   depends_on "vim" => :optional
+  depends_on "z80oolong/tmux/tmux" => :optional
 
   if build.without?("python@3.10")
     resource("appimage-python3.10") do

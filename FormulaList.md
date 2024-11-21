@@ -12,7 +12,7 @@
 
 **なお、この Formula は近日中に、最新の安定版の [tmux][TMUX] を導入するための Formula である ```z80oolong/tmux/tmux@{current_version} (ここに、 {current_version} には最新の安定版のバージョン番号が入ります。)``` への alias となる予定です。**
 
-### z80oolong/tmux/tmux-HEAD
+### z80oolong/tmux/tmux-head
 
 この Formula は、 [github 上の HEAD 版の tmux][TGIT] に、 "[tmux 2.6 以降において各種問題を修正する野良差分ファイル][GST1]" を適用したものを導入するための Formula です。
 
@@ -22,7 +22,11 @@
 
 **この Formula は、 ```homebrew/core/tmux``` と競合するため、この Formula によって導入される [tmux][TMUX] は、 keg only で導入されることに留意して下さい。**
 
-この Formula によって導入される [tmux][TMUX] を使用するには、 ```brew link --force z80oolong/tmux/tmux-HEAD``` コマンドを実行する必要があります。
+この Formula によって導入される [tmux][TMUX] を使用するには、 ```brew link --force z80oolong/tmux/tmux-head``` コマンドを実行する必要があります。
+
+### z80oolong/tmux/tmux-HEAD
+
+上述した、 "[tmux 2.6 以降において各種問題を修正する野良差分ファイル][GST1]" を適用した [HEAD 版の tmux][TGIT] を導入するための Formula である ```z80oolong/tmux/tmux-head``` への alias です。
 
 ### z80oolong/tmux/tmux@{version}
 
@@ -58,7 +62,7 @@
 
 ### z80oolong/tmux/got
 
-[@gorilla0513 氏][GORI]による、 [got][GOT_] を導入するための Formula である ```z80oolong/tmux/got-bin``` の alias です。
+[@gorilla0513 氏][GORI]による、 [got][GOT_] を導入するための Formula である ```z80oolong/tmux/got-bin``` への alias です。
 
 ### z80oolong/tmux/powerline-status
 
