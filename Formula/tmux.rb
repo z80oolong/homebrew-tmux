@@ -62,6 +62,7 @@ class Tmux < Formula
     args =  std_configure_args
     args << "--sysconfdir=#{etc}"
     args << "--with-TERM=tmux-256color"
+    args << "--enable-sixel"
     args << "--enable-utf8proc" if build.with?("utf8proc")
 
     ENV.append "LDFLAGS", "-lresolv"
