@@ -77,14 +77,7 @@ class TmuxAT29a < Formula
       replace_list.each { |old, new| MachO.change_rpath(binname.to_s, old, new) }
     end
   end
-
-  def diff_data
-    lines = path.each_line.with_object([]) do |line, result|
-      result.push(line) if /^__END__/.match?(line) || result.first
-    end
-    lines.shift
-    lines.join
-  end
+  private :replace_rpath
 
   def caveats
     <<~EOS

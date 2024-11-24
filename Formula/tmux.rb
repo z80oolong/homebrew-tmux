@@ -31,7 +31,7 @@ class Tmux < Formula
 
   deprecate! date:        "2024-12-15",
              because:     "this formula conflicts with 'homebrew/core/tmux'",
-             replacement: "z80oolong/tmux/tmux-HEAD"
+             replacement: "z80oolong/tmux/tmux-head"
 
   depends_on "bison" => :build
   depends_on "perl" => :build
@@ -46,7 +46,7 @@ class Tmux < Formula
   end
 
   conflicts_with "homebrew/core/tmux",
-             because:     "this formula conflicts with 'homebrew/core/tmux'"
+    because: "this formula conflicts with 'homebrew/core/tmux'"
 
   resource "completion" do
     url "https://raw.githubusercontent.com/imomaliev/tmux-bash-completion/homebrew_1.0.0/completions/tmux"

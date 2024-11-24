@@ -93,14 +93,6 @@ class TmuxHead < Formula
   end
   private :replace_rpath
 
-  def diff_data
-    lines = path.each_line.with_object([]) do |line, result|
-      result.push(line) if /^__END__/.match?(line) || result.first
-    end
-    lines.shift
-    lines.join
-  end
-
   def caveats
     <<~EOS
       Example configuration has been installed to:

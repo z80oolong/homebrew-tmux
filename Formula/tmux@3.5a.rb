@@ -78,6 +78,7 @@ class TmuxAT35a < Formula
       replace_list.each { |old, new| MachO.change_rpath(binname.to_s, old, new) }
     end
   end
+  private :replace_rpath
 
   def diff_data
     lines = path.each_line.with_object([]) do |line, result|
