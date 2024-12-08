@@ -8,7 +8,7 @@
 
 ### z80oolong/tmux/tmux
 
-この Formula は近日中に、最新の安定版の [tmux][TMUX] を導入するための Formula である ```z80oolong/tmux/tmux@{current_version} (ここに、 {current_version} には最新の安定版のバージョン番号が入ります。)``` への alias です。
+後述する、 "[tmux 2.6 以降において各種問題を修正する野良差分ファイル][GST1]" を適用した [HEAD 版の tmux][TGIT] を導入するための Formula である ```z80oolong/tmux/tmux-head``` への alias です。
 
 ### z80oolong/tmux/tmux-head
 
