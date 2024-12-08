@@ -13,7 +13,7 @@ class TmuxAT35a < Formula
   url "https://github.com/tmux/tmux/releases/download/3.5a/tmux-3.5a.tar.gz"
   sha256 "16216bd0877170dfcc64157085ba9013610b12b082548c7c9542cc0103198951"
   license "ISC"
-  revision 11
+  revision 12
 
   keg_only :versioned_formula
 

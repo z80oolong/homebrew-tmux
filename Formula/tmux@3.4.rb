@@ -13,7 +13,7 @@ class TmuxAT34 < Formula
   url "https://github.com/tmux/tmux/releases/download/3.4/tmux-3.4.tar.gz"
   sha256 "551ab8dea0bf505c0ad6b7bb35ef567cdde0ccb84357df142c254f35a23e19aa"
   license "ISC"
-  revision 11
+  revision 12
 
   keg_only :versioned_formula
 

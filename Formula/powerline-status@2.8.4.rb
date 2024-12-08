@@ -5,6 +5,7 @@ class PowerlineStatusAT284 < Formula
   homepage "https://powerline.readthedocs.io/en/latest/"
   url "https://github.com/powerline/powerline/archive/refs/tags/2.8.4.tar.gz"
   sha256 "9e846af9379b57e410efe264cff3a6b98eb78dd9526e83016776ae5ffc5798f4"
+  revision 1
 
   keg_only :versioned_formula
 

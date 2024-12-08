@@ -1,7 +1,7 @@
 class GotSrc < Formula
   desc "Simple tmux tool with go -- installed with building from source code"
   homepage "https://github.com/skanehira/got/"
-  revision 2
+  revision 3
   head "https://github.com/skanehira/got.git"
 
   stable do

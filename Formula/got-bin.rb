@@ -1,7 +1,7 @@
 class GotBin < Formula
   desc "Simple tmux tool with go -- installed with binary code"
   homepage "https://github.com/skanehira/got/"
-  revision 2
+  revision 3
 
   if OS.linux?
     url "https://github.com/skanehira/got/releases/download/v1.0.3/Linux.zip"

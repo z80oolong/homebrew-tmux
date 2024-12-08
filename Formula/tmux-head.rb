@@ -11,11 +11,11 @@ class TmuxHead < Formula
   desc "Terminal multiplexer"
   homepage "https://tmux.github.io/"
   license "ISC"
-  revision 11
+  revision 12
   head "https://github.com/tmux/tmux.git", branch: "master"
 
   stable do
-    current_commit = "1fe30bb2e810fa63692ed61903e8ac6ba494c799"
+    current_commit = "ae8f2208c98e3c2d6e3fe4cad2281dce8fd11f31"
     url "https://github.com/tmux/tmux.git",
       branch:   "master",
       revision: current_commit
@@ -220,10 +220,10 @@ index a03c8619..d8be348a 100644
  
  	if (ncolours == 0)
 diff --git a/options-table.c b/options-table.c
-index 16e57642..cb9195a2 100644
+index 92b127e5..7b5c4368 100644
 --- a/options-table.c
 +++ b/options-table.c
-@@ -1369,6 +1369,38 @@ const struct options_table_entry options_table[] = {
+@@ -1396,6 +1396,38 @@ const struct options_table_entry options_table[] = {
  		  "This option is no longer used."
  	},
  
@@ -352,7 +352,7 @@ index 6659e1c3..002cd7aa 100644
  	exit(client_main(osdep_event_init(), argc, argv, flags, feat));
  }
 diff --git a/tmux.h b/tmux.h
-index abda6ee6..bab28954 100644
+index 1a71b328..794d56b5 100644
 --- a/tmux.h
 +++ b/tmux.h
 @@ -94,6 +94,17 @@ struct winlink;
