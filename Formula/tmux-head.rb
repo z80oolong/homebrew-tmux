@@ -29,12 +29,12 @@ class TmuxHead < Formula
   depends_on "bison" => :build
   depends_on "perl" => :build
   depends_on "pkg-config" => :build
-  depends_on "glibc"
   depends_on "libevent"
   depends_on "z80oolong/tmux/tmux-ncurses@6.2"
   depends_on "utf8proc" => :optional
 
   on_linux do
+    depends_on "glibc"
     depends_on "patchelf" => :build
   end
 
@@ -68,10 +68,12 @@ class TmuxHead < Formula
   end
 
   def post_install
-    ohai "Installing locale data for {ja_JP, zh_*, ko_*, ...}.UTF-8"
+    on_linux do
+      ohai "Installing locale data for {ja_JP, zh_*, ko_*, ...}.UTF-8"
 
-    %w[ja_JP zh_CN zh_HK zh_SG zh_TW ko_KR en_US].each do |lang|
-      system Formula["glibc"].opt_bin/"localedef", "-i", lang, "-f", "UTF-8", "#{lang}.UTF-8"
+      %w[ja_JP zh_CN zh_HK zh_SG zh_TW ko_KR en_US].each do |lang|
+        system Formula["glibc"].opt_bin/"localedef", "-i", lang, "-f", "UTF-8", "#{lang}.UTF-8"
+      end
     end
   end
 
