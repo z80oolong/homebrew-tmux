@@ -68,7 +68,7 @@ class TmuxHead < Formula
     pkgshare.install "example_tmux.conf"
     bash_completion.install resource("completion")
 
-    replace_rpath "#{bin}/tmux", "ncurses" => "z80oolong/tmux/tmux-ncurses@6.2"
+    replace_rpath "#{bin}/tmux", "ncurses" => "z80oolong/tmux/tmux-ncurses@6.2" unless OS.mac?
   end
 
   def post_install
@@ -92,10 +92,6 @@ class TmuxHead < Formula
       rpath.each_with_index { |i, path| rpath[i] = replace_list[path] if replace_list[path] }
 
       system Formula["patchelf"].opt_bin/"patchelf", "--set-rpath", rpath.join(":"), binname
-    end
-
-    on_macos do
-      replace_list.each { |old, new| MachO.change_rpath(binname.to_s, old, new) }
     end
   end
   private :replace_rpath
