@@ -31,11 +31,15 @@ class TmuxHead < Formula
   depends_on "pkg-config" => :build
   depends_on "libevent"
   depends_on "z80oolong/tmux/tmux-ncurses@6.2"
-  depends_on "utf8proc" => :optional
 
   on_linux do
     depends_on "glibc"
     depends_on "patchelf" => :build
+    depends_on "utf8proc" => :optional
+  end
+
+  on_macos do
+    depends_on "utf8proc"
   end
 
   resource "completion" do
@@ -53,7 +57,7 @@ class TmuxHead < Formula
     args << "--sysconfdir=#{etc}"
     args << "--with-TERM=tmux-256color"
     args << "--enable-sixel"
-    args << "--enable-utf8proc" if build.with?("utf8proc")
+    args << "--enable-utf8proc" if build.with?("utf8proc") || OS.mac?
 
     ENV.append "LDFLAGS", "-lresolv"
     system "./configure", *args
