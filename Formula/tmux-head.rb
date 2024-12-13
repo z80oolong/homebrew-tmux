@@ -29,13 +29,17 @@ class TmuxHead < Formula
   depends_on "bison" => :build
   depends_on "perl" => :build
   depends_on "pkg-config" => :build
-  depends_on "glibc"
   depends_on "libevent"
   depends_on "z80oolong/tmux/tmux-ncurses@6.2"
-  depends_on "utf8proc" => :optional
 
   on_linux do
+    depends_on "glibc"
     depends_on "patchelf" => :build
+    depends_on "utf8proc" => :optional
+  end
+
+  on_macos do
+    depends_on "utf8proc"
   end
 
   resource "completion" do
@@ -53,7 +57,7 @@ class TmuxHead < Formula
     args << "--sysconfdir=#{etc}"
     args << "--with-TERM=tmux-256color"
     args << "--enable-sixel"
-    args << "--enable-utf8proc" if build.with?("utf8proc")
+    args << "--enable-utf8proc" if build.with?("utf8proc") || OS.mac?
 
     ENV.append "LDFLAGS", "-lresolv"
     system "./configure", *args
@@ -64,14 +68,16 @@ class TmuxHead < Formula
     pkgshare.install "example_tmux.conf"
     bash_completion.install resource("completion")
 
-    replace_rpath "#{bin}/tmux", "ncurses" => "z80oolong/tmux/tmux-ncurses@6.2"
+    replace_rpath "#{bin}/tmux", "ncurses" => "z80oolong/tmux/tmux-ncurses@6.2" unless OS.mac?
   end
 
   def post_install
-    ohai "Installing locale data for {ja_JP, zh_*, ko_*, ...}.UTF-8"
+    on_linux do
+      ohai "Installing locale data for {ja_JP, zh_*, ko_*, ...}.UTF-8"
 
-    %w[ja_JP zh_CN zh_HK zh_SG zh_TW ko_KR en_US].each do |lang|
-      system Formula["glibc"].opt_bin/"localedef", "-i", lang, "-f", "UTF-8", "#{lang}.UTF-8"
+      %w[ja_JP zh_CN zh_HK zh_SG zh_TW ko_KR en_US].each do |lang|
+        system Formula["glibc"].opt_bin/"localedef", "-i", lang, "-f", "UTF-8", "#{lang}.UTF-8"
+      end
     end
   end
 
@@ -86,10 +92,6 @@ class TmuxHead < Formula
       rpath.each_with_index { |i, path| rpath[i] = replace_list[path] if replace_list[path] }
 
       system Formula["patchelf"].opt_bin/"patchelf", "--set-rpath", rpath.join(":"), binname
-    end
-
-    on_macos do
-      replace_list.each { |old, new| MachO.change_rpath(binname.to_s, old, new) }
     end
   end
   private :replace_rpath
