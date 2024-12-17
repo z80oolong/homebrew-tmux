@@ -5,8 +5,6 @@ if $PROGRAM_NAME == __FILE__
   exit 0
 end
 
-require "macho"
-
 class TmuxAT33a < Formula
   desc "Terminal multiplexer"
   homepage "https://tmux.github.io/"
@@ -19,13 +17,17 @@ class TmuxAT33a < Formula
 
   depends_on "bison" => :build
   depends_on "pkg-config" => :build
-  depends_on "glibc"
   depends_on "libevent"
   depends_on "z80oolong/tmux/tmux-ncurses@6.2"
-  depends_on "utf8proc" => :optional
+
+  on_macos do
+    depends_on "utf8proc"
+  end
 
   on_linux do
     depends_on "patchelf" => :build
+    depends_on "glibc"
+    depends_on "utf8proc" => :optional
   end
 
   resource "completion" do
@@ -39,7 +41,7 @@ class TmuxAT33a < Formula
     args =  std_configure_args
     args << "--sysconfdir=#{etc}"
     args << "--with-TERM=tmux-256color"
-    args << "--enable-utf8proc" if build.with?("utf8proc")
+    args << "--enable-utf8proc" if build.with?("utf8proc") || OS.mac?
 
     ENV.append "LDFLAGS", "-lresolv"
     system "./configure", *args
@@ -56,27 +58,24 @@ class TmuxAT33a < Formula
   def post_install
     ohai "Installing locale data for {ja_JP, zh_*, ko_*, ...}.UTF-8"
 
+    localedef = OS.linux? ? (Formula["glibc"].opt_bin/"localedef") : "localedef"
     %w[ja_JP zh_CN zh_HK zh_SG zh_TW ko_KR en_US].each do |lang|
-      system Formula["glibc"].opt_bin/"localedef", "-i", lang, "-f", "UTF-8", "#{lang}.UTF-8"
+      system localedef, "-i", lang, "-f", "UTF-8", "#{lang}.UTF-8"
     end
   end
 
   def replace_rpath(binname, **replace_list)
+    return if OS.mac?
+
     replace_list = replace_list.each_with_object({}) do |(old, new), result|
       result[Formula[old].opt_lib.to_s] = Formula[new].opt_lib.to_s
       result[Formula[old].lib.to_s] = Formula[new].lib.to_s
     end
 
-    on_linux do
-      rpath = `#{Formula["patchelf"].opt_bin}/patchelf --print-rpath #{binname}`.chomp.split(":")
-      rpath.each_with_index { |i, path| rpath[i] = replace_list[path] if replace_list[path] }
+    rpath = `#{Formula["patchelf"].opt_bin}/patchelf --print-rpath #{binname}`.chomp.split(":")
+    rpath.each_with_index { |i, path| rpath[i] = replace_list[path] if replace_list[path] }
 
-      system Formula["patchelf"].opt_bin/"patchelf", "--set-rpath", rpath.join(":"), binname
-    end
-
-    on_macos do
-      replace_list.each { |old, new| MachO.change_rpath(binname.to_s, old, new) }
-    end
+    system Formula["patchelf"].opt_bin/"patchelf", "--set-rpath", rpath.join(":"), binname
   end
   private :replace_rpath
 
