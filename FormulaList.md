@@ -2,7 +2,19 @@
 
 ## 概要
 
-本文書では、 [Homebrew for Linux][BREW] 向け Tap リポジトリ z80oolong/tmux に含まれる Formula 一覧を示します。各 Formula の詳細等については ```brew info <formula>``` コマンドも参照して下さい。
+本文書では、 [Homebrew for Linux][BREW] 向け Tap リポジトリ ```z80oolong/tmux``` に含まれる Formula 一覧を示します。各 Formula の詳細等については ```brew info <formula>``` コマンドも参照して下さい。
+
+## 告知 (2024/12/08)
+
+2024/12/08 より、 [Homebrew for Linux][BREW] 向け Tap リポジトリ ```z80oolong/tmux``` に含まれる Formula について、以下の通り変更を行います。
+
+- **[github 上の HEAD 版の tmux][TGIT] に、野良差分ファイルを適用したものを導入するための Formula である ```z80oolong/tmux/tmux-head``` を新設します。**
+- 通常の Formula としての **```z80oolong/tmux/tmux``` を廃止します。**
+    - ```z80oolong/tmux/tmux``` は、 ```z80oolong/tmux/tmux-head``` への alias として存続します。
+- ```z80oolong/tmux/tmux-head``` を含め、野良差分ファイルを適用した [tmux][TMUX] を導入するための Formula は**全て [tmux][TMUX] を keg only として導入します。**
+    - ```homebrew/core/tmux``` で導入される [tmux][TMUX] との conflict を回避するための措置です。
+
+以上、御手数を御掛け致しますが、どうか宜しく御願い致します。
 
 ## Formula 一覧
 
