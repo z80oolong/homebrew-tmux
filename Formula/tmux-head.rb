@@ -13,7 +13,7 @@ class TmuxHead < Formula
   head "https://github.com/tmux/tmux.git", branch: "master"
 
   stable do
-    current_commit = "ae8f2208c98e3c2d6e3fe4cad2281dce8fd11f31"
+    current_commit = "00894d188d2a60767a80ae749e7c3fc810fca8cd"
     url "https://github.com/tmux/tmux.git",
       branch:   "master",
       revision: current_commit
@@ -219,10 +219,10 @@ index a03c8619..d8be348a 100644
  
  	if (ncolours == 0)
 diff --git a/options-table.c b/options-table.c
-index 92b127e5..7b5c4368 100644
+index 39215350..b147e337 100644
 --- a/options-table.c
 +++ b/options-table.c
-@@ -1396,6 +1396,38 @@ const struct options_table_entry options_table[] = {
+@@ -1405,6 +1405,38 @@ const struct options_table_entry options_table[] = {
  		  "This option is no longer used."
  	},
  
@@ -351,7 +351,7 @@ index 6659e1c3..002cd7aa 100644
  	exit(client_main(osdep_event_init(), argc, argv, flags, feat));
  }
 diff --git a/tmux.h b/tmux.h
-index 1a71b328..794d56b5 100644
+index 904a5350..b1f7a072 100644
 --- a/tmux.h
 +++ b/tmux.h
 @@ -94,6 +94,17 @@ struct winlink;
@@ -777,7 +777,7 @@ index d4223497..ac01f9ec 100644
  
  struct tty_term *
 diff --git a/utf8.c b/utf8.c
-index bc7c8fd2..ca3d8ca7 100644
+index f240224b..c28259c6 100644
 --- a/utf8.c
 +++ b/utf8.c
 @@ -27,6 +27,407 @@
@@ -1185,11 +1185,11 @@ index bc7c8fd2..ca3d8ca7 100644
 +#endif
 +#endif
 +
- static const wchar_t utf8_force_wide[] = {
- 	0x0261D,
- 	0x026F9,
-@@ -410,6 +811,23 @@ utf8_width(struct utf8_data *ud, int *width)
- 		*width = 2;
+ struct utf8_width_item {
+ 	wchar_t				wc;
+ 	u_int				width;
+@@ -529,6 +930,23 @@ utf8_width(struct utf8_data *ud, int *width)
+ 		log_debug("cached width for %08X is %d", (u_int)wc, *width);
  		return (UTF8_DONE);
  	}
 +#ifndef NO_USE_UTF8CJK
@@ -1212,7 +1212,7 @@ index bc7c8fd2..ca3d8ca7 100644
  #ifdef HAVE_UTF8PROC
  	*width = utf8proc_wcwidth(wc);
  	log_debug("utf8proc_wcwidth(%05X) returned %d", (u_int)wc, *width);
-@@ -426,6 +844,7 @@ utf8_width(struct utf8_data *ud, int *width)
+@@ -545,6 +963,7 @@ utf8_width(struct utf8_data *ud, int *width)
  #endif
  	if (*width >= 0 && *width <= 0xff)
  		return (UTF8_DONE);
