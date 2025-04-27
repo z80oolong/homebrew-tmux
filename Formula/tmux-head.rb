@@ -13,7 +13,7 @@ class TmuxHead < Formula
   head "https://github.com/tmux/tmux.git", branch: "master"
 
   stable do
-    current_commit = "00894d188d2a60767a80ae749e7c3fc810fca8cd"
+    current_commit = "36fba4cc54d543bec74a08597b89a019cb6edde3"
     url "https://github.com/tmux/tmux.git",
       branch:   "master",
       revision: current_commit
@@ -219,10 +219,10 @@ index a03c8619..d8be348a 100644
  
  	if (ncolours == 0)
 diff --git a/options-table.c b/options-table.c
-index a461b3ea..bd13038a 100644
+index 3d1b4f85..4e130cde 100644
 --- a/options-table.c
 +++ b/options-table.c
-@@ -1405,6 +1405,38 @@ const struct options_table_entry options_table[] = {
+@@ -1412,6 +1412,38 @@ const struct options_table_entry options_table[] = {
  		  "This option is no longer used."
  	},
  
@@ -262,7 +262,7 @@ index a461b3ea..bd13038a 100644
  	OPTIONS_TABLE_HOOK("after-bind-key", ""),
  	OPTIONS_TABLE_HOOK("after-capture-pane", ""),
 diff --git a/tmux.c b/tmux.c
-index 6659e1c3..002cd7aa 100644
+index 298bdf30..d7e6319c 100644
 --- a/tmux.c
 +++ b/tmux.c
 @@ -351,20 +351,33 @@ main(int argc, char **argv)
@@ -314,9 +314,9 @@ index 6659e1c3..002cd7aa 100644
 +	}
 +#endif
  
- 	while ((opt = getopt(argc, argv, "2c:CDdf:lL:NqS:T:uUvV")) != -1) {
+ 	while ((opt = getopt(argc, argv, "2c:CDdf:hlL:NqS:T:uUvV")) != -1) {
  		switch (opt) {
-@@ -508,6 +530,19 @@ main(int argc, char **argv)
+@@ -510,6 +532,19 @@ main(int argc, char **argv)
  		options_set_number(global_w_options, "mode-keys", keys);
  	}
  
@@ -336,7 +336,7 @@ index 6659e1c3..002cd7aa 100644
  	/*
  	 * If socket is specified on the command-line with -S or -L, it is
  	 * used. Otherwise, $TMUX is checked and if that fails "default" is
-@@ -533,6 +568,13 @@ main(int argc, char **argv)
+@@ -535,6 +570,13 @@ main(int argc, char **argv)
  	socket_path = path;
  	free(label);
  
@@ -351,7 +351,7 @@ index 6659e1c3..002cd7aa 100644
  	exit(client_main(osdep_event_init(), argc, argv, flags, feat));
  }
 diff --git a/tmux.h b/tmux.h
-index 0ad4cb89..d4bd8aa1 100644
+index cd71634a..065cba96 100644
 --- a/tmux.h
 +++ b/tmux.h
 @@ -94,6 +94,17 @@ struct winlink;
