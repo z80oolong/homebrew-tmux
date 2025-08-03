@@ -13,7 +13,7 @@ class TmuxHead < Formula
   head "https://github.com/tmux/tmux.git", branch: "master"
 
   stable do
-    current_commit = "36fba4cc54d543bec74a08597b89a019cb6edde3"
+    current_commit = "6f9bcb7fee5f5aace29f5c3e474aaa61e8c34bfd"
     url "https://github.com/tmux/tmux.git",
       branch:   "master",
       revision: current_commit
@@ -351,7 +351,7 @@ index 298bdf30..d7e6319c 100644
  	exit(client_main(osdep_event_init(), argc, argv, flags, feat));
  }
 diff --git a/tmux.h b/tmux.h
-index e8127f83..be6b2f72 100644
+index c996d5b9..f709091e 100644
 --- a/tmux.h
 +++ b/tmux.h
 @@ -94,6 +94,17 @@ struct winlink;
