@@ -11,21 +11,20 @@ class TmuxAT34 < Formula
   url "https://github.com/tmux/tmux/releases/download/3.4/tmux-3.4.tar.gz"
   sha256 "551ab8dea0bf505c0ad6b7bb35ef567cdde0ccb84357df142c254f35a23e19aa"
   license "ISC"
-  revision 12
+  revision 13
 
   keg_only :versioned_formula
 
   depends_on "bison" => :build
   depends_on "pkg-config" => :build
   depends_on "libevent"
-  depends_on "z80oolong/tmux/tmux-ncurses@6.2"
+  depends_on "ncurses"
 
   on_macos do
     depends_on "utf8proc"
   end
 
   on_linux do
-    depends_on "patchelf" => :build
     depends_on "glibc"
     depends_on "utf8proc" => :optional
   end
@@ -52,8 +51,6 @@ class TmuxAT34 < Formula
 
     pkgshare.install "example_tmux.conf"
     bash_completion.install resource("completion")
-
-    replace_rpath "#{bin}/tmux", "ncurses" => "z80oolong/tmux/tmux-ncurses@6.2"
   end
 
   def post_install
@@ -64,21 +61,6 @@ class TmuxAT34 < Formula
       system localedef, "-i", lang, "-f", "UTF-8", "#{lang}.UTF-8"
     end
   end
-
-  def replace_rpath(binname, **replace_list)
-    return if OS.mac?
-
-    replace_list = replace_list.each_with_object({}) do |(old, new), result|
-      result[Formula[old].opt_lib.to_s] = Formula[new].opt_lib.to_s
-      result[Formula[old].lib.to_s] = Formula[new].lib.to_s
-    end
-
-    rpath = `#{Formula["patchelf"].opt_bin}/patchelf --print-rpath #{binname}`.chomp.split(":")
-    rpath.each_with_index { |i, path| rpath[i] = replace_list[path] if replace_list[path] }
-
-    system Formula["patchelf"].opt_bin/"patchelf", "--set-rpath", rpath.join(":"), binname
-  end
-  private :replace_rpath
 
   def caveats
     <<~EOS
