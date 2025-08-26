@@ -5,20 +5,32 @@ if $PROGRAM_NAME == __FILE__
   exit 0
 end
 
+class << ENV
+  def replace_rpath(**replace_list)
+    replace_list = replace_list.each_with_object({}) do |(old, new), result|
+      result[Formula[old].opt_lib.to_s] = Formula[new].opt_lib.to_s
+      result[Formula[old].lib.to_s] = Formula[new].lib.to_s
+    end
+    rpaths = self["HOMEBREW_RPATH_PATHS"].split(":")
+    rpaths = rpaths.each_with_object([]) {|rpath, result| result << (replace_list.key?(rpath) ? replace_list[rpath] : rpath) }
+    self["HOMEBREW_RPATH_PATHS"] = rpaths.join(":")
+  end
+end
+
 class TmuxAT35 < Formula
   desc "Terminal multiplexer"
   homepage "https://tmux.github.io/"
   url "https://github.com/tmux/tmux/releases/download/3.5/tmux-3.5.tar.gz"
   sha256 "2fe01942e7e7d93f524a22f2c883822c06bc258a4d61dba4b407353d7081950f"
   license "ISC"
-  revision 13
+  revision 14
 
   keg_only :versioned_formula
 
   depends_on "bison" => :build
-  depends_on "pkg-config" => :build
+  depends_on "pkgconf" => :build
   depends_on "libevent"
-  depends_on "ncurses"
+  depends_on "z80oolong/tmux/tmux-ncurses@6.5"
 
   on_macos do
     depends_on "utf8proc"
@@ -37,6 +49,8 @@ class TmuxAT35 < Formula
   patch :p1, :DATA
 
   def install
+    ENV.replace_rpath "ncurses" => "z80oolong/tmux/tmux-ncurses@6.5"
+
     args =  std_configure_args
     args << "--sysconfdir=#{etc}"
     args << "--with-TERM=tmux-256color"
