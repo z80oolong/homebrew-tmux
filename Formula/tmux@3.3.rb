@@ -66,9 +66,11 @@ class TmuxAT33 < Formula
   end
 
   def post_install
+    return unless OS.linux?
+
     ohai "Installing locale data for {ja_JP, zh_*, ko_*, ...}.UTF-8"
 
-    localedef = OS.linux? ? (Formula["glibc"].opt_bin/"localedef") : "localedef"
+    localedef = Formula["glibc"].opt_bin/"localedef"
     %w[ja_JP zh_CN zh_HK zh_SG zh_TW ko_KR en_US].each do |lang|
       system localedef, "-i", lang, "-f", "UTF-8", "#{lang}.UTF-8"
     end
