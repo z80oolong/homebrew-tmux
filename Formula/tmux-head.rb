@@ -11,9 +11,11 @@ class << ENV
       result[Formula[old].opt_lib.to_s] = Formula[new].opt_lib.to_s
       result[Formula[old].lib.to_s] = Formula[new].lib.to_s
     end
-    rpaths = self["HOMEBREW_RPATH_PATHS"].split(":")
-    rpaths = rpaths.each_with_object([]) {|rpath, result| result << (replace_list.key?(rpath) ? replace_list[rpath] : rpath) }
-    self["HOMEBREW_RPATH_PATHS"] = rpaths.join(":")
+    if (rpaths = self["HOMEBREW_RPATH_PATHS"])
+      self["HOMEBREW_RPATH_PATHS"] = rpaths.split(":").map { |rpath|
+        replace_list.fetch(rpath, rpath)
+      }.join(":")
+    end
   end
 end
 
