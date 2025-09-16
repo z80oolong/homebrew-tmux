@@ -12,9 +12,9 @@ class TmuxNcursesAT65 < Formula
 
   keg_only :versioned_formula
 
-  depends_on "glibc" => :build
   depends_on "pkgconf" => :build
   on_linux do
+    depends_on "glibc" => :build
     depends_on "gpatch" => :build
   end
 
