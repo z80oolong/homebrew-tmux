@@ -5,17 +5,18 @@ if $PROGRAM_NAME == __FILE__
   exit 0
 end
 
-class << ENV
-  def replace_rpath(**replace_list)
-    replace_list = replace_list.each_with_object({}) do |(old, new), result|
-      result[Formula[old].opt_lib.to_s] = Formula[new].opt_lib.to_s
-      result[Formula[old].lib.to_s] = Formula[new].lib.to_s
-    end
-    if (rpaths = self["HOMEBREW_RPATH_PATHS"])
-      self["HOMEBREW_RPATH_PATHS"] = rpaths.split(":").map { |rpath|
-        replace_list.fetch(rpath, rpath)
-      }.join(":")
-    end
+def ENV.replace_rpath(**replace_list)
+  replace_list = replace_list.each_with_object({}) do |(old, new), result|
+    old_f = Formula[old]
+    new_f = Formula[new]
+    result[old_f.opt_lib.to_s] = new_f.opt_lib.to_s
+    result[old_f.lib.to_s] = new_f.lib.to_s
+  end
+
+  if (rpaths = fetch("HOMEBREW_RPATH_PATHS", false))
+    self["HOMEBREW_RPATH_PATHS"] = (rpaths.split(":").map do |rpath|
+      replace_list.fetch(rpath, rpath)
+    end).join(":")
   end
 end
 
@@ -25,7 +26,7 @@ class TmuxAT33 < Formula
   url "https://github.com/tmux/tmux/releases/download/3.3/tmux-3.3.tar.gz"
   sha256 "b2382ac391f6a1c5b93293016cdc9488337d9a04b9d611ae05eac164740351dc"
   license "ISC"
-  revision 14
+  revision 15
 
   keg_only :versioned_formula
 
@@ -51,13 +52,13 @@ class TmuxAT33 < Formula
 
   def install
     ENV.replace_rpath "ncurses" => "z80oolong/tmux/tmux-ncurses@6.5"
+    ENV.append "LDFLAGS", "-lresolv"
 
     args =  std_configure_args
     args << "--sysconfdir=#{etc}"
     args << "--with-TERM=tmux-256color"
     args << "--enable-utf8proc" if build.with?("utf8proc") || OS.mac?
 
-    ENV.append "LDFLAGS", "-lresolv"
     system "./configure", *args
 
     system "make"

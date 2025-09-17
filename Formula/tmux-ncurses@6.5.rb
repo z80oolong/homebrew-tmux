@@ -1,7 +1,7 @@
 class TmuxNcursesAT65 < Formula
   desc "Text-based UI library"
   homepage "https://invisible-island.net/ncurses/announce.html"
-  url "https://ftp.gnu.org/gnu/ncurses/ncurses-6.5.tar.gz"
+  url "https://ftpmirror.gnu.org/gnu/gnu/ncurses/ncurses-6.5.tar.gz"
   mirror "https://invisible-mirror.net/archives/ncurses/ncurses-6.5.tar.gz"
   mirror "ftp://ftp.invisible-island.net/ncurses/ncurses-6.5.tar.gz"
   mirror "https://ftpmirror.gnu.org/ncurses/ncurses-6.5.tar.gz"
@@ -41,7 +41,14 @@ class TmuxNcursesAT65 < Formula
     args << "--with-cxx-shared"
     args << "--with-gpm=no"
     if OS.linux?
-      args << "--with-terminfo-dirs=#{opt_share}/terminfo:#{share}/terminfo:/etc/terminfo:/lib/terminfo:/usr/share/terminfo"
+      terminfodirs =  []
+      terminfodirs << "#{opt_share}/terminfo"
+      terminfodirs << "#{share}/terminfo"
+      terminfodirs << "/etc/terminfo"
+      terminfodirs << "/lib/terminfo"
+      terminfodirs << "/usr/share/terminfo"
+
+      args << "--with-terminfo-dirs=#{terminfodirs.join(":")}"
       args << "--without-ada"
     end
 
