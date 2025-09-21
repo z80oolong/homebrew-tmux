@@ -4,14 +4,16 @@
 
 本文書では、 [Homebrew for Linux][BREW] 向け Tap リポジトリ ```z80oolong/tmux``` に含まれる Formula 一覧を示します。各 Formula の詳細等については ```brew info <formula>``` コマンドも参照して下さい。
 
-## 告知 (2024/12/08)
+## 告知 (2025/09/21)
 
-2024/12/08 より、 [Homebrew for Linux][BREW] 向け Tap リポジトリ ```z80oolong/tmux``` に含まれる Formula について、以下の通り変更を行います。
+2025/09/21 より、 [Homebrew for Linux][BREW] 向け Tap リポジトリ ```z80oolong/tmux``` に含まれる Formula について、以下の通り変更を行います。
 
-- **[github 上の HEAD 版の tmux][TGIT] に、野良差分ファイルを適用したものを導入するための Formula である ```z80oolong/tmux/tmux-head``` を新設します。**
-- 通常の Formula としての **```z80oolong/tmux/tmux``` を廃止します。**
-    - ```z80oolong/tmux/tmux``` は、 ```z80oolong/tmux/tmux-head``` への alias として存続します。
-- ```z80oolong/tmux/tmux-head``` を含め、野良差分ファイルを適用した [tmux][TMUX] を導入するための Formula は**全て [tmux][TMUX] を keg only として導入します。**
+- **[github 上の tmux][TGIT] に、[直近に公開された野良差分ファイル][GST1]を適用したものを導入するための Formula である ```z80oolong/tmux/tmux@{version}-dev``` を新設します。**
+    - 従来の ```tmux-head``` は廃止します。
+    - なお、 2025/09/21 現在、上記 ```{version}``` には直近の安定版の仮の次期バージョン番号の 3.6 が入ります。
+- **[最新の安定版及び最新の github 上の HEAD 版の tmux][TMUX] に野良差分ファイルを適用したものを導入するための Formula として ```z80oolong/tmux/tmux-current``` を新設します。**
+    - ```z80oolong/tmux/tmux``` は、 ```z80oolong/tmux/tmux-current``` への alias として存続します。
+- ```z80oolong/tmux/tmux-current``` を含め、野良差分ファイルを適用した [tmux][TMUX] を導入するための Formula は**全て [tmux][TMUX] を keg only として導入します。**
     - ```homebrew/core/tmux``` で導入される [tmux][TMUX] との conflict を回避するための措置です。
 
 以上、御手数を御掛け致しますが、どうか宜しく御願い致します。
