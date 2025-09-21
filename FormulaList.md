@@ -20,23 +20,29 @@
 
 ### z80oolong/tmux/tmux
 
-後述する、 "[tmux 2.6 以降において各種問題を修正する野良差分ファイル][GST1]" を適用した [HEAD 版の tmux][TGIT] を導入するための Formula である ```z80oolong/tmux/tmux-head``` への alias です。
+後述する、 "[tmux 2.6 以降において各種問題を修正する野良差分ファイル][GST1]" を適用した [HEAD 版の tmux][TGIT] を導入するための Formula である ```z80oolong/tmux/tmux-current``` への alias です。
 
-### z80oolong/tmux/tmux-head
+### z80oolong/tmux/tmux-current
 
-この Formula は、 [github 上の HEAD 版の tmux][TGIT] に、 "[tmux 2.6 以降において各種問題を修正する野良差分ファイル][GST1]" を適用したものを導入するための Formula です。
+この Formula は、 [github 上の最新の HEAD 版][TGIT] 若しくは、最新の安定版の [tmux][TMUX]に、 "[tmux 2.6 以降において各種問題を修正する野良差分ファイル][GST1]" を適用したものを導入するための Formula です。
 
-通常は、 "[tmux 2.6 以降において各種問題を修正する野良差分ファイル][GST1]" のページにおいて、[直近に公開された野良差分ファイルが対応している HEAD 版の commit][GST1] の [tmux][TMUX] が導入されます。
-
-[github 上の HEAD 版の最新の commit の tmux][TGIT] を導入する場合は、オプション ```--HEAD``` を指定して下さい。
+オプション ```--HEAD``` を指定しない場合は最新の安定版の [tmux][TMUX] が、オプション ```--HEAD``` を指定した場合は [github 上の HEAD 版の最新の commit][TGIT] が、それぞれ導入されます。
 
 **この Formula は、 ```homebrew/core/tmux``` と競合するため、この Formula によって導入される [tmux][TMUX] は、 keg only で導入されることに留意して下さい。**
 
-この Formula によって導入される [tmux][TMUX] を使用するには、 ```brew link --force z80oolong/tmux/tmux-head``` コマンドを実行する必要があります。
+この Formula によって導入される [tmux][TMUX] を使用するには、 ```brew link --force z80oolong/tmux/tmux-current``` コマンドを実行する必要があります。
 
-### z80oolong/tmux/tmux-HEAD
+### z80oolong/tmux/tmux@{version}-dev
 
-上述した、 "[tmux 2.6 以降において各種問題を修正する野良差分ファイル][GST1]" を適用した [HEAD 版の tmux][TGIT] を導入するための Formula である ```z80oolong/tmux/tmux-head``` への alias です。
+(注：上記 ```{version}``` には、 [tmux][TMUX] の最新の安定版の次期バージョンとなりうる仮のバージョン番号が入ります。)
+
+この Formula は、 "[tmux 2.6 以降において各種問題を修正する野良差分ファイル][GST1]" のページにおいて、[直近に公開された HEAD 版の野良差分ファイル][GST1] を、当該野良差分ファイルに対応した [tmux][TMUX] に適用したものを導入するための Formula です。
+
+即ち、この Formula は "[tmux 2.6 以降において各種問題を修正する野良差分ファイル][GST1]" のページで直近に公開された野良差分ファイルが ```tmux-HEAD-xxxxxxxx-fix.diff``` である場合は、 [github 上の HEAD 版の tmux][TGIT]のうち、 commit が xxxxxxxx であるものが導入されます。
+
+**この Formula は、 versioned formula であるため、この Formula によって導入される [tmux][TMUX] は、 keg only で導入されることに留意して下さい。**
+
+Formula によって導入される [tmux][TMUX] を使用するには、 ```brew link --force z80oolong/tmux/tmux@{version}-dev``` コマンドを実行する必要があります。
 
 ### z80oolong/tmux/tmux@{version}
 
@@ -85,9 +91,9 @@
 この Formula によって導入された [powerline][POWE] を使用する際は、**設定ファイル ```${HOME}/.tmux.conf (または ${HOME}/.config/tmux/tmux.conf 等)``` に以下の設定を記述する必要があることに留意して下さい。**
 
 ```
-# ここに、 HOMEBREW_PREFIX は、 Homebrew for Linux が置かれているディレクトリであり、環境に応じて読み替えて設定すること。
-run-shell "HOMEBREW_PREFIX/opt/powerline-status/bin/powerline-daemon -q"
-source HOMEBREW_PREFIX/opt/powerline-status/share/powerline/bindings/tmux/powerline.conf
+  # ここに、 HOMEBREW_PREFIX は、 Homebrew for Linux が置かれているディレクトリであり、環境に応じて読み替えて設定すること。
+  run-shell "HOMEBREW_PREFIX/opt/powerline-status/bin/powerline-daemon -q"
+  source HOMEBREW_PREFIX/opt/powerline-status/share/powerline/bindings/tmux/powerline.conf
 ```
 
 ### z80oolong/tmux/powerline-status@{version}
@@ -103,9 +109,9 @@ source HOMEBREW_PREFIX/opt/powerline-status/share/powerline/bindings/tmux/powerl
 この Formula によって導入された [powerline {version}][POWE] を使用する際は、**設定ファイル ```${HOME}/.tmux.conf (または ${HOME}/.config/tmux/tmux.conf 等)``` に以下の設定を記述する必要があることに留意して下さい。**
 
 ```
-# ここに、 HOMEBREW_PREFIX は、 Homebrew for Linux が置かれているディレクトリであり、環境に応じて読み替えて設定すること。
-run-shell "HOMEBREW_PREFIX/opt/powerline-status/bin/powerline-daemon -q"
-source HOMEBREW_PREFIX/opt/powerline-status/share/powerline/bindings/tmux/powerline.conf
+  # ここに、 HOMEBREW_PREFIX は、 Homebrew for Linux が置かれているディレクトリであり、環境に応じて読み替えて設定すること。
+  run-shell "HOMEBREW_PREFIX/opt/powerline-status/bin/powerline-daemon -q"
+  source HOMEBREW_PREFIX/opt/powerline-status/share/powerline/bindings/tmux/powerline.conf
 ```
 
 **この Formula は、 versioned formula であるため、この Formula によって導入される [powerline][POWE] は、 keg only で導入されることに留意して下さい。**
@@ -119,8 +125,8 @@ source HOMEBREW_PREFIX/opt/powerline-status/share/powerline/bindings/tmux/powerl
 この Formula によって導入された [tpm][TPM_] を使用する際は、**設定ファイル ```${HOME}/.tmux.conf (または ${HOME}/.config/tmux/tmux.conf 等)``` の末尾に以下の設定を記述する必要があることに留意して下さい。**
 
 ```
-# ここに、 HOMEBREW_PREFIX は、 Homebrew for Linux が置かれているディレクトリであり、環境に応じて読み替えて設定すること。
-run-shell -b "HOMEBREW_PREFIX/opt/tpm/libexec/tpm/tpm"
+  # ここに、 HOMEBREW_PREFIX は、 Homebrew for Linux が置かれているディレクトリであり、環境に応じて読み替えて設定すること。
+  run-shell -b "HOMEBREW_PREFIX/opt/tpm/libexec/tpm/tpm"
 ```
 
 <!-- 外部リンク一覧 -->

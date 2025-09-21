@@ -24,13 +24,13 @@ class TmuxAT36Dev < Formula
   desc "Terminal multiplexer"
   homepage "https://tmux.github.io/"
 
-  current_commit = "6f9bcb7fee5f5aace29f5c3e474aaa61e8c34bfd"
+  current_commit = "3e28777ecbc8de3df803d5d7429a5ecd35f61553"
   url "https://github.com/tmux/tmux.git",
     branch:   "master",
     revision: current_commit
   version "next-3.6-g#{current_commit[0..7]}"
   license "ISC"
-  revision 14
+  revision 15
 
   keg_only :versioned_formula
 
@@ -109,10 +109,10 @@ end
 
 __END__
 diff --git a/image-sixel.c b/image-sixel.c
-index a03c8619..d8be348a 100644
+index fac7eab9..629057ed 100644
 --- a/image-sixel.c
 +++ b/image-sixel.c
-@@ -123,6 +123,9 @@ sixel_parse_write(struct sixel_image *si, u_int ch)
+@@ -124,6 +124,9 @@ sixel_parse_write(struct sixel_image *si, u_int ch)
  {
  	struct sixel_line	*sl;
  	u_int			 i;
@@ -122,7 +122,7 @@ index a03c8619..d8be348a 100644
  
  	if (sixel_parse_expand_lines(si, si->dy + 6) != 0)
  		return (1);
-@@ -131,8 +134,32 @@ sixel_parse_write(struct sixel_image *si, u_int ch)
+@@ -132,8 +135,32 @@ sixel_parse_write(struct sixel_image *si, u_int ch)
  	for (i = 0; i < 6; i++) {
  		if (sixel_parse_expand_line(si, sl, si->dx + 1) != 0)
  			return (1);
@@ -155,7 +155,7 @@ index a03c8619..d8be348a 100644
  		sl++;
  	}
  	return (0);
-@@ -468,7 +495,19 @@ sixel_scale(struct sixel_image *si, u_int xpixel, u_int ypixel, u_int ox,
+@@ -475,7 +502,19 @@ sixel_scale(struct sixel_image *si, u_int xpixel, u_int ypixel, u_int ox,
  	}
  
  	if (colours) {
@@ -175,7 +175,7 @@ index a03c8619..d8be348a 100644
  		for (i = 0; i < si->ncolours; i++)
  			new->colours[i] = si->colours[i];
  		new->ncolours = si->ncolours;
-@@ -522,11 +561,28 @@ sixel_print_compress_colors(struct sixel_image *si, struct sixel_chunk *chunks,
+@@ -529,11 +568,28 @@ sixel_print_compress_colors(struct sixel_image *si, struct sixel_chunk *chunks,
  			colors[i] = 0;
  			if (y + i < si->y) {
  				sl = &si->lines[y + i];
@@ -204,7 +204,7 @@ index a03c8619..d8be348a 100644
  			}
  		}
  
-@@ -572,9 +628,15 @@ sixel_print(struct sixel_image *si, struct sixel_image *map, size_t *size)
+@@ -580,9 +636,15 @@ sixel_print(struct sixel_image *si, struct sixel_image *map, size_t *size)
  	if (map != NULL) {
  		colours = map->colours;
  		ncolours = map->ncolours;
@@ -219,12 +219,12 @@ index a03c8619..d8be348a 100644
 +#endif
  	}
  
- 	if (ncolours == 0)
+ 	used_colours = si->used_colours;
 diff --git a/options-table.c b/options-table.c
-index 5b8a4eb6..fa570698 100644
+index 6946a085..3abbd6ed 100644
 --- a/options-table.c
 +++ b/options-table.c
-@@ -1420,6 +1420,38 @@ const struct options_table_entry options_table[] = {
+@@ -1518,6 +1518,38 @@ const struct options_table_entry options_table[] = {
  		  "This option is no longer used."
  	},
  
@@ -353,7 +353,7 @@ index 298bdf30..d7e6319c 100644
  	exit(client_main(osdep_event_init(), argc, argv, flags, feat));
  }
 diff --git a/tmux.h b/tmux.h
-index c996d5b9..f709091e 100644
+index 4276ce8b..70882dd6 100644
 --- a/tmux.h
 +++ b/tmux.h
 @@ -94,6 +94,17 @@ struct winlink;
