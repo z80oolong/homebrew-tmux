@@ -24,13 +24,13 @@ class TmuxAT36Dev < Formula
   desc "Terminal multiplexer"
   homepage "https://tmux.github.io/"
 
-  current_commit = "3e28777ecbc8de3df803d5d7429a5ecd35f61553"
+  @@current_commit = "449f255f3ef0167c6d226148cdaabac70686dde9"
   url "https://github.com/tmux/tmux.git",
     branch:   "master",
-    revision: current_commit
-  version "next-3.6-g#{current_commit[0..7]}"
+    revision: @@current_commit
+  version "next-3.6-g#{@@current_commit[0..7]}"
   license "ISC"
-  revision 15
+  revision 16
 
   keg_only :versioned_formula
 
@@ -93,6 +93,9 @@ class TmuxAT36Dev < Formula
 
   def caveats
     <<~EOS
+      #{full_name} is a Formula for installing the development version of
+      `tmux` based on the HEAD version (commit #{@@current_commit[0..7]}) from its git repository.
+
       Example configuration has been installed to:
         #{opt_pkgshare}
     EOS

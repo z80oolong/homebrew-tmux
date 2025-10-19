@@ -2,67 +2,63 @@
 
 ## 概要
 
-[Homebrew for Linux][BREW] とは、Linux の各ディストリビューションにおけるソースコードの取得及びビルドに基づいたパッケージ管理システムです。 [Homebrew for Linux][BREW] の使用により、ソースコードからのビルドに基づいたソフトウェアの導入を単純かつ容易に行うことが出来ます。
+[Homebrew for Linux][BREW] は、Linux ディストリビューション向けのソースコードベースのパッケージ管理システムです。これを利用することで、ソフトウェアのソースコードからのビルドおよびインストールが簡単かつ効率的に行えます。
 
-また、 [tmux][TMUX] とは、 terminal session を効果的に操作できる端末多重化ソフトウェアです。 [tmux][TMUX] の使用により、複数の仮想 window や pane を同時に表示し、それらの間を切り替えたり terminal session を分割することが可能となります。そして、これにより単一の terminal window 内で複数の task を同時に実行することが可能となります。
+[tmux][TMUX] は、端末多重化ソフトウェアであり、複数の仮想ウィンドウやペインを同時に操作・表示し、端末セッションの分割や切り替えを可能にします。これにより、単一の端末ウィンドウ内で複数のタスクを効率的に実行できます。
 
-しかし [tmux 2.6][TMUX] 以降において、現在のところ以下のような問題が発生しています。
+しかし、[tmux 2.6][TMUX] 以降では、以下の問題が報告されています：
 
-- Unicode の規格における東アジア圏の各種文字のうち、いわゆる "◎" や "★" 等の記号文字及び罫線文字等、 [East_Asian_Width 特性の値が A (Ambiguous) となる文字][EAWA] (以下、 [East Asian Ambiguous Character][EAWA]) が、日本語環境で文字幅を適切に扱うことが出来ずに表示が乱れる問題が発生する。
-- Unicode 上の絵文字の文字幅も適切に扱われない問題が発生する。
-- [tmux][TMUX] の pane 分割において、画面分割におけるボーダーラインの罫線文字の文字幅が適切に扱われず、画面表示が乱れる問題が発生する。
-- [tmux][TMUX] の新たな HEAD 版より追加された SIXEL による画像表示において、パレット数が 0 となるような画像と表示させようとすると、 [tmux][TMUX] の process が異常終了したり、 ORMODE に対応した SIXEL 画像が正常に表示されない問題が発生する。
+- Unicode の東アジア圏の各種文字のうち、いわゆる "◎" や "★" 等の記号文字及び罫線文字等の、いわゆる [East_Asian_Width 特性が A（Ambiguous）][EAWA] の文字（以下、[East Asian Ambiguous Character][EAWA]）が、日本語環境で適切な文字幅として扱われず、表示が乱れる。
+- Unicode の絵文字の文字幅が正しく扱われない。
+- [tmux][TMUX] のペイン分割におけるボーダーラインの罫線文字の幅が適切に処理されず、画面表示が乱れる。
+- [tmux][TMUX] の HEAD 版で追加された SIXEL 画像表示において、パレット数が 0 の画像や ORMODE に対応した SIXEL 画像が正常に表示されない、またはプロセスが異常終了する。
 
-この [Homebrew for Linux][BREW] 向け Tap リポジトリは、前述の各種問題を修正するための差分ファイルである "[tmux 2.6 以降において各種問題を修正する野良差分ファイル][GST1]" をソースコードに適用した [tmux][TMUX] を導入するためのリポジトリです。
+本 [Homebrew for Linux][BREW] 向け Tap リポジトリは、[tmux 2.6 以降の各種問題を修正する野良差分ファイル][GST1] を適用した [tmux][TMUX] を導入するためのものです。また、[powerline][POWE] や [got][GOT_] など、[tmux][TMUX] の利用に有用なツールの Formula も提供しています。
 
-また、 [powerline][POWE] や [got][GOT_] 等、本リポジトリで導入される [tmux][TMUX] を使用する際に有用となるツールを導入するための Formula も同梱しています。
+## 使用方法
 
-## 使用法
+1. 以下のリソースを参考に、[Homebrew for Linux][BREW] を端末にインストールします：
+    - [thermes 氏][THER] による「[Linuxbrew のススメ][THBR]」
+    - [Homebrew for Linux 公式ページ][BREW]
+2. 本リポジトリの Formula を以下のようにインストールします：
+    ```
+      $ brew tap z80oolong/tmux
+      $ brew install <formula>
+    ```
 
-まず最初に、以下に示す Qiita の投稿及び Web ページの記述に基づいて、手元の端末に [Homebrew for Linux][BREW] を構築します。
-
-- [thermes 氏][THER]による "[Linuxbrew のススメ][THBR]" の投稿
-- [Homebrew for Linux の公式ページ][BREW]
-
-そして、本リポジトリに含まれる Formula を以下のようにインストールします。
-
-```
- $ brew tap z80oolong/tmux
- $ brew install <formula>
-```
-
-なお、一時的な手法ですが、以下のようにして URL を直接指定してインストールすることも出来ます。
+または、一時的な方法として、以下のように URL を直接指定してインストール可能です：
 
 ```
- $ brew install https://raw.githubusercontent.com/z80oolong/homebrew-tmux/master/Formula/<formula>.rb
+  $ brew install https://raw.githubusercontent.com/z80oolong/homebrew-tmux/master/Formula/<formula>.rb
 ```
 
-なお、本リポジトリに含まれる Formula の一覧及びその詳細については、本リポジトリに同梱する ```FormulaList.md``` を参照して下さい。
+利用可能な Formula の一覧および詳細は、本リポジトリに同梱の `FormulaList.md` を参照してください。
 
-## その他詳細について
+## 詳細情報
 
-その他、本リポジトリ及び [Homebrew for Linux][BREW] の使用についての詳細は ```brew help``` コマンド及び  ```man brew``` コマンドの内容、若しくは [Homebrew for Linux の公式ページ][BREW]を御覧下さい。
+本リポジトリおよび [Homebrew for Linux][BREW] の使用方法の詳細は、以下のコマンドやリソースを参照してください：
+
+- `brew help` コマンド
+- `man brew` コマンド
+- [Homebrew for Linux 公式ページ][BREW]
 
 ## 謝辞
 
-まず最初に、 [tmux][TMUX] に関する差分ファイルを作成するに当たっては、下記の URL にある、 Markus Kuhn 氏が作成した [East Asian Ambiguous Character][EAWA] の扱いを考慮した wcwidth(3) 関数の実装を使用しました。 [Markus Kuhn][DRMK] 氏には心より感謝いたします。
+[tmux][TMUX] の差分ファイル作成にあたり、[Markus Kuhn 氏][DRMK] が提供する [East Asian Ambiguous Character][EAWA] 対応の `wcwidth(3)` 実装（[wcwidth.c][WCWD]）を使用しました。心より感謝申し上げます。
 
-[http://www.cl.cam.ac.uk/~mgk25/ucs/wcwidth.c][WCWD]
+また、[tmux][TMUX] のペイン分割用ボーダーラインの罫線文字の適切な処理に関する修正を提供してくださった [koie-hidetaka 氏][KOIE] に深く感謝いたします。同氏には、他にも本差分ファイルに関する有益な助言をいただきました。
 
-また、本差分ファイルについて、 [tmux][TMUX] の画面分割の為のボーダーラインの罫線文字について判別と適切な描画を行う為の修正を作成して頂いた [koie-hidetaka 氏][KOIE]に心より感謝致します。 [koie-hidetaka 氏][KOIE]におきましては、他にも本差分ファイルに関して有益な指摘も幾つか頂きました。
+さらに、以下のツールの開発者に感謝申し上げます：
+- [tmux][TMUX] のセッション選択を容易にする [got][GOT_] の開発者、[@gorilla0513 氏][GORI]
+- [tmux][TMUX] のステータスラインを装飾する [powerline][POWE] の開発コミュニティ、特に Fabrizio Schiavi 氏
 
-そして、本リポジトリで導入される [tmux][TMUX] を使用するにあたって非常に有用であるツールであり：
+[Homebrew for Linux][BREW] の導入には、[Homebrew for Linux 公式ページ][BREW] および [thermes 氏][THER] の「[Linuxbrew のススメ][THBR]」を参考にしました。開発コミュニティおよび [thermes 氏][THER] に感謝申し上げます。
 
-- 端末上で [tmux][TMUX] のセッション選択を容易にするツールである [got][GOT_] を作成された [@gorilla0513 氏][GORI]に心より感謝致します。
-- [tmux][TMUX] のステータスラインを機能的に装飾するツールである Fabrizio Schiavi 氏を始めとする [powerline][POWE] の開発コミュニティの各氏に心より感謝致します。
-
-そして、[Homebrew for Linux][BREW] の導入に関しては、 [Homebrew for Linux の公式ページ][BREW] の他、 [thermes 氏][THER]による "[Linuxbrew のススメ][THBR]" 及び [Homebrew for Linux][BREW] 関連の各種資料を参考にしました。 [Homebrew for Linux の開発コミュニティ][BREW]及び[thermes 氏][THER]を始めとする各氏に心より感謝致します。
-
-そして最後に、 [tmux][TMUX] の作者である [Nicholas Marriott 氏][NICM]を初め、 [tmux][TMUX] に関わる全ての皆様及び、 [Homebrew for Linux][BREW] に関わる全ての皆様に心より感謝致します。
+最後に、[tmux][TMUX] の作者 [Nicholas Marriott 氏][NICM] をはじめ、[tmux][TMUX] および [Homebrew for Linux][BREW] に関わるすべての皆様に心より感謝いたします。
 
 ## 使用条件
 
-本リポジトリは、 [Homebrew for Linux][BREW] の Tap リポジトリの一つとして、 [Homebrew for Linux の開発コミュニティ][BREW]及び [Z.OOL. (mailto:zool@zool.jpn.org)][ZOOL] が著作権を有し、[Homebrew for Linux][BREW] のライセンスと同様である [BSD 2-Clause License][BSD2] に基づいて配布されるものとします。詳細については、本リポジトリに同梱する ```LICENSE``` を参照して下さい。
+本リポジトリは、[Homebrew for Linux][BREW] の Tap リポジトリとして、[Homebrew for Linux 開発コミュニティ][BREW] および [Z.OOL. (mailto:zool@zool.jpn.org)][ZOOL] が著作権を有し、[BSD 2-Clause License][BSD2] に基づいて配布されます。詳細は、本リポジトリに同梱の `LICENSE` ファイルを参照してください。
 
 <!-- 外部リンク一覧 -->
 
