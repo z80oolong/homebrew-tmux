@@ -36,7 +36,9 @@
 
 **この Formula は ```homebrew/core/tmux``` と競合するため、keg-only で導入されることに留意してください。** 使用するには ```brew link --force z80oolong/tmux/tmux-current``` を実行してください。
 
-### z80oolong/tmux/tmux@3.6-dev
+### z80oolong/tmux/tmux@{version}-dev
+
+(注：2025/09/21 時点で、{version} には次期バージョン番号の仮称である 3.6 が入ります。)
 
 ```z80oolong/tmux/tmux@3.6-dev``` は、"[tmux 2.6 以降の各種問題を修正する野良差分ファイル][GST1]" の最新版を [GitHub の HEAD 版 tmux][TGIT] の対応するコミットに適用したものを導入します。**たとえば、最新の野良差分ファイルが ```tmux-HEAD-xxxxxxxx-fix.diff``` の場合、コミット ID ```xxxxxxxx``` のバージョンが導入されます。**
 
@@ -45,6 +47,8 @@
 **なお、この Formula は ```z80oolong/tmux/tmux-current``` による [tmux][TMUX] の最新の HEAD 版の導入時に差分ファイルの適用で不具合が発生する場合に、暫定的に使用するものです。通常は ```z80oolong/tmux/tmux``` もしくは ```z80oolong/tmux/tmux-current``` を使用してください。**
 
 ### z80oolong/tmux/tmux@{version}
+
+(注：上記 ```{version}``` には、 [tmux][TMUX] の各バージョン番号が入ります。)
 
 ```z80oolong/tmux/tmux@{version}``` は、安定版 [tmux {version}][TMUX] に "[tmux 2.6 以降の各種問題を修正する野良差分ファイル][GST1]" を適用したものを導入します。
 
@@ -93,6 +97,8 @@
 ```
 
 ### z80oolong/tmux/powerline-status@{version}
+
+(注：上記 ```{version}``` には、 [powerline][POWE] の各バージョン番号が入ります。)
 
 ```z80oolong/tmux/powerline-status@{version}``` は、安定版 [powerline {version}][POWE] を導入します。HEAD 版 [tmux][TMUX] での動作不具合を修正しています。
 

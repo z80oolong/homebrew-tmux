@@ -8,10 +8,10 @@
 
 しかし、[tmux 2.6][TMUX] 以降では、以下の問題が報告されています：
 
-- Unicode の東アジア圏の各種文字のうち、いわゆる "◎" や "★" 等の記号文字及び罫線文字等の、いわゆる [East_Asian_Width 特性が A（Ambiguous）][EAWA] の文字（以下、[East Asian Ambiguous Character][EAWA]）が、日本語環境で適切な文字幅として扱われず、表示が乱れる。
+- **Unicode の東アジア圏の各種文字のうち、いわゆる "◎" や "★" 等の記号文字及び罫線文字等の、いわゆる [East_Asian_Width 特性が A（Ambiguous）][EAWA] の文字（以下、[East Asian Ambiguous Character][EAWA]）が、日本語環境で適切な文字幅として扱われず、表示が乱れる。**
 - Unicode の絵文字の文字幅が正しく扱われない。
 - [tmux][TMUX] のペイン分割におけるボーダーラインの罫線文字の幅が適切に処理されず、画面表示が乱れる。
-- [tmux][TMUX] の HEAD 版で追加された SIXEL 画像表示において、パレット数が 0 の画像や ORMODE に対応した SIXEL 画像が正常に表示されない、またはプロセスが異常終了する。
+- **[tmux][TMUX] の HEAD 版で追加された SIXEL 画像表示において、パレット数が 0 の画像や ORMODE に対応した SIXEL 画像が正常に表示されない、またはプロセスが異常終了する。**
 
 本 [Homebrew for Linux][BREW] 向け Tap リポジトリは、[tmux 2.6 以降の各種問題を修正する野良差分ファイル][GST1] を適用した [tmux][TMUX] を導入するためのものです。また、[powerline][POWE] や [got][GOT_] など、[tmux][TMUX] の利用に有用なツールの Formula も提供しています。
 
