@@ -23,14 +23,14 @@
 - 本リポジトリの Formula を以下のようにインストールします：
 
 ```
-  # brew tap z80oolong/tmux
-  # brew install <formula>
+  $ brew tap z80oolong/tmux
+  $ brew install <formula>
 ```
 
 または、一時的な方法として、以下のように URL を直接指定してインストール可能です：
 
 ```
-  # brew install https://raw.githubusercontent.com/z80oolong/homebrew-tmux/master/Formula/<formula>.rb
+  $ brew install https://raw.githubusercontent.com/z80oolong/homebrew-tmux/master/Formula/<formula>.rb
 ```
 
 利用可能な Formula の一覧および詳細は、本リポジトリに同梱の ```FormulaList.md``` を参照してください。
