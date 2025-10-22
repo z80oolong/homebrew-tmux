@@ -2,23 +2,20 @@
 
 ## 概要
 
-本ドキュメントでは、[Homebrew for Linux][BREW] 向け Tap リポジトリ ```z80oolong/tmux``` に含まれる Formula の一覧を紹介します。各 Formula の詳細は、```brew info <formula>``` コマンドで確認できます。
+本ドキュメントでは、[Homebrew for Linux][BREW] 向け Tap リポジトリ ```z80oolong/tmux``` に含まれる Formula の一覧を紹介します。各 Formula の詳細については、```brew info <formula>``` コマンドも参照してください。
 
 ## 告知 (2025/09/21)
 
-2025/09/21 より、Tap リポジトリ ```z80oolong/tmux``` の Formula に以下の変更を適用します。
+2025/09/21 より、[Homebrew for Linux][BREW] 向け Tap リポジトリ ```z80oolong/tmux``` に含まれる Formula について、以下の変更を実施します。
 
-1. **Formula ```z80oolong/tmux/tmux@{version}-dev``` の新設**
-    - **"[tmux 2.6 以降の各種問題を修正する野良差分ファイル][GST1]" の最新版を、[GitHub の HEAD 版][TGIT] の対応するコミットに適用したものを導入します。**
-        - 従来の ```tmux-head``` は廃止します。
-        - 2025/09/21 時点で、```{version}``` には次期バージョン番号の仮称である ```3.6``` が入ります。
-        - **この Formula は、```z80oolong/tmux/tmux-current``` による [tmux][TMUX] の最新の HEAD 版の導入時に差分ファイルの適用で不具合が発生する場合に、暫定的に使用するものです。**
-2. **Formula ```z80oolong/tmux/tmux-current``` の新設**
-    - **最新の安定版および [GitHub の HEAD 版 tmux][TMUX] に "[tmux 2.6 以降の各種問題を修正する野良差分ファイル][GST1]" を適用したものを導入します。**
+- **"[tmux 2.6 以降において各種問題を修正する野良差分ファイル][GST1]" (以下、野良差分ファイル) のページで公開された最新の HEAD 版向け野良差分ファイルを、その差分ファイルに対応する [GitHub 上の HEAD 版の tmux][TGIT] のコミットに適用したものをインストールするための Formula ```z80oolong/tmux/tmux@{version}-dev``` を新設します。**
+    - この Formula は、```z80oolong/tmux/tmux-current``` による [tmux][TMUX] の最新の HEAD 版の導入時に差分ファイルの適用で不具合が発生する場合に、暫定的に使用するものです。
+    - 従来の ```tmux-head``` は廃止します。
+    - なお、2025/09/21 現在、```{version}``` には最新の安定版の仮の次期バージョン番号である 3.6 が指定されます。
+- **[最新の安定版および最新の GitHub 上の HEAD 版の tmux][TMUX] に野良差分ファイルを適用したものをインストールするための Formula として、```z80oolong/tmux/tmux-current``` を新設します。**
     - ```z80oolong/tmux/tmux``` は、```z80oolong/tmux/tmux-current``` の alias として存続します。
-3. **keg-only について**
-    - ```z80oolong/tmux/tmux-current``` を含む、野良差分ファイルを適用した [tmux][TMUX] の Formula はすべて keg-only として導入されます。
-    - これは、```homebrew/core/tmux``` との競合を回避するためです。
+- ```z80oolong/tmux/tmux-current``` を含め、野良差分ファイルを適用した [tmux][TMUX] を導入する Formula はすべて **keg-only** としてインストールされます。
+    - これは、```homebrew/core/tmux``` との競合を回避するための措置です。
 
 ご不便をおかけしますが、ご理解とご協力をお願いいたします。
 
@@ -26,118 +23,128 @@
 
 ### z80oolong/tmux/tmux
 
-```z80oolong/tmux/tmux``` は ```z80oolong/tmux/tmux-current``` の alias であり、最新の安定版または [GitHub の HEAD 版 tmux][TMUX] に "[tmux 2.6 以降の各種問題を修正する野良差分ファイル][GST1]" を適用したものを導入します。
+この Formula は、[GitHub 上の最新の HEAD 版の tmux][TGIT] または最新の安定版の [tmux][TMUX] に、野良差分ファイルを適用したものをインストールする ```z80oolong/tmux/tmux-current``` の alias です。
 
 ### z80oolong/tmux/tmux-current
 
-```z80oolong/tmux/tmux-current``` は、最新の安定版または [GitHub の HEAD 版 tmux][TMUX] に "[tmux 2.6 以降の各種問題を修正する野良差分ファイル][GST1]" を適用したものを導入します。
+この Formula は、[GitHub 上の最新の HEAD 版の tmux][TGIT] または最新の安定版の [tmux][TMUX] に、野良差分ファイルを適用したものをインストールします。
 
-オプションとして、```--HEAD``` を指定すると HEAD 版の最新コミットが導入され、指定しない場合は最新の安定版が導入されます。
-
-**この Formula は ```homebrew/core/tmux``` と競合するため、keg-only で導入されることに留意してください。** 使用するには ```brew link --force z80oolong/tmux/tmux-current``` を実行してください。
+- **オプション:**
+    - ```--HEAD``` を指定した場合: [GitHub 上の HEAD 版の最新コミット][TGIT] がインストールされます。
+    - オプションを指定しない場合: 最新の安定版の [tmux][TMUX] がインストールされます。
+- **注意:**
+    - **この Formula は ```homebrew/core/tmux``` と競合するため、keg-only としてインストールされます。** この Formula によってインストールされる tmux を使用するには、```brew link --force z80oolong/tmux/tmux-current``` コマンドを実行してください。
 
 ### z80oolong/tmux/tmux@{version}-dev
 
-(注：2025/09/21 時点で、{version} には次期バージョン番号の仮称である 3.6 が入ります。)
+(注: ```{version}``` には、[tmux][TMUX] の最新安定版の次期バージョンとなりうる仮のバージョン番号が入ります。)
 
-```z80oolong/tmux/tmux@3.6-dev``` は、"[tmux 2.6 以降の各種問題を修正する野良差分ファイル][GST1]" の最新版を [GitHub の HEAD 版 tmux][TGIT] の対応するコミットに適用したものを導入します。**たとえば、最新の野良差分ファイルが ```tmux-HEAD-xxxxxxxx-fix.diff``` の場合、コミット ID ```xxxxxxxx``` のバージョンが導入されます。**
+この Formula は、"[tmux 2.6 以降において各種問題を修正する野良差分ファイル][GST1]" のページで公開された最新の HEAD 版向け野良差分ファイルを、その差分ファイルに対応する [GitHub 上の HEAD 版の tmux][TGIT] のコミットに適用したものをインストールします。
 
-**この Formula は versioned formula のため、keg-only で導入されることに留意してください。** 使用するには ```brew link --force z80oolong/tmux/tmux@3.6-dev``` を実行してください。
+たとえば、最新の HEAD 版向け野良差分ファイルが ```tmux-HEAD-xxxxxxxx-fix.diff``` の場合、[GitHub 上の HEAD 版の tmux][TGIT] のコミット ```xxxxxxxx``` がインストールされます。
 
-**なお、この Formula は ```z80oolong/tmux/tmux-current``` による [tmux][TMUX] の最新の HEAD 版の導入時に差分ファイルの適用で不具合が発生する場合に、暫定的に使用するものです。通常は ```z80oolong/tmux/tmux``` もしくは ```z80oolong/tmux/tmux-current``` を使用してください。**
+- **注意:**
+    - **この Formula は versioned formula のため、keg-only としてインストールされます。** この Formula によってインストールされる tmux を使用するには、```brew link --force z80oolong/tmux/tmux@{version}-dev``` コマンドを実行してください。
+    - **この Formula は、```z80oolong/tmux/tmux-current``` による [tmux][TMUX] の最新の HEAD 版の導入時に差分ファイルの適用で不具合が発生する場合に、暫定的に使用するものです。** 通常の場合は、```z80oolong/tmux/tmux-current```、```z80oolong/tmux/tmux``` を使用してください。
 
 ### z80oolong/tmux/tmux@{version}
 
-(注：上記 ```{version}``` には、 [tmux][TMUX] の各バージョン番号が入ります。)
+(注: ```{version}``` には、[tmux][TMUX] の各安定版のバージョン番号が入ります。)
 
-```z80oolong/tmux/tmux@{version}``` は、安定版 [tmux {version}][TMUX] に "[tmux 2.6 以降の各種問題を修正する野良差分ファイル][GST1]" を適用したものを導入します。
+この Formula は、安定版の [tmux {version}][TMUX] に、野良差分ファイルを適用したものをインストールします。
 
-**この Formula は versioned formula のため、keg-only で導入されることに留意してください。** 使用するには ```brew link --force z80oolong/tmux/tmux@{version}``` を実行してください。
+- **注意:**
+    - **この Formula は versioned formula のため、keg-only としてインストールされます。** この Formula によってインストールされる tmux を使用するには、```brew link --force z80oolong/tmux/tmux@{version}``` コマンドを実行してください。
 
 ### z80oolong/tmux/tmux-ncurses@6.2
 
-```z80oolong/tmux/tmux-ncurses@6.2``` は、上記 Formula で導入される [tmux][TMUX] に依存する ncurses ライブラリを導入します。East Asian Ambiguous Character の文字幅を全角文字として扱う修正を加えています。
+上述の Formula でインストールされる [tmux][TMUX] に依存する ncurses ライブラリをインストールします。この ncurses ライブラリには、East Asian Ambiguous Character の文字幅を全角文字として扱う修正が施されています。
 
-**この Formula は versioned formula のため、keg-only で導入されることに留意してください。**
-
-### z80oolong/tmux/got-bin
-
-```z80oolong/tmux/got-bin``` は、[@gorilla0513 氏][GORI] による [got][GOT_] を導入します。このツールは、tmux のセッション一覧を表示し、attach や削除を簡単に行えます。x86-64 Linux および macOS 向けのビルド済みバイナリを提供します。
-
-オプションとして、```--with-tmux``` を指定すると、```z80oolong/tmux/tmux``` を同時に導入できます。
-
-**その他のアーキテクチャでは、```z80oolong/tmux/got-src``` をインストールし、```brew link --force z80oolong/tmux/got-src``` を実行してください。**
-
-### z80oolong/tmux/got-src
-
-```z80oolong/tmux/got-src``` は、[@gorilla0513 氏][GORI] による [got][GOT_] をソースコードからビルドして導入します。
-
-オプションとして、```--with-tmux``` を指定すると、```z80oolong/tmux/tmux``` を同時に導入できます。
-
-**```z80oolong/tmux/got-bin``` と競合するため、keg-only で導入されることに留意してください。**
+- **注意:**
+    - **この Formula は versioned formula のため、keg-only としてインストールされます。**
 
 ### z80oolong/tmux/got
 
-```z80oolong/tmux/got``` は、```z80oolong/tmux/got-bin``` の alias です。
+[@gorilla0513 氏][GORI] による [got][GOT_] をインストールするための Formula である ```z80oolong/tmux/got-bin``` の alias です。
+
+### z80oolong/tmux/got-bin
+
+[@gorilla0513 氏][GORI] による [got][GOT_] をインストールする Formula です。[got][GOT_] は、tmux のセッション一覧を表示し、セッションへのアタッチや削除を簡単に行うためのツールです。
+
+この Formula は、x86-64 Linux および macOS 向けのビルド済みバイナリファイルをインストールします。他のアーキテクチャでは、後述の ```z80oolong/tmux/got-src``` を ```brew install z80oolong/tmux/got-src``` コマンドでインストールし、```brew link --force z80oolong/tmux/got-src``` コマンドでリンクしてください。
+
+- **オプション:**
+    - ```--with-tmux```: ```z80oolong/tmux/tmux``` を同時にインストールします。
+
+### z80oolong/tmux/got-src
+
+[@gorilla0513 氏][GORI] による [got][GOT_] をソースコードからビルドしてインストールする Formula です。
+
+- **オプション:**
+    - ```--with-tmux```: ```z80oolong/tmux/tmux``` を同時にインストールします。
+- **注意:**
+    - **この Formula は ```z80oolong/tmux/got-bin``` と競合するため、keg-only としてインストールされます。**
 
 ### z80oolong/tmux/powerline-status
 
-```z80oolong/tmux/powerline-status``` は、[tmux][TMUX] のステータスラインを装飾する [powerline][POWE] を導入します。HEAD 版 [tmux][TMUX] での動作不具合を修正しています。
+[tmux][TMUX] のステータスラインを機能的に装飾するツール [powerline][POWE] をインストールする Formula です。この Formula では、GitHub 上の HEAD 版の tmux で [powerline][POWE] が正常に動作しない不具合を修正しています。
 
-**なお、この Formula で導入される powerline は、 ```z80oolong/fonts/umefont``` および ```z80oolong/fonts/vlgothic``` で導入される "梅フォント" 及び "VLゴシックフォント" で動作確認しています。**
+この Formula でインストールされる [powerline][POWE] は、```z80oolong/fonts/umefont``` および ```z80oolong/fonts/vlgothic``` でインストールされる "梅フォント" および "VLゴシックフォント" での動作確認済みです。
 
-オプションとして、```--with-tmux``` を指定すると、```z80oolong/tmux/tmux``` を同時に導入できます。
-
-**使用するには、```${HOME}/.tmux.conf```（または ```${HOME}/.config/tmux/tmux.conf```）に以下の設定を記述してください。**
+- **オプション:** 
+    - ```--with-tmux```: ```z80oolong/tmux/tmux``` を同時にインストールします。
+- **注意:**
+    - この Formula でインストールした powerline を使用するには、設定ファイル ```${HOME}/.tmux.conf``` (または ```${HOME}/.config/tmux/tmux.conf``` など)に以下の設定を記述してください。
 
 ```
-  # HOMEBREW_PREFIX は環境に応じて設定してください。
+  # HOMEBREW_PREFIX は、Homebrew for Linux がインストールされているディレクトリに適宜置き換えてください。
   run-shell "HOMEBREW_PREFIX/opt/powerline-status/bin/powerline-daemon -q"
   source HOMEBREW_PREFIX/opt/powerline-status/share/powerline/bindings/tmux/powerline.conf
 ```
 
 ### z80oolong/tmux/powerline-status@{version}
 
-(注：上記 ```{version}``` には、 [powerline][POWE] の各バージョン番号が入ります。)
+(注: ```{version}``` には、[powerline][POWE] の各安定版のバージョン番号が入ります。)
 
-```z80oolong/tmux/powerline-status@{version}``` は、安定版 [powerline {version}][POWE] を導入します。HEAD 版 [tmux][TMUX] での動作不具合を修正しています。
+[tmux][TMUX] のステータスラインを機能的に装飾するツールの安定版 [powerline {version}][POWE] をインストールする Formula です。この Formula では、GitHub 上の HEAD 版の tmux で [powerline][POWE] が正常に動作しない不具合を修正しています。
 
-**なお、この Formula で導入される powerline は、 ```z80oolong/fonts/umefont``` および ```z80oolong/fonts/vlgothic``` で導入される "梅フォント" 及び "VLゴシックフォント" で動作確認しています。**
+この Formula でインストールされる [powerline][POWE] は、```z80oolong/fonts/umefont``` および ```z80oolong/fonts/vlgothic``` でインストールされる "梅フォント" および "VLゴシックフォント" での動作確認済みです。
 
-オプションとして、```--with-tmux``` を指定すると、```z80oolong/tmux/tmux``` を同時に導入できます。
-
-**使用するには、```${HOME}/.tmux.conf```（または ```${HOME}/.config/tmux/tmux.conf```）に以下の設定を記述してください。**
+- **オプション:**
+    - ```--with-tmux```: ```z80oolong/tmux/tmux``` を同時にインストールします。
+- **注意:**
+    - **この Formula は versioned formula のため、keg-only としてインストールされます。** この Formula によってインストールされる powerline を使用するには、```brew link --force z80oolong/tmux/powerline-status@{version}``` コマンドを実行してください。
+    - この Formula でインストールした powerline を使用するには、設定ファイル ```${HOME}/.tmux.conf``` (または ```${HOME}/.config/tmux/tmux.conf``` など)に以下の設定を記述してください。
 
 ```
-  # HOMEBREW_PREFIX は環境に応じて設定してください。
+  # HOMEBREW_PREFIX は、Homebrew for Linux がインストールされているディレクトリに適宜置き換えてください。
   run-shell "HOMEBREW_PREFIX/opt/powerline-status/bin/powerline-daemon -q"
   source HOMEBREW_PREFIX/opt/powerline-status/share/powerline/bindings/tmux/powerline.conf
 ```
 
-**この Formula は versioned formula のため、keg-only で導入されることに留意してください。** 使用するには ```brew link --force z80oolong/tmux/powerline-status@{version}``` を実行してください。
-
 ### z80oolong/tmux/tpm
 
-```z80oolong/tmux/tpm``` は、[tmux][TMUX] のプラグインを管理する [tpm][TPM_] を導入します。
+[tmux][TMUX] のプラグインを導入および管理するツール [tpm][TPM_] をインストールする Formula です。
 
-**使用するには、```${HOME}/.tmux.conf```（または ```${HOME}/.config/tmux/tmux.conf```）の末尾に以下の設定を記述してください。**
+- **注意:**
+    - この Formula でインストールした tpm を使用するには、設定ファイル ```${HOME}/.tmux.conf``` (または ```${HOME}/.config/tmux/tmux.conf``` など)の末尾に以下の設定を記述してください。
 
 ```
-  # HOMEBREW_PREFIX は環境に応じて設定してください。
+  # HOMEBREW_PREFIX は、Homebrew for Linux がインストールされているディレクトリに適宜置き換えてください。
   run-shell -b "HOMEBREW_PREFIX/opt/tpm/libexec/tpm/tpm"
 ```
 
 <!-- 外部リンク一覧 -->
 
-[BREW]:https://linuxbrew.sh/
-[TMUX]:https://tmux.github.io/
-[TGIT]:https://github.com/tmux/tmux
-[EAWA]:http://www.unicode.org/reports/tr11/#Ambiguous
-[GST1]:https://github.com/z80oolong/tmux-eaw-fix
-[LIBE]:http://libevent.org/
-[DOXY]:http://www.doxygen.org/
-[GLEV]:https://github.com/libevent/libevent
-[GORI]:https://qiita.com/gorilla0513
-[GOT_]:https://github.com/skanehira/got
-[TPM_]:https://github.com/tmux-plugins/tpm
-[POWE]:https://powerline.readthedocs.io/en/latest/#
+[BREW]: https://linuxbrew.sh/  
+[TMUX]: https://tmux.github.io/  
+[TGIT]: https://github.com/tmux/tmux  
+[EAWA]: http://www.unicode.org/reports/tr11/#Ambiguous  
+[GST1]: https://github.com/z80oolong/tmux-eaw-fix  
+[LIBE]: http://libevent.org/  
+[DOXY]: http://www.doxygen.org/  
+[GLEV]: https://github.com/libevent/libevent  
+[GORI]: https://qiita.com/gorilla0513  
+[GOT_]: https://github.com/skanehira/got  
+[TPM_]: https://github.com/tmux-plugins/tpm  
+[POWE]: https://powerline.readthedocs.io/en/latest/#
