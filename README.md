@@ -18,7 +18,7 @@
 ## 使用方法
 
 - [Homebrew for Linux][BREW] を端末にインストールします。以下のリソースを参考にしてください：
-    - [thermes 氏][THER] による「[Linuxbrew のススメ][THBR]」
+    - [thermes 氏][THER] による "[Linuxbrew のススメ][THBR]"
     - [Homebrew for Linux 公式ページ][BREW]
 - 本リポジトリの Formula を以下のようにインストールします：
 
