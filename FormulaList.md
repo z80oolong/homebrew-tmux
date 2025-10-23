@@ -43,6 +43,8 @@
 
 たとえば、最新の HEAD 版向け野良差分ファイルが ```tmux-HEAD-xxxxxxxx-fix.diff``` の場合、[GitHub 上の HEAD 版の tmux][TGIT] のコミット ```xxxxxxxx``` がインストールされます。
 
+この Formula によりインストールされる [tmux][TMUX] の具体的なコミットについては、```brew info z80oolong/tmux/tmux@{version}-dev``` コマンドで出力されるメッセージを参照してください。
+
 - **注意:**
     - **この Formula は versioned formula のため、keg-only としてインストールされます。** この Formula によってインストールされる tmux を使用するには、```brew link --force z80oolong/tmux/tmux@{version}-dev``` コマンドを実行してください。
     - **この Formula は、```z80oolong/tmux/tmux-current``` による [tmux][TMUX] の最新の HEAD 版の導入時に差分ファイルの適用で不具合が発生する場合に、暫定的に使用するものです。** 通常の場合は、```z80oolong/tmux/tmux-current```、```z80oolong/tmux/tmux``` を使用してください。
