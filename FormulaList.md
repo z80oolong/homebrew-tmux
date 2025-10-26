@@ -32,7 +32,8 @@
 [GitHub 上の HEAD 版の最新コミットの tmux][TGIT] をインストールする場合は、```--HEAD``` オプションを指定してください。
 
 - **注意:**
-    - **この Formula は ```homebrew/core/tmux``` と競合するため、keg-only としてインストールされます。** この Formula によってインストールされた [tmux][TMUX] を使用するには、```brew link --force z80oolong/tmux/tmux-current``` コマンドを実行してください。
+    - **この Formula は ```homebrew/core/tmux``` と競合するため、keg-only としてインストールされます。**
+    - **この Formula によってインストールされた [tmux][TMUX] を使用するには、```brew link --force z80oolong/tmux/tmux-current``` コマンドを実行してください。**
 
 ### z80oolong/tmux/tmux@{version}-dev
 
@@ -45,7 +46,8 @@
 この Formula によりインストールされる [tmux][TMUX] の具体的なコミットについては、```brew info z80oolong/tmux/tmux@{version}-dev``` コマンドで出力されるメッセージを参照してください。
 
 - **注意:**
-    - **この Formula は versioned formula のため、keg-only としてインストールされます。** この Formula によってインストールされた [tmux][TMUX] を使用するには、```brew link --force z80oolong/tmux/tmux@{version}-dev``` コマンドを実行してください。
+    - **この Formula は versioned formula のため、keg-only としてインストールされます。**
+    - **この Formula によってインストールされた [tmux][TMUX] を使用するには、```brew link --force z80oolong/tmux/tmux@{version}-dev``` コマンドを実行してください。**
     - **この Formula は、```z80oolong/tmux/tmux-current``` による [tmux][TMUX] の最新の HEAD 版の導入時に差分ファイルの適用で不具合が発生する場合に、暫定的に使用するものです。** 通常の場合は、```z80oolong/tmux/tmux-current``` または ```z80oolong/tmux/tmux``` を使用してください。
 
 ### z80oolong/tmux/tmux@{version}
@@ -55,7 +57,8 @@
 この Formula は、安定版の [tmux {version}][TMUX] に、野良差分ファイルを適用したものをインストールします。
 
 - **注意:**
-    - **この Formula は versioned formula のため、keg-only としてインストールされます。** この Formula によってインストールされた [tmux][TMUX] を使用するには、```brew link --force z80oolong/tmux/tmux@{version}``` コマンドを実行してください。
+    - **この Formula は versioned formula のため、keg-only としてインストールされます。**
+    - **この Formula によってインストールされた [tmux][TMUX] を使用するには、```brew link --force z80oolong/tmux/tmux@{version}``` コマンドを実行してください。**
 
 ### z80oolong/tmux/tmux-ncurses@6.2
 
@@ -72,7 +75,7 @@
 
 この Formula は、[@gorilla0513 氏][GORI] による [got][GOT_] をインストールします。[got][GOT_] は、tmux のセッション一覧を表示し、セッションへのアタッチや削除を簡単に行うためのツールです。
 
-この Formula は、x86-64 Linux および macOS 向けのビルド済みバイナリファイルをインストールします。他のアーキテクチャでは、後述の ```z80oolong/tmux/got-src``` を ```brew install z80oolong/tmux/got-src``` コマンドでインストールし、```brew link --force z80oolong/tmux/got-src``` コマンドでリンクしてください。
+この Formula は、x86-64 Linux および macOS 向けのビルド済みバイナリファイルをインストールします。**他のアーキテクチャでは、後述の ```z80oolong/tmux/got-src``` を ```brew install z80oolong/tmux/got-src``` コマンドでインストールし、```brew link --force z80oolong/tmux/got-src``` コマンドでリンクしてください。**
 
 - **オプション:**
     - **```--with-tmux```**: ```z80oolong/tmux/tmux``` を同時にインストールします。
@@ -84,7 +87,8 @@
 - **オプション:**
     - **```--with-tmux```**: ```z80oolong/tmux/tmux``` を同時にインストールします。
 - **注意:**
-    - **この Formula は ```z80oolong/tmux/got-bin``` と競合するため、keg-only としてインストールされます。** この Formula によってインストールされた [got][GOT_] を使用するには、```brew link --force z80oolong/tmux/got-src``` コマンドを実行してください。
+    - **この Formula は ```z80oolong/tmux/got-bin``` と競合するため、keg-only としてインストールされます。**
+    - **この Formula によってインストールされた [got][GOT_] を使用するには、```brew link --force z80oolong/tmux/got-src``` コマンドを実行してください。**
 
 ### z80oolong/tmux/powerline-status
 
@@ -116,7 +120,8 @@
 - **オプション:**
     - **```--with-tmux```**: ```z80oolong/tmux/tmux``` を同時にインストールします。
 - **注意:**
-    - **この Formula は versioned formula のため、keg-only としてインストールされます。** この Formula によってインストールされた [powerline][POWE] を使用するには、```brew link --force z80oolong/tmux/powerline-status@{version}``` コマンドを実行してください。
+    - **この Formula は versioned formula のため、keg-only としてインストールされます。**
+    - **この Formula によってインストールされた [powerline][POWE] を使用するには、```brew link --force z80oolong/tmux/powerline-status@{version}``` コマンドを実行してください。**
     - この Formula でインストールした [powerline][POWE] を使用するには、設定ファイル ```${HOME}/.tmux.conf``` (または ```${HOME}/.config/tmux/tmux.conf``` など)に以下の設定を記述してください。
 
 ```
