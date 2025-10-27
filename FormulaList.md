@@ -2,7 +2,9 @@
 
 ## 概要
 
-本ドキュメントでは、[Homebrew for Linux][BREW] 向け Tap リポジトリ ```z80oolong/tmux``` に含まれる Formula の一覧を紹介します。この Tap リポジトリは、[tmux][TMUX] に野良差分ファイルを適用したアプリケーションを提供します。各 Formula の詳細については、```brew info <formula>``` コマンドをご覧ください。
+本ドキュメントでは、[Homebrew for Linux][BREW] 向け Tap リポジトリ ```z80oolong/tmux``` に含まれる Formula の一覧を紹介します。
+
+この Tap リポジトリは、[tmux][TMUX] に野良差分ファイルを適用したアプリケーションを提供します。各 Formula の詳細については、```brew info <formula>``` コマンドをご覧ください。
 
 ## 告知 (2025/09/21)
 
