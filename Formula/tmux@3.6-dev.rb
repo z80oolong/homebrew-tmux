@@ -24,7 +24,7 @@ class TmuxAT36Dev < Formula
   desc "Terminal multiplexer"
   homepage "https://tmux.github.io/"
 
-  @@current_commit = "449f255f3ef0167c6d226148cdaabac70686dde9"
+  @@current_commit = "be2d4aa43498a6c36d9f30f4ccedb3347882ad42"
   url "https://github.com/tmux/tmux.git",
     branch:   "master",
     revision: @@current_commit
@@ -267,7 +267,7 @@ index 6946a085..3abbd6ed 100644
  	OPTIONS_TABLE_HOOK("after-bind-key", ""),
  	OPTIONS_TABLE_HOOK("after-capture-pane", ""),
 diff --git a/tmux.c b/tmux.c
-index 298bdf30..d7e6319c 100644
+index 8d390203..e25f8205 100644
 --- a/tmux.c
 +++ b/tmux.c
 @@ -351,20 +351,33 @@ main(int argc, char **argv)
@@ -356,10 +356,10 @@ index 298bdf30..d7e6319c 100644
  	exit(client_main(osdep_event_init(), argc, argv, flags, feat));
  }
 diff --git a/tmux.h b/tmux.h
-index 4276ce8b..70882dd6 100644
+index 7be23085..7c727cbd 100644
 --- a/tmux.h
 +++ b/tmux.h
-@@ -94,6 +94,17 @@ struct winlink;
+@@ -96,6 +96,17 @@ struct winlink;
  #define TMUX_LOCK_CMD "lock -np"
  #endif
  
