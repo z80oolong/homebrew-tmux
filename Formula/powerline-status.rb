@@ -35,7 +35,7 @@ class PowerlineStatus < Formula
         libexec.install "./squashfs-root"
       end
 
-      system libexec/"squashfs-root/usr/bin/python3.10", libexec/"squashfs-root/usr/bin/pip", "install", \
+      system libexec/"squashfs-root/usr/bin/python3.10", libexec/"squashfs-root/usr/bin/pip", "install",
         "-v", "--no-binary", ":all:", "--ignore-installed", buildpath
     else
       venv = virtualenv_create(libexec, "python3", without_pip: false)
@@ -48,9 +48,9 @@ class PowerlineStatus < Formula
 
     (share/"powerline").mkpath
     if build.without?("python@3.10")
-      install_symlink_recurse (share/"powerline"), \
+      install_symlink_recurse (share/"powerline"),
         (libexec/"squashfs-root/opt/python3.10/lib/python3.10/site-packages/powerline/bindings")
-      install_symlink_recurse (share/"powerline"), \
+      install_symlink_recurse (share/"powerline"),
         (libexec/"squashfs-root/opt/python3.10/lib/python3.10/site-packages/powerline/config_files")
 
       bin.install_symlink libexec/"squashfs-root/opt/python3.10/bin/powerline"

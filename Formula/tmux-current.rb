@@ -5,21 +5,6 @@ if $PROGRAM_NAME == __FILE__
   exit 0
 end
 
-def ENV.replace_rpath(**replace_list)
-  replace_list = replace_list.each_with_object({}) do |(old, new), result|
-    old_f = Formula[old]
-    new_f = Formula[new]
-    result[old_f.opt_lib.to_s] = new_f.opt_lib.to_s
-    result[old_f.lib.to_s] = new_f.lib.to_s
-  end
-
-  if (rpaths = fetch("HOMEBREW_RPATH_PATHS", false))
-    self["HOMEBREW_RPATH_PATHS"] = (rpaths.split(":").map do |rpath|
-      replace_list.fetch(rpath, rpath)
-    end).join(":")
-  end
-end
-
 class TmuxCurrent < Formula
   desc "Terminal multiplexer"
   homepage "https://tmux.github.io/"
@@ -34,7 +19,7 @@ class TmuxCurrent < Formula
   end
 
   head do
-    url "https://github.com/tmux/tmux.git", branch: "master"
+    url "https://github.com/tmux/tmux.git", revision: "master"
 
     depends_on "autoconf" => :build
     depends_on "automake" => :build
@@ -65,7 +50,11 @@ class TmuxCurrent < Formula
   end
 
   def install
-    ENV.replace_rpath "ncurses" => "z80oolong/tmux/tmux-ncurses@6.5"
+    old_curses_f = Formula["ncurses"]
+    new_curses_f = Formula["z80oolong/tmux/tmux-ncurses@6.5"]
+
+    ENV.replace_rpath old_curses_f.lib => new_curses_f.lib,
+      old_curses_f.opt_lib => new_curses_f.opt_lib
     ENV.append "LDFLAGS", "-lresolv"
     ENV["LC_ALL"] = "C"
 
@@ -108,3 +97,19 @@ class TmuxCurrent < Formula
     system "#{bin}/tmux", "-V"
   end
 end
+
+module EnvExtend
+  def replace_rpath(**replace_list)
+    replace_list = replace_list.each_with_object({}) do |(old, new), result|
+      result[old.to_s] = new.to_s
+    end
+
+    if (rpaths = fetch("HOMEBREW_RPATH_PATHS", false))
+      self["HOMEBREW_RPATH_PATHS"] = (rpaths.split(":").map do |rpath|
+        replace_list.fetch(rpath, rpath)
+      end).join(":")
+    end
+  end
+end
+
+ENV.extend(EnvExtend)

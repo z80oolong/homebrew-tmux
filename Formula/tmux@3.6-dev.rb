@@ -5,30 +5,13 @@ if $PROGRAM_NAME == __FILE__
   exit 0
 end
 
-def ENV.replace_rpath(**replace_list)
-  replace_list = replace_list.each_with_object({}) do |(old, new), result|
-    old_f = Formula[old]
-    new_f = Formula[new]
-    result[old_f.opt_lib.to_s] = new_f.opt_lib.to_s
-    result[old_f.lib.to_s] = new_f.lib.to_s
-  end
-
-  if (rpaths = fetch("HOMEBREW_RPATH_PATHS", false))
-    self["HOMEBREW_RPATH_PATHS"] = (rpaths.split(":").map do |rpath|
-      replace_list.fetch(rpath, rpath)
-    end).join(":")
-  end
-end
-
 class TmuxAT36Dev < Formula
   desc "Terminal multiplexer"
   homepage "https://tmux.github.io/"
 
-  @@current_commit = "be2d4aa43498a6c36d9f30f4ccedb3347882ad42"
-  url "https://github.com/tmux/tmux.git",
-    branch:   "master",
-    revision: @@current_commit
-  version "next-3.6-g#{@@current_commit[0..7]}"
+  CURRENT_COMMIT = "768042d29d5151c6024f8be1b01ed388237a34c1"
+  url "https://github.com/tmux/tmux.git", revision: CURRENT_COMMIT
+  version "next-3.6-g#{CURRENT_COMMIT[0..7]}"
   license "ISC"
   revision 16
 
@@ -59,7 +42,11 @@ class TmuxAT36Dev < Formula
   patch :p1, :DATA
 
   def install
-    ENV.replace_rpath "ncurses" => "z80oolong/tmux/tmux-ncurses@6.5"
+    old_curses_f = Formula["ncurses"]
+    new_curses_f = Formula["z80oolong/tmux/tmux-ncurses@6.5"]
+
+    ENV.replace_rpath old_curses_f.lib => new_curses_f.lib,
+      old_curses_f.opt_lib => new_curses_f.opt_lib
     ENV.append "LDFLAGS", "-lresolv"
     ENV["LC_ALL"] = "C"
 
@@ -94,7 +81,7 @@ class TmuxAT36Dev < Formula
   def caveats
     <<~EOS
       #{full_name} is a Formula for installing the development version of
-      `tmux` based on the HEAD version (commit #{@@current_commit[0..7]}) from its git repository.
+      `tmux` based on the HEAD version (commit #{CURRENT_COMMIT[0..7]}) from its git repository.
 
       Example configuration has been installed to:
         #{opt_pkgshare}
@@ -110,9 +97,25 @@ class TmuxAT36Dev < Formula
   end
 end
 
+module EnvExtend
+  def replace_rpath(**replace_list)
+    replace_list = replace_list.each_with_object({}) do |(old, new), result|
+      result[old.to_s] = new.to_s
+    end
+
+    if (rpaths = fetch("HOMEBREW_RPATH_PATHS", false))
+      self["HOMEBREW_RPATH_PATHS"] = (rpaths.split(":").map do |rpath|
+        replace_list.fetch(rpath, rpath)
+      end).join(":")
+    end
+  end
+end
+
+ENV.extend(EnvExtend)
+
 __END__
 diff --git a/image-sixel.c b/image-sixel.c
-index fac7eab9..629057ed 100644
+index 1c93d7a7..b29c9778 100644
 --- a/image-sixel.c
 +++ b/image-sixel.c
 @@ -124,6 +124,9 @@ sixel_parse_write(struct sixel_image *si, u_int ch)
@@ -158,27 +161,7 @@ index fac7eab9..629057ed 100644
  		sl++;
  	}
  	return (0);
-@@ -475,7 +502,19 @@ sixel_scale(struct sixel_image *si, u_int xpixel, u_int ypixel, u_int ox,
- 	}
- 
- 	if (colours) {
-+#ifndef NO_FIX_SIXEL
-+		/* Code to prevent the function xmalloc() from exiting abnormally if si->ncolors == 0 */
-+		if (si->ncolours == 0) {
-+			new->colours = xmalloc((size_t)1 * sizeof *new->colours);
-+			new->colours[0] = 0;
-+			log_debug("%s: WARNING; si->ncolours == 0, force %d ncolour.", __func__, 1);
-+		} else {
-+			new->colours = xmalloc(si->ncolours * sizeof *new->colours);
-+			log_debug("%s: si->ncolours == %d.", __func__, si->ncolours);
-+		}
-+#else
- 		new->colours = xmalloc(si->ncolours * sizeof *new->colours);
-+#endif
- 		for (i = 0; i < si->ncolours; i++)
- 			new->colours[i] = si->colours[i];
- 		new->ncolours = si->ncolours;
-@@ -529,11 +568,28 @@ sixel_print_compress_colors(struct sixel_image *si, struct sixel_chunk *chunks,
+@@ -529,11 +556,28 @@ sixel_print_compress_colors(struct sixel_image *si, struct sixel_chunk *chunks,
  			colors[i] = 0;
  			if (y + i < si->y) {
  				sl = &si->lines[y + i];
@@ -207,7 +190,7 @@ index fac7eab9..629057ed 100644
  			}
  		}
  
-@@ -580,9 +636,15 @@ sixel_print(struct sixel_image *si, struct sixel_image *map, size_t *size)
+@@ -580,9 +624,15 @@ sixel_print(struct sixel_image *si, struct sixel_image *map, size_t *size)
  	if (map != NULL) {
  		colours = map->colours;
  		ncolours = map->ncolours;
@@ -356,7 +339,7 @@ index 8d390203..e25f8205 100644
  	exit(client_main(osdep_event_init(), argc, argv, flags, feat));
  }
 diff --git a/tmux.h b/tmux.h
-index 7be23085..7c727cbd 100644
+index c3959d2a..5e44a0db 100644
 --- a/tmux.h
 +++ b/tmux.h
 @@ -96,6 +96,17 @@ struct winlink;
@@ -754,7 +737,7 @@ index 3dab31b6..af80835a 100644
 +#endif
  }
 diff --git a/tty-term.c b/tty-term.c
-index d4223497..ac01f9ec 100644
+index 29dbaf59..19dfc707 100644
 --- a/tty-term.c
 +++ b/tty-term.c
 @@ -510,6 +510,15 @@ tty_term_apply_overrides(struct tty_term *term)
@@ -782,7 +765,7 @@ index d4223497..ac01f9ec 100644
  
  struct tty_term *
 diff --git a/utf8.c b/utf8.c
-index f240224b..c28259c6 100644
+index 95b7ceb3..2d916268 100644
 --- a/utf8.c
 +++ b/utf8.c
 @@ -27,6 +27,407 @@
