@@ -141,7 +141,35 @@
 
 ```
   # HOMEBREW_PREFIX は、Homebrew for Linux がインストールされているディレクトリに適宜置き換えてください。
-  run-shell -b "HOMEBREW_PREFIX/opt/tpm/libexec/tpm/tpm"
+  run-shell -b "HOMEBREW_PREFIX/opt/tpm@3.1.0/libexec/tpm@3.1.0/tpm"
+```
+
+### z80oolong/tmux/tmux-resurrect
+
+この Formula は、 [tmux][TMUX] のセッション、ウィンドウ、ペインの状態を保存・復元する [tmux][TMUX] のプラグイン [tmux-resurrect][TMXR] をインストールします。
+
+- **注意:**
+    - **この Formula は [tmux][TMUX] のプラグインであるため、keg-only としてインストールされます。**
+    - **この Formula によってインストールされた [tmux-resurrect][TMXR] を使用するには、```brew link --force z80oolong/tmux/tmux-resurrect``` コマンドを実行してください。**
+    - **この Formula によってインストールされた [tmux-resurrect][TMXR] を使用するには、設定ファイル ```${HOME}/.tmux.conf``` (または ```${HOME}/.config/tmux/tmux.conf``` など)に以下の設定を記述してください。**
+
+```
+  # HOMEBREW_PREFIX は、Homebrew for Linux がインストールされているディレクトリに適宜置き換えてください。
+  run-shell "HOMEBREW_PREFIX/opt/tmux-resurrect/libexec/tmux-resurrect/resurrect.tmux"
+```
+
+### z80oolong/tmux/tmux-continuum
+
+この Formula は、 [tmux][TMUX] のセッション状態を定期的に自動保存する [tmux][TMUX] のプラグイン [tmux-continuum][TMXC] をインストールします。[tmux-continuum][TMXC] は、[tmux-resurrect][TMXR] と組み合わせて使用されます。
+
+- **注意:**
+    - **この Formula は [tmux][TMUX] のプラグインであるため、keg-only としてインストールされます。**
+    - **この Formula によってインストールされた [tmux-continuum][TMXC] を使用するには、```brew link --force z80oolong/tmux/tmux-continuum``` コマンドを実行してください。**
+    - **この Formula によってインストールされた [tmux-continuum][TMXC] を使用するには、設定ファイル ```${HOME}/.tmux.conf``` (または ```${HOME}/.config/tmux/tmux.conf``` など)に以下の設定を記述してください。**
+
+```
+  # HOMEBREW_PREFIX は、Homebrew for Linux がインストールされているディレクトリに適宜置き換えてください。
+  run-shell "HOMEBREW_PREFIX/opt/tmux-continuum/libexec/tmux-continuum/continuum.tmux"
 ```
 
 <!-- 外部リンク一覧 -->
@@ -158,3 +186,5 @@
 [GOT_]: https://github.com/skanehira/got  
 [TPM_]: https://github.com/tmux-plugins/tpm  
 [POWE]: https://powerline.readthedocs.io/en/latest/#
+[TMXR]: https://github.com/tmux-plugins/tmux-resurrect
+[TMXC]: https://github.com/tmux-plugins/tmux-continuum
