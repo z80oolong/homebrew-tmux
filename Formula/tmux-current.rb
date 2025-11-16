@@ -53,8 +53,8 @@ class TmuxCurrent < Formula
     old_curses_f = Formula["ncurses"]
     new_curses_f = Formula["z80oolong/tmux/tmux-ncurses@6.5"]
 
-    ENV.replace_rpath old_curses_f.lib => new_curses_f.lib,
-      old_curses_f.opt_lib => new_curses_f.opt_lib
+    ENV.replace_rpath old_curses_f.lib     => new_curses_f.lib,
+                      old_curses_f.opt_lib => new_curses_f.opt_lib
     ENV.append "LDFLAGS", "-lresolv"
     ENV["LC_ALL"] = "C"
 
@@ -94,7 +94,9 @@ class TmuxCurrent < Formula
   end
 
   test do
-    system "#{bin}/tmux", "-V"
+    ENV["LC_ALL"] = "ja_JP.UTF-8"
+    ver = build.head? ? "next-3.6" : version
+    assert_equal "tmux #{ver}", shell_output("#{bin}/tmux -V").strip
   end
 end
 

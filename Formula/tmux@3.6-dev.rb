@@ -9,7 +9,8 @@ class TmuxAT36Dev < Formula
   desc "Terminal multiplexer"
   homepage "https://tmux.github.io/"
 
-  CURRENT_COMMIT = "768042d29d5151c6024f8be1b01ed388237a34c1"
+  CURRENT_COMMIT = "768042d29d5151c6024f8be1b01ed388237a34c1".freeze
+
   url "https://github.com/tmux/tmux.git", revision: CURRENT_COMMIT
   version "next-3.6-g#{CURRENT_COMMIT[0..7]}"
   license "ISC"
@@ -45,8 +46,8 @@ class TmuxAT36Dev < Formula
     old_curses_f = Formula["ncurses"]
     new_curses_f = Formula["z80oolong/tmux/tmux-ncurses@6.5"]
 
-    ENV.replace_rpath old_curses_f.lib => new_curses_f.lib,
-      old_curses_f.opt_lib => new_curses_f.opt_lib
+    ENV.replace_rpath old_curses_f.lib     => new_curses_f.lib,
+                      old_curses_f.opt_lib => new_curses_f.opt_lib
     ENV.append "LDFLAGS", "-lresolv"
     ENV["LC_ALL"] = "C"
 
@@ -93,7 +94,8 @@ class TmuxAT36Dev < Formula
   end
 
   test do
-    system "#{bin}/tmux", "-V"
+    ENV["LC_ALL"] = "ja_JP.UTF-8"
+    assert_equal "tmux next-3.6", shell_output("#{bin}/tmux -V").strip
   end
 end
 

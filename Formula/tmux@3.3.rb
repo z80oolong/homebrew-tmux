@@ -39,8 +39,8 @@ class TmuxAT33 < Formula
     old_curses_f = Formula["ncurses"]
     new_curses_f = Formula["z80oolong/tmux/tmux-ncurses@6.5"]
 
-    ENV.replace_rpath old_curses_f.lib => new_curses_f.lib,
-      old_curses_f.opt_lib => new_curses_f.opt_lib
+    ENV.replace_rpath old_curses_f.lib     => new_curses_f.lib,
+                      old_curses_f.opt_lib => new_curses_f.opt_lib
     ENV.append "LDFLAGS", "-lresolv"
 
     args =  std_configure_args
@@ -76,7 +76,8 @@ class TmuxAT33 < Formula
   end
 
   test do
-    system "#{bin}/tmux", "-V"
+    ENV["LC_ALL"] = "ja_JP.UTF-8"
+    assert_equal "tmux #{version}", shell_output("#{bin}/tmux -V").strip
   end
 end
 

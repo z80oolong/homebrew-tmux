@@ -61,4 +61,13 @@ class GotSrc < Formula
 
     (share/"doc/#{name}-#{version}").install "README.md"
   end
+
+  test do
+    re  = "^\e[^U]*Use the arrow keys to navigate:"
+    re << "\e[^M]*Menu\e[^N]*New Session\e[^S]*Session List"
+    re << "\e[^U]*Use the arrow keys to navigate:"
+    re << "\e[^M]*Menu\e[^N]*New Session\e[^S]*Session List\e.*$"
+    ENV["LC_ALL"] = "ja_JP.UTF-8"
+    assert_match Regexp.new(re, Regexp::MULTILINE), pipe_output("#{bin}/got", "\x04")
+  end
 end

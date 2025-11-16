@@ -88,6 +88,13 @@ class PowerlineStatusAT283 < Formula
       ...
     EOS
   end
+
+  test do
+    re =  "^usage: powerline-daemon \\[-h\\] "
+    re << "\\[--quiet\\] \\[--socket SOCKET\\] \\[--kill\\]"
+    ENV["LC_ALL"] = "ja_JP.UTF-8"
+    assert_match Regexp.new(re), shell_output("#{bin}/powerline-daemon -h")
+  end
 end
 
 __END__
