@@ -132,18 +132,6 @@
   source HOMEBREW_PREFIX/opt/powerline-status/share/powerline/bindings/tmux/powerline.conf
 ```
 
-### z80oolong/tmux/tpm@3.1.0
-
-この Formula は、[tmux][TMUX] のプラグインを導入および管理するツール [tpm][TPM_] のバージョン 3.1.0 をインストールします。
-
-- **注意:**
-    - この Formula でインストールした [tpm][TPM_] を使用するには、設定ファイル ```${HOME}/.tmux.conf``` (または ```${HOME}/.config/tmux/tmux.conf``` など)の末尾に以下の設定を記述してください。
-
-```
-  # HOMEBREW_PREFIX は、Homebrew for Linux がインストールされているディレクトリに適宜置き換えてください。
-  run-shell -b "HOMEBREW_PREFIX/opt/tpm@3.1.0/libexec/tpm@3.1.0/tpm"
-```
-
 ### z80oolong/tmux/tmux-resurrect
 
 この Formula は、 [tmux][TMUX] のセッション、ウィンドウ、ペインの状態を保存・復元する [tmux][TMUX] のプラグイン [tmux-resurrect][TMXR] をインストールします。
@@ -174,17 +162,17 @@
 
 <!-- 外部リンク一覧 -->
 
-[BREW]: https://linuxbrew.sh/  
-[TMUX]: https://tmux.github.io/  
-[TGIT]: https://github.com/tmux/tmux  
-[EAWA]: http://www.unicode.org/reports/tr11/#Ambiguous  
-[GST1]: https://github.com/z80oolong/tmux-eaw-fix  
-[LIBE]: http://libevent.org/  
-[DOXY]: http://www.doxygen.org/  
-[GLEV]: https://github.com/libevent/libevent  
-[GORI]: https://qiita.com/gorilla0513  
-[GOT_]: https://github.com/skanehira/got  
-[TPM_]: https://github.com/tmux-plugins/tpm  
+[BREW]: https://linuxbrew.sh/
+[TMUX]: https://tmux.github.io/
+[TGIT]: https://github.com/tmux/tmux
+[EAWA]: http://www.unicode.org/reports/tr11/#Ambiguous
+[GST1]: https://github.com/z80oolong/tmux-eaw-fix
+[LIBE]: http://libevent.org/
+[DOXY]: http://www.doxygen.org/
+[GLEV]: https://github.com/libevent/libevent
+[GORI]: https://qiita.com/gorilla0513
+[GOT_]: https://github.com/skanehira/got
+[TPM_]: https://github.com/tmux-plugins/tpm
 [POWE]: https://powerline.readthedocs.io/en/latest/#
 [TMXR]: https://github.com/tmux-plugins/tmux-resurrect
 [TMXC]: https://github.com/tmux-plugins/tmux-continuum
