@@ -5,11 +5,11 @@ if $PROGRAM_NAME == __FILE__
   exit 0
 end
 
-class TmuxAT33a < Formula
+class TmuxAT36 < Formula
   desc "Terminal multiplexer"
   homepage "https://tmux.github.io/"
-  url "https://github.com/tmux/tmux/releases/download/3.3a/tmux-3.3a.tar.gz"
-  sha256 "e4fd347843bd0772c4f48d6dde625b0b109b7a380ff15db21e97c11a4dcdf93f"
+  url "https://github.com/tmux/tmux/releases/download/3.6/tmux-3.6.tar.gz"
+  sha256 "136db80cfbfba617a103401f52874e7c64927986b65b1b700350b6058ad69607"
   license "ISC"
   revision 15
 
@@ -47,6 +47,7 @@ class TmuxAT33a < Formula
     args =  std_configure_args
     args << "--sysconfdir=#{etc}"
     args << "--with-TERM=tmux-256color"
+    args << "--enable-sixel"
     args << "--enable-utf8proc" if build.with?("utf8proc") || OS.mac?
 
     system "./configure", *args
@@ -76,6 +77,10 @@ class TmuxAT33a < Formula
     EOS
   end
 
+  def diff_data
+    path.readlines(nil).first.gsub(/^.*\n__END__\n/m, "")
+  end
+
   test do
     ENV["LC_ALL"] = "ja_JP.UTF-8"
     assert_equal "tmux #{version}", shell_output("#{bin}/tmux -V").strip
@@ -99,11 +104,103 @@ end
 ENV.extend(EnvExtend)
 
 __END__
+diff --git a/image-sixel.c b/image-sixel.c
+index 1c93d7a..b29c977 100644
+--- a/image-sixel.c
++++ b/image-sixel.c
+@@ -124,6 +124,9 @@ sixel_parse_write(struct sixel_image *si, u_int ch)
+ {
+ 	struct sixel_line	*sl;
+ 	u_int			 i;
++#ifndef NO_FIX_SIXEL
++	u_int			 dstdata, srcdata;
++#endif
+ 
+ 	if (sixel_parse_expand_lines(si, si->dy + 6) != 0)
+ 		return (1);
+@@ -132,8 +135,32 @@ sixel_parse_write(struct sixel_image *si, u_int ch)
+ 	for (i = 0; i < 6; i++) {
+ 		if (sixel_parse_expand_line(si, sl, si->dx + 1) != 0)
+ 			return (1);
++#ifndef NO_FIX_SIXEL
++		if (ch & (1 << i)) {
++			if (sl->data[si->dx] == 0) {
++				/* The element of the array for storing pixels, sl->data[si->dx], stores
++				 * si->dc, a value incremented by one from the palette number.
++				 */
++
++				sl->data[si->dx] = si->dc;
++			} else {
++				/* This code is for the ORMODE of SIXEL Graphics.
++				 * The value obtained by the logical OR of the decremented by 1 value 
++				 * from sl->data[si->dx] and si->dc, which are the elements of the array
++				 * for storing pixel palette numbers, is incremented by 1, and stored
++				 * in sl->data[si-dx].
++				 */
++
++				dstdata = sl->data[si->dx] - 1;
++				srcdata = si->dc - 1;
++				dstdata = dstdata | srcdata;
++				sl->data[si->dx] = dstdata + 1;
++			}
++		}
++#else
+ 		if (ch & (1 << i))
+ 			sl->data[si->dx] = si->dc;
++#endif
+ 		sl++;
+ 	}
+ 	return (0);
+@@ -529,11 +556,28 @@ sixel_print_compress_colors(struct sixel_image *si, struct sixel_chunk *chunks,
+ 			colors[i] = 0;
+ 			if (y + i < si->y) {
+ 				sl = &si->lines[y + i];
++#ifndef NO_FIX_SIXEL
++				if (x < sl->x) {
++					/* For sl->data[x], which is an element of an array for storing the palette number for each pixel,
++					 * if the value of sl->data[x] is 0 except for the bottom pixel with y-coordinate,
++					 * especially if ormode is used, the palette number of sl->data[x] is 1 and The palette number
++					 * in sl->data[x] should be considered to be 1.
++					 */
++					if (y < (si->y - 6) && sl->data[x] == 0)
++						sl->data[x] = 1;
++					if (sl->data[x] != 0) {
++						colors[i] = sl->data[x];
++						c = sl->data[x] - 1;
++						chunks[c].next_pattern |= 1 << i;
++					}
++				}
++#else
+ 				if (x < sl->x && sl->data[x] != 0) {
+ 					colors[i] = sl->data[x];
+ 					c = sl->data[x] - 1;
+ 					chunks[c].next_pattern |= 1 << i;
+ 				}
++#endif
+ 			}
+ 		}
+ 
+@@ -580,9 +624,15 @@ sixel_print(struct sixel_image *si, struct sixel_image *map, size_t *size)
+ 	if (map != NULL) {
+ 		colours = map->colours;
+ 		ncolours = map->ncolours;
++#ifndef NO_FIX_SIXEL
++		log_debug("%s: map->{colours,ncolours}; colours == %p, ncolours == %d", __func__, colours, ncolours);
++#endif
+ 	} else {
+ 		colours = si->colours;
+ 		ncolours = si->ncolours;
++#ifndef NO_FIX_SIXEL
++		log_debug("%s: si->{colours,ncolours}; colours == %p, ncolours == %d", __func__, colours, ncolours);
++#endif
+ 	}
+ 
+ 	used_colours = si->used_colours;
 diff --git a/options-table.c b/options-table.c
-index 17be7ec4..0291a4cb 100644
+index 8989c26..2fe5e4d 100644
 --- a/options-table.c
 +++ b/options-table.c
-@@ -1210,6 +1210,38 @@ const struct options_table_entry options_table[] = {
+@@ -1518,6 +1518,38 @@ const struct options_table_entry options_table[] = {
  		  "This option is no longer used."
  	},
  
@@ -143,10 +240,10 @@ index 17be7ec4..0291a4cb 100644
  	OPTIONS_TABLE_HOOK("after-bind-key", ""),
  	OPTIONS_TABLE_HOOK("after-capture-pane", ""),
 diff --git a/tmux.c b/tmux.c
-index b9f2be30..b4c68a6f 100644
+index 8d39020..e25f820 100644
 --- a/tmux.c
 +++ b/tmux.c
-@@ -333,20 +333,33 @@ main(int argc, char **argv)
+@@ -351,20 +351,33 @@ main(int argc, char **argv)
  {
  	char					*path = NULL, *label = NULL;
  	char					*cause, **var;
@@ -180,7 +277,7 @@ index b9f2be30..b4c68a6f 100644
  
  	setlocale(LC_TIME, "");
  	tzset();
-@@ -359,7 +372,16 @@ main(int argc, char **argv)
+@@ -377,7 +390,16 @@ main(int argc, char **argv)
  		environ_put(global_environ, *var, 0);
  	if ((cwd = find_cwd()) != NULL)
  		environ_set(global_environ, "PWD", 0, "%s", cwd);
@@ -195,9 +292,9 @@ index b9f2be30..b4c68a6f 100644
 +	}
 +#endif
  
- 	while ((opt = getopt(argc, argv, "2c:CDdf:lL:NqS:T:uUvV")) != -1) {
+ 	while ((opt = getopt(argc, argv, "2c:CDdf:hlL:NqS:T:uUvV")) != -1) {
  		switch (opt) {
-@@ -490,6 +512,19 @@ main(int argc, char **argv)
+@@ -510,6 +532,19 @@ main(int argc, char **argv)
  		options_set_number(global_w_options, "mode-keys", keys);
  	}
  
@@ -217,7 +314,7 @@ index b9f2be30..b4c68a6f 100644
  	/*
  	 * If socket is specified on the command-line with -S or -L, it is
  	 * used. Otherwise, $TMUX is checked and if that fails "default" is
-@@ -515,6 +550,13 @@ main(int argc, char **argv)
+@@ -535,6 +570,13 @@ main(int argc, char **argv)
  	socket_path = path;
  	free(label);
  
@@ -232,11 +329,11 @@ index b9f2be30..b4c68a6f 100644
  	exit(client_main(osdep_event_init(), argc, argv, flags, feat));
  }
 diff --git a/tmux.h b/tmux.h
-index 53084b8b..0381eb70 100644
+index b2f10ca..473358a 100644
 --- a/tmux.h
 +++ b/tmux.h
-@@ -80,6 +80,17 @@ struct winlink;
- #define TMUX_TERM "screen"
+@@ -96,6 +96,17 @@ struct winlink;
+ #define TMUX_LOCK_CMD "lock -np"
  #endif
  
 +/* If "pane-border-ascii" is not used, "utf8-cjk" is not used too. */
@@ -254,15 +351,21 @@ index 53084b8b..0381eb70 100644
  #define PANE_MINIMUM 1
  
 diff --git a/tty-acs.c b/tty-acs.c
-index 64ba367e..0692c5bf 100644
+index 3dab31b..af80835 100644
 --- a/tty-acs.c
 +++ b/tty-acs.c
-@@ -23,6 +23,217 @@
+@@ -23,6 +23,223 @@
  
  #include "tmux.h"
  
 +#ifndef NO_USE_PANE_BORDER_ACS_ASCII
 +#include <string.h>
++
++enum acs_type {
++	ACST_UTF8,
++	ACST_ACS,
++	ACST_ASCII,
++};
 +
 +static const char tty_acs_table[UCHAR_MAX][4] = {
 +	['+'] = "\342\206\222",	/* arrow pointing right */
@@ -475,7 +578,7 @@ index 64ba367e..0692c5bf 100644
  /* Table mapping ACS entries to UTF-8. */
  struct tty_acs_entry {
  	u_char		 key;
-@@ -199,11 +410,91 @@ tty_acs_reverse_cmp(const void *key, const void *value)
+@@ -199,11 +416,85 @@ tty_acs_reverse_cmp(const void *key, const void *value)
  
  	return (strcmp(test, entry->string));
  }
@@ -496,12 +599,6 @@ index 64ba367e..0692c5bf 100644
 +	log_debug("%s width is %d", s, ud.width);
 +	return ud.width;
 +}
-+
-+enum acs_type {
-+	ACST_UTF8,
-+	ACST_ACS,
-+	ACST_ASCII,
-+};
 +
 +static enum acs_type
 +tty_acs_type(struct tty *tty)
@@ -630,10 +727,10 @@ index 64ba367e..0692c5bf 100644
 +#endif
  }
 diff --git a/tty-term.c b/tty-term.c
-index fdf0c4fa..9d01e6a5 100644
+index 29dbaf5..19dfc70 100644
 --- a/tty-term.c
 +++ b/tty-term.c
-@@ -503,6 +503,15 @@ tty_term_apply_overrides(struct tty_term *term)
+@@ -510,6 +510,15 @@ tty_term_apply_overrides(struct tty_term *term)
  		term->flags &= ~TERM_NOAM;
  	log_debug("NOAM flag is %d", !!(term->flags & TERM_NOAM));
  
@@ -649,7 +746,7 @@ index fdf0c4fa..9d01e6a5 100644
  	/* Generate ACS table. If none is present, use nearest ASCII. */
  	memset(term->acs, 0, sizeof term->acs);
  	if (tty_term_has(term, TTYC_ACSC))
-@@ -511,6 +520,7 @@ tty_term_apply_overrides(struct tty_term *term)
+@@ -518,6 +527,7 @@ tty_term_apply_overrides(struct tty_term *term)
  		acs = "a#j+k+l+m+n+o-p-q-r-s-t+u+v+w+x|y<z>~.";
  	for (; acs[0] != '\0' && acs[1] != '\0'; acs += 2)
  		term->acs[(u_char) acs[0]][0] = acs[1];
@@ -658,11 +755,11 @@ index fdf0c4fa..9d01e6a5 100644
  
  struct tty_term *
 diff --git a/utf8.c b/utf8.c
-index df75a769..7d5e0124 100644
+index 95b7ceb..2d91626 100644
 --- a/utf8.c
 +++ b/utf8.c
-@@ -26,6 +26,407 @@
- 
+@@ -27,6 +27,407 @@
+ #include "compat.h"
  #include "tmux.h"
  
 +#ifndef NO_USE_UTF8CJK
@@ -1066,12 +1163,12 @@ index df75a769..7d5e0124 100644
 +#endif
 +#endif
 +
- struct utf8_item {
- 	RB_ENTRY(utf8_item)	index_entry;
- 	u_int			index;
-@@ -229,6 +630,23 @@ utf8_width(struct utf8_data *ud, int *width)
- 	case 0:
- 		return (UTF8_ERROR);
+ struct utf8_width_item {
+ 	wchar_t				wc;
+ 	u_int				width;
+@@ -529,6 +930,23 @@ utf8_width(struct utf8_data *ud, int *width)
+ 		log_debug("cached width for %08X is %d", (u_int)wc, *width);
+ 		return (UTF8_DONE);
  	}
 +#ifndef NO_USE_UTF8CJK
 +	if (options_get_number(global_options, "utf8-cjk")) {
@@ -1092,11 +1189,11 @@ index df75a769..7d5e0124 100644
 +#else
  #ifdef HAVE_UTF8PROC
  	*width = utf8proc_wcwidth(wc);
- #else
-@@ -237,6 +655,7 @@ utf8_width(struct utf8_data *ud, int *width)
+ 	log_debug("utf8proc_wcwidth(%05X) returned %d", (u_int)wc, *width);
+@@ -545,6 +963,7 @@ utf8_width(struct utf8_data *ud, int *width)
+ #endif
  	if (*width >= 0 && *width <= 0xff)
  		return (UTF8_DONE);
- 	log_debug("UTF-8 %.*s, wcwidth() %d", (int)ud->size, ud->data, *width);
 +#endif
  	return (UTF8_ERROR);
  }

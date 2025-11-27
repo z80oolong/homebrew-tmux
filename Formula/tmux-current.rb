@@ -1,10 +1,3 @@
-#!/usr/bin/env ruby
-
-if $PROGRAM_NAME == __FILE__
-  puts DATA.gets(nil)
-  exit 0
-end
-
 class TmuxCurrent < Formula
   desc "Terminal multiplexer"
   homepage "https://tmux.github.io/"
@@ -12,10 +5,10 @@ class TmuxCurrent < Formula
   revision 15
 
   stable do
-    url "https://github.com/tmux/tmux/releases/download/3.5a/tmux-3.5a.tar.gz"
-    sha256 "16216bd0877170dfcc64157085ba9013610b12b082548c7c9542cc0103198951"
+    url "https://github.com/tmux/tmux/releases/download/3.6/tmux-3.6.tar.gz"
+    sha256 "136db80cfbfba617a103401f52874e7c64927986b65b1b700350b6058ad69607"
 
-    patch :p1, Formula["z80oolong/tmux/tmux@3.5a"].diff_data
+    patch :p1, Formula["z80oolong/tmux/tmux@3.6"].diff_data
   end
 
   head do
@@ -25,7 +18,7 @@ class TmuxCurrent < Formula
     depends_on "automake" => :build
     depends_on "perl" => :build
 
-    patch :p1, Formula["z80oolong/tmux/tmux@3.6-dev"].diff_data
+    patch :p1, Formula["z80oolong/tmux/tmux@3.7-dev"].diff_data
   end
 
   keg_only "this formula conflicts with 'homebrew/core/tmux'"
@@ -95,7 +88,7 @@ class TmuxCurrent < Formula
 
   test do
     ENV["LC_ALL"] = "ja_JP.UTF-8"
-    ver = build.head? ? "next-3.6" : version
+    ver = build.head? ? "next-3.7" : version
     assert_equal "tmux #{ver}", shell_output("#{bin}/tmux -V").strip
   end
 end

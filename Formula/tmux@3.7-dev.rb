@@ -5,14 +5,14 @@ if $PROGRAM_NAME == __FILE__
   exit 0
 end
 
-class TmuxAT36Dev < Formula
+class TmuxAT37Dev < Formula
   desc "Terminal multiplexer"
   homepage "https://tmux.github.io/"
 
-  CURRENT_COMMIT = "768042d29d5151c6024f8be1b01ed388237a34c1".freeze
+  CURRENT_COMMIT = "3542bfa5b8f2a71bfe1f12dfae7f76d1a48257de".freeze
 
   url "https://github.com/tmux/tmux.git", revision: CURRENT_COMMIT
-  version "next-3.6-g#{CURRENT_COMMIT[0..7]}"
+  version "next-3.7-g#{CURRENT_COMMIT[0..7]}"
   license "ISC"
   revision 16
 
@@ -95,7 +95,7 @@ class TmuxAT36Dev < Formula
 
   test do
     ENV["LC_ALL"] = "ja_JP.UTF-8"
-    assert_equal "tmux next-3.6", shell_output("#{bin}/tmux -V").strip
+    assert_equal "tmux next-3.7", shell_output("#{bin}/tmux -V").strip
   end
 end
 
@@ -209,7 +209,7 @@ index 1c93d7a7..b29c9778 100644
  
  	used_colours = si->used_colours;
 diff --git a/options-table.c b/options-table.c
-index 6946a085..3abbd6ed 100644
+index 8989c264..2fe5e4d1 100644
 --- a/options-table.c
 +++ b/options-table.c
 @@ -1518,6 +1518,38 @@ const struct options_table_entry options_table[] = {
@@ -341,7 +341,7 @@ index 8d390203..e25f8205 100644
  	exit(client_main(osdep_event_init(), argc, argv, flags, feat));
  }
 diff --git a/tmux.h b/tmux.h
-index c3959d2a..5e44a0db 100644
+index 2184e6c6..38326e51 100644
 --- a/tmux.h
 +++ b/tmux.h
 @@ -96,6 +96,17 @@ struct winlink;
