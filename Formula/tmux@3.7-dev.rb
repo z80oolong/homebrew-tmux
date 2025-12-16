@@ -9,7 +9,7 @@ class TmuxAT37Dev < Formula
   desc "Terminal multiplexer"
   homepage "https://tmux.github.io/"
 
-  CURRENT_COMMIT = "3542bfa5b8f2a71bfe1f12dfae7f76d1a48257de".freeze
+  CURRENT_COMMIT = "4b810ae4932367afc8509bc8105603a8d965b0b8".freeze
 
   url "https://github.com/tmux/tmux.git", revision: CURRENT_COMMIT
   version "next-3.7-g#{CURRENT_COMMIT[0..7]}"
@@ -117,7 +117,7 @@ ENV.extend(EnvExtend)
 
 __END__
 diff --git a/image-sixel.c b/image-sixel.c
-index 1c93d7a7..b29c9778 100644
+index 5c800461..6406d615 100644
 --- a/image-sixel.c
 +++ b/image-sixel.c
 @@ -124,6 +124,9 @@ sixel_parse_write(struct sixel_image *si, u_int ch)
@@ -209,10 +209,10 @@ index 1c93d7a7..b29c9778 100644
  
  	used_colours = si->used_colours;
 diff --git a/options-table.c b/options-table.c
-index 8989c264..2fe5e4d1 100644
+index 447fb52e..492d88b8 100644
 --- a/options-table.c
 +++ b/options-table.c
-@@ -1518,6 +1518,38 @@ const struct options_table_entry options_table[] = {
+@@ -1533,6 +1533,38 @@ const struct options_table_entry options_table[] = {
  		  "This option is no longer used."
  	},
  
@@ -341,7 +341,7 @@ index 8d390203..e25f8205 100644
  	exit(client_main(osdep_event_init(), argc, argv, flags, feat));
  }
 diff --git a/tmux.h b/tmux.h
-index 2184e6c6..38326e51 100644
+index 60795e09..09551bc7 100644
 --- a/tmux.h
 +++ b/tmux.h
 @@ -96,6 +96,17 @@ struct winlink;

@@ -5,10 +5,10 @@ class TmuxCurrent < Formula
   revision 15
 
   stable do
-    url "https://github.com/tmux/tmux/releases/download/3.6/tmux-3.6.tar.gz"
-    sha256 "136db80cfbfba617a103401f52874e7c64927986b65b1b700350b6058ad69607"
+    url "https://github.com/tmux/tmux/releases/download/3.6a/tmux-3.6a.tar.gz"
+    sha256 "b6d8d9c76585db8ef5fa00d4931902fa4b8cbe8166f528f44fc403961a3f3759"
 
-    patch :p1, Formula["z80oolong/tmux/tmux@3.6"].diff_data
+    patch :p1, Formula["z80oolong/tmux/tmux@3.6a"].diff_data
   end
 
   head do

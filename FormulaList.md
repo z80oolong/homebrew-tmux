@@ -132,6 +132,20 @@
   source HOMEBREW_PREFIX/opt/powerline-status/share/powerline/bindings/tmux/powerline.conf
 ```
 
+### z80oolong/tmux/tmux-sensible
+
+この Formula は、[tmux][TMUX] の合理的なデフォルトオプションを設定するプラグイン [tmux-sensible][TMSN] をインストールします。[tmux-sensible][TMSN] は、多くの tmux ユーザーが同意できる基本的な設定を提供し、vim-sensible に着想を得たものです。
+
+- **注意:**
+    - **この Formula は [tmux][TMUX] のプラグインであるため、keg-only としてインストールされます。**
+    - **この Formula によってインストールされた [tmux-sensible][TMSN] を使用するには、```brew link --force z80oolong/tmux/tmux-sensible``` コマンドを実行してください。**
+    - **この Formula によってインストールされた [tmux-sensible][TMSN] を使用するには、設定ファイル ```${HOME}/.tmux.conf``` (または ```${HOME}/.config/tmux/tmux.conf``` など)に以下の設定を記述してください。**
+
+```
+  # HOMEBREW_PREFIX は、Homebrew for Linux がインストールされているディレクトリに適宜置き換えてください。
+  run-shell HOMEBREW_PREFIX/opt/tmux-sensible/share/tmux-sensible/sensible.tmux
+```
+
 ### z80oolong/tmux/tmux-resurrect
 
 この Formula は、 [tmux][TMUX] のセッション、ウィンドウ、ペインの状態を保存・復元する [tmux][TMUX] のプラグイン [tmux-resurrect][TMXR] をインストールします。
@@ -174,5 +188,6 @@
 [GOT_]: https://github.com/skanehira/got
 [TPM_]: https://github.com/tmux-plugins/tpm
 [POWE]: https://powerline.readthedocs.io/en/latest/#
+[TMSN]: https://github.com/tmux-plugins/tmux-sensible
 [TMXR]: https://github.com/tmux-plugins/tmux-resurrect
 [TMXC]: https://github.com/tmux-plugins/tmux-continuum
