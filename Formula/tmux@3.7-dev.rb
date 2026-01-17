@@ -9,7 +9,7 @@ class TmuxAT37Dev < Formula
   desc "Terminal multiplexer"
   homepage "https://tmux.github.io/"
 
-  CURRENT_COMMIT = "4b810ae4932367afc8509bc8105603a8d965b0b8".freeze
+  CURRENT_COMMIT = "95b4bb51c640664ac4602dd24d29bb7c112c83c5".freeze
 
   url "https://github.com/tmux/tmux.git", revision: CURRENT_COMMIT
   version "next-3.7-g#{CURRENT_COMMIT[0..7]}"
@@ -209,10 +209,10 @@ index 5c800461..6406d615 100644
  
  	used_colours = si->used_colours;
 diff --git a/options-table.c b/options-table.c
-index 447fb52e..492d88b8 100644
+index d9918193..7d8edfb3 100644
 --- a/options-table.c
 +++ b/options-table.c
-@@ -1533,6 +1533,38 @@ const struct options_table_entry options_table[] = {
+@@ -1549,6 +1549,38 @@ const struct options_table_entry options_table[] = {
  		  "This option is no longer used."
  	},
  
@@ -341,7 +341,7 @@ index 8d390203..e25f8205 100644
  	exit(client_main(osdep_event_init(), argc, argv, flags, feat));
  }
 diff --git a/tmux.h b/tmux.h
-index 60795e09..09551bc7 100644
+index 1917ee19..1a9def32 100644
 --- a/tmux.h
 +++ b/tmux.h
 @@ -96,6 +96,17 @@ struct winlink;

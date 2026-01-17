@@ -9,7 +9,7 @@ class TmuxSensible < Formula
   keg_only "`tmux-sensible` is tmux plugin"
 
   depends_on "z80oolong/tmux/tmux"
-
+p $:
   def install
     ohai "Clean #{libexec}, #{share}"
     rm_r libexec.glob("*")
