@@ -9,7 +9,7 @@ class TmuxAT37Dev < Formula
   desc "Terminal multiplexer"
   homepage "https://tmux.github.io/"
 
-  CURRENT_COMMIT = "615c27c11789948df2db09e113e882f82dfb3e1c".freeze
+  CURRENT_COMMIT = "8356578a54dd798b40c9165ce30999ae69b5ce34".freeze
 
   url "https://github.com/tmux/tmux.git", revision: CURRENT_COMMIT
   version "next-3.7-g#{CURRENT_COMMIT[0..7]}"
@@ -341,7 +341,7 @@ index 8d390203..e25f8205 100644
  	exit(client_main(osdep_event_init(), argc, argv, flags, feat));
  }
 diff --git a/tmux.h b/tmux.h
-index 4405c3b9..12913f92 100644
+index 98504b1b..4590c697 100644
 --- a/tmux.h
 +++ b/tmux.h
 @@ -96,6 +96,17 @@ struct winlink;
