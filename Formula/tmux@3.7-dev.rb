@@ -9,7 +9,7 @@ class TmuxAT37Dev < Formula
   desc "Terminal multiplexer"
   homepage "https://tmux.github.io/"
 
-  CURRENT_COMMIT = "8356578a54dd798b40c9165ce30999ae69b5ce34".freeze
+  CURRENT_COMMIT = "31d77e29b6c9fbb07d032018da78db3a8a38d979".freeze
 
   url "https://github.com/tmux/tmux.git", revision: CURRENT_COMMIT
   version "next-3.7-g#{CURRENT_COMMIT[0..7]}"
@@ -117,7 +117,7 @@ ENV.extend(EnvExtend)
 
 __END__
 diff --git a/image-sixel.c b/image-sixel.c
-index 5c800461..6406d615 100644
+index c37e2cce..2a1c423f 100644
 --- a/image-sixel.c
 +++ b/image-sixel.c
 @@ -124,6 +124,9 @@ sixel_parse_write(struct sixel_image *si, u_int ch)
@@ -209,10 +209,10 @@ index 5c800461..6406d615 100644
  
  	used_colours = si->used_colours;
 diff --git a/options-table.c b/options-table.c
-index d9918193..7d8edfb3 100644
+index 6585484c..33e57a0a 100644
 --- a/options-table.c
 +++ b/options-table.c
-@@ -1549,6 +1549,38 @@ const struct options_table_entry options_table[] = {
+@@ -1564,6 +1564,38 @@ const struct options_table_entry options_table[] = {
  		  "This option is no longer used."
  	},
  
@@ -341,7 +341,7 @@ index 8d390203..e25f8205 100644
  	exit(client_main(osdep_event_init(), argc, argv, flags, feat));
  }
 diff --git a/tmux.h b/tmux.h
-index 98504b1b..4590c697 100644
+index 5ccbadc8..84982377 100644
 --- a/tmux.h
 +++ b/tmux.h
 @@ -96,6 +96,17 @@ struct winlink;
@@ -767,7 +767,7 @@ index 29dbaf59..19dfc707 100644
  
  struct tty_term *
 diff --git a/utf8.c b/utf8.c
-index 95b7ceb3..2d916268 100644
+index dc966814..012bccd6 100644
 --- a/utf8.c
 +++ b/utf8.c
 @@ -27,6 +27,407 @@
@@ -1178,7 +1178,7 @@ index 95b7ceb3..2d916268 100644
  struct utf8_width_item {
  	wchar_t				wc;
  	u_int				width;
-@@ -529,6 +930,23 @@ utf8_width(struct utf8_data *ud, int *width)
+@@ -563,6 +964,23 @@ utf8_width(struct utf8_data *ud, int *width)
  		log_debug("cached width for %08X is %d", (u_int)wc, *width);
  		return (UTF8_DONE);
  	}
@@ -1202,7 +1202,7 @@ index 95b7ceb3..2d916268 100644
  #ifdef HAVE_UTF8PROC
  	*width = utf8proc_wcwidth(wc);
  	log_debug("utf8proc_wcwidth(%05X) returned %d", (u_int)wc, *width);
-@@ -545,6 +963,7 @@ utf8_width(struct utf8_data *ud, int *width)
+@@ -579,6 +997,7 @@ utf8_width(struct utf8_data *ud, int *width)
  #endif
  	if (*width >= 0 && *width <= 0xff)
  		return (UTF8_DONE);
