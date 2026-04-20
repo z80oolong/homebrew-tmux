@@ -5,7 +5,12 @@ if $PROGRAM_NAME == __FILE__
   exit 0
 end
 
+require "#{Tap.fetch("z80oolong/tmux").path}/lib/extend.rb"
+ENV.extend(EnvExtend)
+
 class TmuxAT35 < Formula
+  include DiffDataMixin
+
   desc "Terminal multiplexer"
   homepage "https://tmux.github.io/"
   url "https://github.com/tmux/tmux/releases/download/3.5/tmux-3.5.tar.gz"
@@ -82,22 +87,6 @@ class TmuxAT35 < Formula
     assert_equal "tmux #{version}", shell_output("#{bin}/tmux -V").strip
   end
 end
-
-module EnvExtend
-  def replace_rpath(**replace_list)
-    replace_list = replace_list.each_with_object({}) do |(old, new), result|
-      result[old.to_s] = new.to_s
-    end
-
-    if (rpaths = fetch("HOMEBREW_RPATH_PATHS", false))
-      self["HOMEBREW_RPATH_PATHS"] = (rpaths.split(":").map do |rpath|
-        replace_list.fetch(rpath, rpath)
-      end).join(":")
-    end
-  end
-end
-
-ENV.extend(EnvExtend)
 
 __END__
 diff --git a/image-sixel.c b/image-sixel.c

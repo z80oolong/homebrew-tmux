@@ -5,11 +5,16 @@ if $PROGRAM_NAME == __FILE__
   exit 0
 end
 
+require "#{Tap.fetch("z80oolong/tmux").path}/lib/extend.rb"
+ENV.extend(EnvExtend)
+
 class TmuxAT37Dev < Formula
+  include DiffDataMixin
+
   desc "Terminal multiplexer"
   homepage "https://tmux.github.io/"
 
-  CURRENT_COMMIT = "31d77e29b6c9fbb07d032018da78db3a8a38d979".freeze
+  CURRENT_COMMIT = "dd62c2f9467f975388f4a2701022752961bdb086".freeze
 
   url "https://github.com/tmux/tmux.git", revision: CURRENT_COMMIT
   version "next-3.7-g#{CURRENT_COMMIT[0..7]}"
@@ -89,31 +94,11 @@ class TmuxAT37Dev < Formula
     EOS
   end
 
-  def diff_data
-    path.readlines(nil).first.gsub(/^.*\n__END__\n/m, "")
-  end
-
   test do
     ENV["LC_ALL"] = "ja_JP.UTF-8"
     assert_equal "tmux next-3.7", shell_output("#{bin}/tmux -V").strip
   end
 end
-
-module EnvExtend
-  def replace_rpath(**replace_list)
-    replace_list = replace_list.each_with_object({}) do |(old, new), result|
-      result[old.to_s] = new.to_s
-    end
-
-    if (rpaths = fetch("HOMEBREW_RPATH_PATHS", false))
-      self["HOMEBREW_RPATH_PATHS"] = (rpaths.split(":").map do |rpath|
-        replace_list.fetch(rpath, rpath)
-      end).join(":")
-    end
-  end
-end
-
-ENV.extend(EnvExtend)
 
 __END__
 diff --git a/image-sixel.c b/image-sixel.c
@@ -209,10 +194,10 @@ index c37e2cce..2a1c423f 100644
  
  	used_colours = si->used_colours;
 diff --git a/options-table.c b/options-table.c
-index 6585484c..33e57a0a 100644
+index 9070d94d..84837d58 100644
 --- a/options-table.c
 +++ b/options-table.c
-@@ -1564,6 +1564,38 @@ const struct options_table_entry options_table[] = {
+@@ -1565,6 +1565,38 @@ const struct options_table_entry options_table[] = {
  		  "This option is no longer used."
  	},
  
@@ -341,7 +326,7 @@ index 8d390203..e25f8205 100644
  	exit(client_main(osdep_event_init(), argc, argv, flags, feat));
  }
 diff --git a/tmux.h b/tmux.h
-index 5ccbadc8..84982377 100644
+index 6d420e09..ec14fc8e 100644
 --- a/tmux.h
 +++ b/tmux.h
 @@ -96,6 +96,17 @@ struct winlink;

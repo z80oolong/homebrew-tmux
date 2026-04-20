@@ -1,3 +1,6 @@
+require "#{Tap.fetch("z80oolong/tmux").path}/lib/extend.rb"
+ENV.extend(EnvExtend)
+
 class TmuxCurrent < Formula
   desc "Terminal multiplexer"
   homepage "https://tmux.github.io/"
@@ -92,19 +95,3 @@ class TmuxCurrent < Formula
     assert_equal "tmux #{ver}", shell_output("#{bin}/tmux -V").strip
   end
 end
-
-module EnvExtend
-  def replace_rpath(**replace_list)
-    replace_list = replace_list.each_with_object({}) do |(old, new), result|
-      result[old.to_s] = new.to_s
-    end
-
-    if (rpaths = fetch("HOMEBREW_RPATH_PATHS", false))
-      self["HOMEBREW_RPATH_PATHS"] = (rpaths.split(":").map do |rpath|
-        replace_list.fetch(rpath, rpath)
-      end).join(":")
-    end
-  end
-end
-
-ENV.extend(EnvExtend)
