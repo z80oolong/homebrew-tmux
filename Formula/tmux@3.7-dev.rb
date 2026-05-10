@@ -14,7 +14,7 @@ class TmuxAT37Dev < Formula
   desc "Terminal multiplexer"
   homepage "https://tmux.github.io/"
 
-  CURRENT_COMMIT = "dd62c2f9467f975388f4a2701022752961bdb086".freeze
+  CURRENT_COMMIT = "8fb1b1d412bd5ae0e9c016c9e36ec13c9e25a9cc".freeze
 
   url "https://github.com/tmux/tmux.git", revision: CURRENT_COMMIT
   version "next-3.7-g#{CURRENT_COMMIT[0..7]}"
@@ -194,10 +194,10 @@ index c37e2cce..2a1c423f 100644
  
  	used_colours = si->used_colours;
 diff --git a/options-table.c b/options-table.c
-index 9070d94d..84837d58 100644
+index a65b75ae..f98dacbb 100644
 --- a/options-table.c
 +++ b/options-table.c
-@@ -1565,6 +1565,38 @@ const struct options_table_entry options_table[] = {
+@@ -1623,6 +1623,38 @@ const struct options_table_entry options_table[] = {
  		  "This option is no longer used."
  	},
  
@@ -237,10 +237,10 @@ index 9070d94d..84837d58 100644
  	OPTIONS_TABLE_HOOK("after-bind-key", ""),
  	OPTIONS_TABLE_HOOK("after-capture-pane", ""),
 diff --git a/tmux.c b/tmux.c
-index 8d390203..e25f8205 100644
+index 251b0336..035b0975 100644
 --- a/tmux.c
 +++ b/tmux.c
-@@ -351,20 +351,33 @@ main(int argc, char **argv)
+@@ -368,20 +368,33 @@ main(int argc, char **argv)
  {
  	char					*path = NULL, *label = NULL;
  	char					*cause, **var;
@@ -274,7 +274,7 @@ index 8d390203..e25f8205 100644
  
  	setlocale(LC_TIME, "");
  	tzset();
-@@ -377,7 +390,16 @@ main(int argc, char **argv)
+@@ -394,7 +407,16 @@ main(int argc, char **argv)
  		environ_put(global_environ, *var, 0);
  	if ((cwd = find_cwd()) != NULL)
  		environ_set(global_environ, "PWD", 0, "%s", cwd);
@@ -291,7 +291,7 @@ index 8d390203..e25f8205 100644
  
  	while ((opt = getopt(argc, argv, "2c:CDdf:hlL:NqS:T:uUvV")) != -1) {
  		switch (opt) {
-@@ -510,6 +532,19 @@ main(int argc, char **argv)
+@@ -527,6 +549,19 @@ main(int argc, char **argv)
  		options_set_number(global_w_options, "mode-keys", keys);
  	}
  
@@ -311,7 +311,7 @@ index 8d390203..e25f8205 100644
  	/*
  	 * If socket is specified on the command-line with -S or -L, it is
  	 * used. Otherwise, $TMUX is checked and if that fails "default" is
-@@ -535,6 +570,13 @@ main(int argc, char **argv)
+@@ -552,6 +587,13 @@ main(int argc, char **argv)
  	socket_path = path;
  	free(label);
  
@@ -326,7 +326,7 @@ index 8d390203..e25f8205 100644
  	exit(client_main(osdep_event_init(), argc, argv, flags, feat));
  }
 diff --git a/tmux.h b/tmux.h
-index 6d420e09..ec14fc8e 100644
+index 692ee1c2..8009b8ba 100644
 --- a/tmux.h
 +++ b/tmux.h
 @@ -96,6 +96,17 @@ struct winlink;
@@ -724,10 +724,10 @@ index 3dab31b6..af80835a 100644
 +#endif
  }
 diff --git a/tty-term.c b/tty-term.c
-index 29dbaf59..19dfc707 100644
+index 39bfd9d6..9b3d1b23 100644
 --- a/tty-term.c
 +++ b/tty-term.c
-@@ -510,6 +510,15 @@ tty_term_apply_overrides(struct tty_term *term)
+@@ -511,6 +511,15 @@ tty_term_apply_overrides(struct tty_term *term)
  		term->flags &= ~TERM_NOAM;
  	log_debug("NOAM flag is %d", !!(term->flags & TERM_NOAM));
  
@@ -743,7 +743,7 @@ index 29dbaf59..19dfc707 100644
  	/* Generate ACS table. If none is present, use nearest ASCII. */
  	memset(term->acs, 0, sizeof term->acs);
  	if (tty_term_has(term, TTYC_ACSC))
-@@ -518,6 +527,7 @@ tty_term_apply_overrides(struct tty_term *term)
+@@ -519,6 +528,7 @@ tty_term_apply_overrides(struct tty_term *term)
  		acs = "a#j+k+l+m+n+o-p-q-r-s-t+u+v+w+x|y<z>~.";
  	for (; acs[0] != '\0' && acs[1] != '\0'; acs += 2)
  		term->acs[(u_char) acs[0]][0] = acs[1];
