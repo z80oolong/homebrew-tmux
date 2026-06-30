@@ -8,10 +8,10 @@ class TmuxCurrent < Formula
   revision 15
 
   stable do
-    url "https://github.com/tmux/tmux/releases/download/3.6b/tmux-3.6b.tar.gz"
-    sha256 "390759d25fdba016887ec982b808927e637070fd7d03a8021f8ef3102b9ae3c7"
+    url "https://github.com/tmux/tmux/releases/download/3.7/tmux-3.7.tar.gz"
+    sha256 "2344f191501b8a73eb71dd6c5fd5dcf8c765f5066f34ab46f04b3013dc7bc1a5"
 
-    patch :p1, Formula["z80oolong/tmux/tmux@3.6b"].diff_data
+    patch :p1, Formula["z80oolong/tmux/tmux@3.7"].diff_data
   end
 
   head do
@@ -21,7 +21,7 @@ class TmuxCurrent < Formula
     depends_on "automake" => :build
     depends_on "perl" => :build
 
-    patch :p1, Formula["z80oolong/tmux/tmux@3.7-dev"].diff_data
+    patch :p1, Formula["z80oolong/tmux/tmux@3.8-dev"].diff_data
   end
 
   keg_only "this formula conflicts with 'homebrew/core/tmux'"
