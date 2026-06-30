@@ -1,5 +1,24 @@
 # z80oolong/tmux -- tmux に野良差分ファイルを適用するための Formula 群
 
+## 告知 (2026-06-30)
+
+Homebrew がバージョン 6.0.0 に更新されたことに伴い、セキュリティ対策が強化されました。**これにより、サードパーティの Tap リポジトリを導入する際には、明示的に信頼を設定する必要があります。**
+
+本 Tap リポジトリをご利用の際は、以下の手順に従ってください。
+
+```
+  $ brew tap z80oolong/tmux
+  $ brew trust z80oolong/tmux
+```
+
+その後、通常通り Formula のインストールを行えます。
+
+```
+  $ brew install <formula>
+```
+
+詳細は `brew trust --help` コマンドまたは Homebrew 公式ドキュメントを参照してください。
+
 ## 概要
 
 [Homebrew for Linux][BREW] は、Linux ディストリビューションにおけるソースコードベースのパッケージ管理システムです。これにより、ソフトウェアのソースコードからのビルドおよびインストールを簡単かつ効率的に行えます。
@@ -17,13 +36,16 @@
 
 ## 使用方法
 
-- [Homebrew for Linux][BREW] を端末にインストールします。以下のリソースを参考にしてください：
-    - [thermes 氏][THER] による "[Linuxbrew のススメ][THBR]"
-    - [Homebrew for Linux 公式ページ][BREW]
-- 本リポジトリの Formula を以下のようにインストールします：
+[Homebrew for Linux][BREW] を端末にインストールします。以下のリソースを参考にしてください：
+
+- [thermes 氏][THER] による "[Linuxbrew のススメ][THBR]"
+- [Homebrew for Linux 公式ページ][BREW]
+
+本リポジトリの Formula を以下のようにインストールします：
 
 ```
   $ brew tap z80oolong/tmux
+  $ brew trust z80oolong/tmux
   $ brew install <formula>
 ```
 
