@@ -86,19 +86,19 @@ Homebrew がバージョン 6.0.0 に更新されたことに伴い、セキュ�
 
 <!-- 外部リンク一覧 -->
 
-[BREW]: https://linuxbrew.sh/  
-[TMUX]: https://tmux.github.io/  
-[TGIT]: https://github.com/tmux/tmux  
-[EAWA]: http://www.unicode.org/reports/tr11/#Ambiguous  
-[GST1]: https://github.com/z80oolong/tmux-eaw-fix  
-[THER]: https://qiita.com/thermes  
-[THBR]: https://qiita.com/thermes/items/926b478ff6e3758ecfea  
-[WCWD]: http://www.cl.cam.ac.uk/~mgk25/ucs/wcwidth.c  
-[DRMK]: http://www.cl.cam.ac.uk/~mgk25/  
-[NICM]: https://github.com/nicm  
-[GORI]: https://qiita.com/gorilla0513  
-[KOIE]: https://github.com/koie  
-[GOT_]: https://github.com/skanehira/got  
-[POWE]: https://powerline.readthedocs.io/en/latest/#  
-[BSD2]: https://opensource.org/licenses/BSD-2-Clause  
+[BREW]: https://linuxbrew.sh/
+[TMUX]: https://tmux.github.io/
+[TGIT]: https://github.com/tmux/tmux
+[EAWA]: http://www.unicode.org/reports/tr11/#Ambiguous
+[GST1]: https://github.com/z80oolong/tmux-eaw-fix
+[THER]: https://qiita.com/thermes
+[THBR]: https://qiita.com/thermes/items/926b478ff6e3758ecfea
+[WCWD]: http://www.cl.cam.ac.uk/~mgk25/ucs/wcwidth.c
+[DRMK]: http://www.cl.cam.ac.uk/~mgk25/
+[NICM]: https://github.com/nicm
+[GORI]: https://qiita.com/gorilla0513
+[KOIE]: https://github.com/koie
+[GOT_]: https://github.com/skanehira/got
+[POWE]: https://powerline.readthedocs.io/en/latest/#
+[BSD2]: https://opensource.org/licenses/BSD-2-Clause
 [ZOOL]: http://zool.jpn.org/

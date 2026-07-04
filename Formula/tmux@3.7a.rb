@@ -8,25 +8,19 @@ end
 require "#{Tap.fetch("z80oolong/tmux").path}/lib/extend.rb"
 ENV.extend(EnvExtend)
 
-class TmuxAT38Dev < Formula
+class TmuxAT37a < Formula
   include DiffDataMixin
 
   desc "Terminal multiplexer"
   homepage "https://tmux.github.io/"
-
-  CURRENT_COMMIT = "31b0b0c99e39ced9a42fe3674b80f9eb0e009da7".freeze
-
-  url "https://github.com/tmux/tmux.git", revision: CURRENT_COMMIT
-  version "next-3.8-g#{CURRENT_COMMIT[0..7]}"
+  url "https://github.com/tmux/tmux/releases/download/3.7a/tmux-3.7a.tar.gz"
+  sha256 "8ee44ce951182845fd57ad12dd6f27fb677b1afb900e2e84df4798112ed0dbf0"
   license "ISC"
-  revision 16
+  revision 15
 
   keg_only :versioned_formula
 
-  depends_on "autoconf" => :build
-  depends_on "automake" => :build
   depends_on "bison" => :build
-  depends_on "perl" => :build
   depends_on "pkgconf" => :build
   depends_on "libevent"
   depends_on "z80oolong/tmux/tmux-ncurses@6.5"
@@ -54,9 +48,6 @@ class TmuxAT38Dev < Formula
     ENV.replace_rpath old_curses_f.lib     => new_curses_f.lib,
                       old_curses_f.opt_lib => new_curses_f.opt_lib
     ENV.append "LDFLAGS", "-lresolv"
-    ENV["LC_ALL"] = "C"
-
-    system "sh", "autogen.sh"
 
     args =  std_configure_args
     args << "--sysconfdir=#{etc}"
@@ -86,9 +77,6 @@ class TmuxAT38Dev < Formula
 
   def caveats
     <<~EOS
-      #{full_name} is a Formula for installing the development version of
-      `tmux` based on the HEAD version (commit #{CURRENT_COMMIT[0..7]}) from its git repository.
-
       Example configuration has been installed to:
         #{opt_pkgshare}
     EOS
@@ -96,13 +84,13 @@ class TmuxAT38Dev < Formula
 
   test do
     ENV["LC_ALL"] = "ja_JP.UTF-8"
-    assert_equal "tmux next-3.7", shell_output("#{bin}/tmux -V").strip
+    assert_equal "tmux #{version}", shell_output("#{bin}/tmux -V").strip
   end
 end
 
 __END__
 diff --git a/image-sixel.c b/image-sixel.c
-index a004d78f..7ee420f8 100644
+index cc946cf..4083c8f 100644
 --- a/image-sixel.c
 +++ b/image-sixel.c
 @@ -123,12 +123,40 @@ static int
@@ -192,10 +180,10 @@ index a004d78f..7ee420f8 100644
  
  	used_colours = si->used_colours;
 diff --git a/options-table.c b/options-table.c
-index c7a8158b..fcf8508b 100644
+index d743cdf..da47a1d 100644
 --- a/options-table.c
 +++ b/options-table.c
-@@ -1880,6 +1880,38 @@ const struct options_table_entry options_table[] = {
+@@ -1639,6 +1639,38 @@ const struct options_table_entry options_table[] = {
  		  "This option is no longer used."
  	},
  
@@ -235,7 +223,7 @@ index c7a8158b..fcf8508b 100644
  	OPTIONS_TABLE_HOOK("after-bind-key", ""),
  	OPTIONS_TABLE_HOOK("after-capture-pane", ""),
 diff --git a/tmux.c b/tmux.c
-index 132c3921..6567aadf 100644
+index 132c392..6567aad 100644
 --- a/tmux.c
 +++ b/tmux.c
 @@ -376,20 +376,33 @@ main(int argc, char **argv)
@@ -324,10 +312,10 @@ index 132c3921..6567aadf 100644
  	exit(client_main(osdep_event_init(), argc, argv, flags, feat));
  }
 diff --git a/tmux.h b/tmux.h
-index 503c551a..4cfb0a15 100644
+index 5dc86b2..d4e601b 100644
 --- a/tmux.h
 +++ b/tmux.h
-@@ -100,6 +100,17 @@ struct winlink;
+@@ -96,6 +96,17 @@ struct winlink;
  #define TMUX_LOCK_CMD "lock -np"
  #endif
  
@@ -342,11 +330,11 @@ index 503c551a..4cfb0a15 100644
 +#define NO_USE_UTF8CJK_EMOJI
 +#endif
 +
- /* Minimum and maximum layout cell size, NOT including border lines. */
+ /* Minimum layout cell size, NOT including border lines. */
  #define PANE_MINIMUM 1
- #define PANE_MAXIMUM 10000
+ 
 diff --git a/tty-acs.c b/tty-acs.c
-index 3dab31b6..af80835a 100644
+index 3dab31b..af80835 100644
 --- a/tty-acs.c
 +++ b/tty-acs.c
 @@ -23,6 +23,223 @@
@@ -722,7 +710,7 @@ index 3dab31b6..af80835a 100644
 +#endif
  }
 diff --git a/tty-term.c b/tty-term.c
-index c248aa84..b6a4c127 100644
+index 39bfd9d..9b3d1b2 100644
 --- a/tty-term.c
 +++ b/tty-term.c
 @@ -511,6 +511,15 @@ tty_term_apply_overrides(struct tty_term *term)
@@ -750,7 +738,7 @@ index c248aa84..b6a4c127 100644
  
  struct tty_term *
 diff --git a/utf8.c b/utf8.c
-index e57100fd..fe0365c7 100644
+index e57100f..fe0365c 100644
 --- a/utf8.c
 +++ b/utf8.c
 @@ -27,6 +27,407 @@
