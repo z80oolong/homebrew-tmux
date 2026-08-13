@@ -14,7 +14,7 @@ class TmuxAT38Dev < Formula
   desc "Terminal multiplexer"
   homepage "https://tmux.github.io/"
 
-  CURRENT_COMMIT = "31b0b0c99e39ced9a42fe3674b80f9eb0e009da7".freeze
+  CURRENT_COMMIT = "851c5a933d4838c32ad06c248b2ba975d106149c".freeze
 
   url "https://github.com/tmux/tmux.git", revision: CURRENT_COMMIT
   version "next-3.8-g#{CURRENT_COMMIT[0..7]}"
@@ -192,10 +192,10 @@ index a004d78f..7ee420f8 100644
  
  	used_colours = si->used_colours;
 diff --git a/options-table.c b/options-table.c
-index c7a8158b..fcf8508b 100644
+index 8fcb4d0b..0d0d759a 100644
 --- a/options-table.c
 +++ b/options-table.c
-@@ -1880,6 +1880,38 @@ const struct options_table_entry options_table[] = {
+@@ -1907,6 +1907,38 @@ const struct options_table_entry options_table[] = {
  		  "This option is no longer used."
  	},
  
@@ -232,13 +232,13 @@ index c7a8158b..fcf8508b 100644
 +#endif
 +
  	/* Hook options. */
- 	OPTIONS_TABLE_HOOK("after-bind-key", ""),
- 	OPTIONS_TABLE_HOOK("after-capture-pane", ""),
+ 	OPTIONS_TABLE_AFTER_HOOK("bind-key"),
+ 	OPTIONS_TABLE_AFTER_HOOK("capture-pane"),
 diff --git a/tmux.c b/tmux.c
-index 132c3921..6567aadf 100644
+index c25e0d42..e8572326 100644
 --- a/tmux.c
 +++ b/tmux.c
-@@ -376,20 +376,33 @@ main(int argc, char **argv)
+@@ -394,20 +394,33 @@ main(int argc, char **argv)
  {
  	char					*path = NULL, *label = NULL;
  	char					*cause, **var;
@@ -272,7 +272,7 @@ index 132c3921..6567aadf 100644
  
  	setlocale(LC_TIME, "");
  	tzset();
-@@ -402,7 +415,16 @@ main(int argc, char **argv)
+@@ -420,7 +433,16 @@ main(int argc, char **argv)
  		environ_put(global_environ, *var, 0);
  	if ((cwd = find_cwd()) != NULL)
  		environ_set(global_environ, "PWD", 0, "%s", cwd);
@@ -289,7 +289,7 @@ index 132c3921..6567aadf 100644
  
  	while ((opt = getopt(argc, argv, "2c:CDdf:hlL:NqS:T:uUvV")) != -1) {
  		switch (opt) {
-@@ -535,6 +557,19 @@ main(int argc, char **argv)
+@@ -553,6 +575,19 @@ main(int argc, char **argv)
  		options_set_number(global_w_options, "mode-keys", keys);
  	}
  
@@ -309,7 +309,7 @@ index 132c3921..6567aadf 100644
  	/*
  	 * If socket is specified on the command-line with -S or -L, it is
  	 * used. Otherwise, $TMUX is checked and if that fails "default" is
-@@ -560,6 +595,13 @@ main(int argc, char **argv)
+@@ -578,6 +613,13 @@ main(int argc, char **argv)
  	socket_path = path;
  	free(label);
  
@@ -324,11 +324,11 @@ index 132c3921..6567aadf 100644
  	exit(client_main(osdep_event_init(), argc, argv, flags, feat));
  }
 diff --git a/tmux.h b/tmux.h
-index 503c551a..4cfb0a15 100644
+index b961b67d..e1d439cc 100644
 --- a/tmux.h
 +++ b/tmux.h
-@@ -100,6 +100,17 @@ struct winlink;
- #define TMUX_LOCK_CMD "lock -np"
+@@ -106,6 +106,17 @@ struct winlink;
+ #define TMUX_MOUSE 0
  #endif
  
 +/* If "pane-border-ascii" is not used, "utf8-cjk" is not used too. */
@@ -346,7 +346,7 @@ index 503c551a..4cfb0a15 100644
  #define PANE_MINIMUM 1
  #define PANE_MAXIMUM 10000
 diff --git a/tty-acs.c b/tty-acs.c
-index 3dab31b6..af80835a 100644
+index eedb79c2..ad6c0b74 100644
 --- a/tty-acs.c
 +++ b/tty-acs.c
 @@ -23,6 +23,223 @@
@@ -722,10 +722,10 @@ index 3dab31b6..af80835a 100644
 +#endif
  }
 diff --git a/tty-term.c b/tty-term.c
-index c248aa84..b6a4c127 100644
+index 850adf31..798da677 100644
 --- a/tty-term.c
 +++ b/tty-term.c
-@@ -511,6 +511,15 @@ tty_term_apply_overrides(struct tty_term *term)
+@@ -512,6 +512,15 @@ tty_term_apply_overrides(struct tty_term *term)
  		term->flags &= ~TERM_NOAM;
  	log_debug("NOAM flag is %d", !!(term->flags & TERM_NOAM));
  
@@ -741,16 +741,16 @@ index c248aa84..b6a4c127 100644
  	/* Generate ACS table. If none is present, use nearest ASCII. */
  	memset(term->acs, 0, sizeof term->acs);
  	if (tty_term_has(term, TTYC_ACSC))
-@@ -519,6 +528,7 @@ tty_term_apply_overrides(struct tty_term *term)
+@@ -520,6 +529,7 @@ tty_term_apply_overrides(struct tty_term *term)
  		acs = "a#j+k+l+m+n+o-p-q-r-s-t+u+v+w+x|y<z>~.";
  	for (; acs[0] != '\0' && acs[1] != '\0'; acs += 2)
  		term->acs[(u_char) acs[0]][0] = acs[1];
 +#endif
- }
  
- struct tty_term *
+ 	tty_term_validate(term);
+ }
 diff --git a/utf8.c b/utf8.c
-index e57100fd..fe0365c7 100644
+index 887d2b0f..4d793ac4 100644
 --- a/utf8.c
 +++ b/utf8.c
 @@ -27,6 +27,407 @@
