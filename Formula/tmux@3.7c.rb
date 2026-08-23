@@ -8,13 +8,13 @@ end
 require "#{Tap.fetch("z80oolong/tmux").path}/lib/extend.rb"
 ENV.extend(EnvExtend)
 
-class TmuxAT37a < Formula
+class TmuxAT37c < Formula
   include DiffDataMixin
 
   desc "Terminal multiplexer"
   homepage "https://tmux.github.io/"
-  url "https://github.com/tmux/tmux/releases/download/3.7a/tmux-3.7a.tar.gz"
-  sha256 "8ee44ce951182845fd57ad12dd6f27fb677b1afb900e2e84df4798112ed0dbf0"
+  url "https://github.com/tmux/tmux/releases/download/3.7c/tmux-3.7c.tar.gz"
+  sha256 "7c60cae9a0e25288e2e24750aafc9e8800fc7fd4555e447e1b29ee4201cfb3bf"
   license "ISC"
   revision 15
 
@@ -62,17 +62,6 @@ class TmuxAT37a < Formula
 
     pkgshare.install "example_tmux.conf"
     bash_completion.install resource("completion")
-  end
-
-  def post_install
-    return unless OS.linux?
-
-    ohai "Installing locale data for {ja_JP, zh_*, ko_*, ...}.UTF-8"
-
-    localedef = Formula["glibc"].opt_bin/"localedef"
-    %w[ja_JP zh_CN zh_HK zh_SG zh_TW ko_KR en_US].each do |lang|
-      system localedef, "-i", lang, "-f", "UTF-8", "#{lang}.UTF-8"
-    end
   end
 
   def caveats

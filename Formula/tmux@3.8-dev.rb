@@ -14,7 +14,7 @@ class TmuxAT38Dev < Formula
   desc "Terminal multiplexer"
   homepage "https://tmux.github.io/"
 
-  CURRENT_COMMIT = "851c5a933d4838c32ad06c248b2ba975d106149c".freeze
+  CURRENT_COMMIT = "c1f947a3c5bc72a40c32dead736f84c4628791ec".freeze
 
   url "https://github.com/tmux/tmux.git", revision: CURRENT_COMMIT
   version "next-3.8-g#{CURRENT_COMMIT[0..7]}"
@@ -71,17 +71,6 @@ class TmuxAT38Dev < Formula
 
     pkgshare.install "example_tmux.conf"
     bash_completion.install resource("completion")
-  end
-
-  def post_install
-    return unless OS.linux?
-
-    ohai "Installing locale data for {ja_JP, zh_*, ko_*, ...}.UTF-8"
-
-    localedef = Formula["glibc"].opt_bin/"localedef"
-    %w[ja_JP zh_CN zh_HK zh_SG zh_TW ko_KR en_US].each do |lang|
-      system localedef, "-i", lang, "-f", "UTF-8", "#{lang}.UTF-8"
-    end
   end
 
   def caveats
@@ -235,7 +224,7 @@ index 8fcb4d0b..0d0d759a 100644
  	OPTIONS_TABLE_AFTER_HOOK("bind-key"),
  	OPTIONS_TABLE_AFTER_HOOK("capture-pane"),
 diff --git a/tmux.c b/tmux.c
-index c25e0d42..e8572326 100644
+index ab7c5133..48012504 100644
 --- a/tmux.c
 +++ b/tmux.c
 @@ -394,20 +394,33 @@ main(int argc, char **argv)
@@ -324,7 +313,7 @@ index c25e0d42..e8572326 100644
  	exit(client_main(osdep_event_init(), argc, argv, flags, feat));
  }
 diff --git a/tmux.h b/tmux.h
-index b961b67d..e1d439cc 100644
+index e7f7deb9..600fb75d 100644
 --- a/tmux.h
 +++ b/tmux.h
 @@ -106,6 +106,17 @@ struct winlink;
@@ -722,7 +711,7 @@ index eedb79c2..ad6c0b74 100644
 +#endif
  }
 diff --git a/tty-term.c b/tty-term.c
-index 850adf31..798da677 100644
+index 8e0248e8..32af1920 100644
 --- a/tty-term.c
 +++ b/tty-term.c
 @@ -512,6 +512,15 @@ tty_term_apply_overrides(struct tty_term *term)
