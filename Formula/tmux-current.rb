@@ -24,7 +24,7 @@ class TmuxCurrent < Formula
     patch :p1, Formula["z80oolong/tmux/tmux@3.8-dev"].diff_data
   end
 
-  keg_only "this formula conflicts with 'homebrew/core/tmux'"
+  keg_only "this formula conflicts with `homebrew/core/tmux`"
 
   depends_on "bison" => :build
   depends_on "pkgconf" => :build

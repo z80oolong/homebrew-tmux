@@ -8,25 +8,19 @@ end
 require "#{Tap.fetch("z80oolong/tmux").path}/lib/extend.rb"
 ENV.extend(EnvExtend)
 
-class TmuxAT38Dev < Formula
+class TmuxAT38Rc < Formula
   include DiffDataMixin
 
   desc "Terminal multiplexer"
   homepage "https://tmux.github.io/"
-
-  CURRENT_COMMIT = "e880cf63e0a9fe095d7c5d313761520fb1a8653c".freeze
-
-  url "https://github.com/tmux/tmux.git", revision: CURRENT_COMMIT
-  version "next-3.8-g#{CURRENT_COMMIT[0..7]}"
+  url "https://github.com/tmux/tmux/releases/download/3.8-rc/tmux-3.8-rc.tar.gz"
+  sha256 "decb97e52e91a459f9b9d5726d64cd7cb87506eca1090817da6cc84a9a71eb51"
   license "ISC"
-  revision 16
+  revision 15
 
   keg_only :versioned_formula
 
-  depends_on "autoconf" => :build
-  depends_on "automake" => :build
   depends_on "bison" => :build
-  depends_on "perl" => :build
   depends_on "pkgconf" => :build
   depends_on "libevent"
   depends_on "z80oolong/tmux/tmux-ncurses@6.5"
@@ -54,9 +48,6 @@ class TmuxAT38Dev < Formula
     ENV.replace_rpath old_curses_f.lib     => new_curses_f.lib,
                       old_curses_f.opt_lib => new_curses_f.opt_lib
     ENV.append "LDFLAGS", "-lresolv"
-    ENV["LC_ALL"] = "C"
-
-    system "sh", "autogen.sh"
 
     args =  std_configure_args
     args << "--sysconfdir=#{etc}"
@@ -75,9 +66,6 @@ class TmuxAT38Dev < Formula
 
   def caveats
     <<~EOS
-      #{full_name} is a Formula for installing the development version of
-      `tmux` based on the HEAD version (commit #{CURRENT_COMMIT[0..7]}) from its git repository.
-
       Example configuration has been installed to:
         #{opt_pkgshare}
     EOS
@@ -85,13 +73,13 @@ class TmuxAT38Dev < Formula
 
   test do
     ENV["LC_ALL"] = "ja_JP.UTF-8"
-    assert_equal "tmux next-3.9", shell_output("#{bin}/tmux -V").strip
+    assert_equal "tmux #{version}", shell_output("#{bin}/tmux -V").strip
   end
 end
 
 __END__
 diff --git a/image-sixel.c b/image-sixel.c
-index a004d78f..7ee420f8 100644
+index a004d78..7ee420f 100644
 --- a/image-sixel.c
 +++ b/image-sixel.c
 @@ -123,12 +123,40 @@ static int
@@ -181,10 +169,10 @@ index a004d78f..7ee420f8 100644
  
  	used_colours = si->used_colours;
 diff --git a/options-table.c b/options-table.c
-index 97c0840d..1489bb71 100644
+index 5d171b1..e897750 100644
 --- a/options-table.c
 +++ b/options-table.c
-@@ -1920,6 +1920,38 @@ const struct options_table_entry options_table[] = {
+@@ -1918,6 +1918,38 @@ const struct options_table_entry options_table[] = {
  		  "This option is no longer used."
  	},
  
@@ -224,7 +212,7 @@ index 97c0840d..1489bb71 100644
  	OPTIONS_TABLE_AFTER_HOOK("bind-key"),
  	OPTIONS_TABLE_AFTER_HOOK("capture-pane"),
 diff --git a/tmux.c b/tmux.c
-index ab7c5133..48012504 100644
+index ab7c513..4801250 100644
 --- a/tmux.c
 +++ b/tmux.c
 @@ -394,20 +394,33 @@ main(int argc, char **argv)
@@ -313,7 +301,7 @@ index ab7c5133..48012504 100644
  	exit(client_main(osdep_event_init(), argc, argv, flags, feat));
  }
 diff --git a/tmux.h b/tmux.h
-index 6635280e..eeaed356 100644
+index 191c6d1..9d2bd7f 100644
 --- a/tmux.h
 +++ b/tmux.h
 @@ -107,6 +107,17 @@ struct winlink;
@@ -335,7 +323,7 @@ index 6635280e..eeaed356 100644
  #define PANE_MINIMUM 1
  #define PANE_MAXIMUM 10000
 diff --git a/tty-acs.c b/tty-acs.c
-index eedb79c2..ad6c0b74 100644
+index eedb79c..ad6c0b7 100644
 --- a/tty-acs.c
 +++ b/tty-acs.c
 @@ -23,6 +23,223 @@
@@ -711,7 +699,7 @@ index eedb79c2..ad6c0b74 100644
 +#endif
  }
 diff --git a/tty-term.c b/tty-term.c
-index 6b149fce..1304b050 100644
+index 6b149fc..1304b05 100644
 --- a/tty-term.c
 +++ b/tty-term.c
 @@ -513,6 +513,15 @@ tty_term_apply_overrides(struct tty_term *term)
@@ -739,7 +727,7 @@ index 6b149fce..1304b050 100644
  	tty_term_validate(term);
  }
 diff --git a/utf8.c b/utf8.c
-index 68c37d36..d98138c7 100644
+index 68c37d3..d98138c 100644
 --- a/utf8.c
 +++ b/utf8.c
 @@ -27,6 +27,407 @@
