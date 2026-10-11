@@ -8,19 +8,25 @@ end
 require "#{Tap.fetch("z80oolong/tmux").path}/lib/extend.rb"
 ENV.extend(EnvExtend)
 
-class TmuxAT37b < Formula
+class TmuxAT39Dev < Formula
   include DiffDataMixin
 
   desc "Terminal multiplexer"
   homepage "https://tmux.github.io/"
-  url "https://github.com/tmux/tmux/releases/download/3.7b/tmux-3.7b.tar.gz"
-  sha256 "87f2e99e3b685973f2ca002ffd6ed7e51a5744f7009daae5a15670b6d532db96"
+
+  CURRENT_COMMIT = "95c1c3d7c50795170fd95ec8614bf45fea09faab".freeze
+
+  url "https://github.com/tmux/tmux.git", revision: CURRENT_COMMIT
+  version "next-3.9-g#{CURRENT_COMMIT[0..7]}"
   license "ISC"
-  revision 15
+  revision 16
 
   keg_only :versioned_formula
 
+  depends_on "autoconf" => :build
+  depends_on "automake" => :build
   depends_on "bison" => :build
+  depends_on "perl" => :build
   depends_on "pkgconf" => :build
   depends_on "libevent"
   depends_on "z80oolong/tmux/tmux-ncurses@6.5"
@@ -48,6 +54,9 @@ class TmuxAT37b < Formula
     ENV.replace_rpath old_curses_f.lib     => new_curses_f.lib,
                       old_curses_f.opt_lib => new_curses_f.opt_lib
     ENV.append "LDFLAGS", "-lresolv"
+    ENV["LC_ALL"] = "C"
+
+    system "sh", "autogen.sh"
 
     args =  std_configure_args
     args << "--sysconfdir=#{etc}"
@@ -66,6 +75,9 @@ class TmuxAT37b < Formula
 
   def caveats
     <<~EOS
+      #{full_name} is a Formula for installing the development version of
+      `tmux` based on the HEAD version (commit #{CURRENT_COMMIT[0..7]}) from its git repository.
+
       Example configuration has been installed to:
         #{opt_pkgshare}
     EOS
@@ -73,13 +85,13 @@ class TmuxAT37b < Formula
 
   test do
     ENV["LC_ALL"] = "ja_JP.UTF-8"
-    assert_equal "tmux #{version}", shell_output("#{bin}/tmux -V").strip
+    assert_equal "tmux next-3.9", shell_output("#{bin}/tmux -V").strip
   end
 end
 
 __END__
 diff --git a/image-sixel.c b/image-sixel.c
-index cc946cf..4083c8f 100644
+index a004d78f8..7ee420f88 100644
 --- a/image-sixel.c
 +++ b/image-sixel.c
 @@ -123,12 +123,40 @@ static int
@@ -169,10 +181,10 @@ index cc946cf..4083c8f 100644
  
  	used_colours = si->used_colours;
 diff --git a/options-table.c b/options-table.c
-index d743cdf..da47a1d 100644
+index 15179d87a..234968c72 100644
 --- a/options-table.c
 +++ b/options-table.c
-@@ -1639,6 +1639,38 @@ const struct options_table_entry options_table[] = {
+@@ -1919,6 +1919,38 @@ const struct options_table_entry options_table[] = {
  		  "This option is no longer used."
  	},
  
@@ -209,13 +221,13 @@ index d743cdf..da47a1d 100644
 +#endif
 +
  	/* Hook options. */
- 	OPTIONS_TABLE_HOOK("after-bind-key", ""),
- 	OPTIONS_TABLE_HOOK("after-capture-pane", ""),
+ 	OPTIONS_TABLE_AFTER_HOOK("bind-key"),
+ 	OPTIONS_TABLE_AFTER_HOOK("capture-pane"),
 diff --git a/tmux.c b/tmux.c
-index 132c392..6567aad 100644
+index 1ea10b767..c1d326efc 100644
 --- a/tmux.c
 +++ b/tmux.c
-@@ -376,20 +376,33 @@ main(int argc, char **argv)
+@@ -436,20 +436,33 @@ main(int argc, char **argv)
  {
  	char					*path = NULL, *label = NULL;
  	char					*cause, **var;
@@ -249,7 +261,7 @@ index 132c392..6567aad 100644
  
  	setlocale(LC_TIME, "");
  	tzset();
-@@ -402,7 +415,16 @@ main(int argc, char **argv)
+@@ -462,7 +475,16 @@ main(int argc, char **argv)
  		environ_put(global_environ, *var, 0);
  	if ((cwd = find_cwd()) != NULL)
  		environ_set(global_environ, "PWD", 0, "%s", cwd);
@@ -266,7 +278,7 @@ index 132c392..6567aad 100644
  
  	while ((opt = getopt(argc, argv, "2c:CDdf:hlL:NqS:T:uUvV")) != -1) {
  		switch (opt) {
-@@ -535,6 +557,19 @@ main(int argc, char **argv)
+@@ -595,6 +617,19 @@ main(int argc, char **argv)
  		options_set_number(global_w_options, "mode-keys", keys);
  	}
  
@@ -286,7 +298,7 @@ index 132c392..6567aad 100644
  	/*
  	 * If socket is specified on the command-line with -S or -L, it is
  	 * used. Otherwise, $TMUX is checked and if that fails "default" is
-@@ -560,6 +595,13 @@ main(int argc, char **argv)
+@@ -620,6 +655,13 @@ main(int argc, char **argv)
  	socket_path = path;
  	free(label);
  
@@ -301,11 +313,11 @@ index 132c392..6567aad 100644
  	exit(client_main(osdep_event_init(), argc, argv, flags, feat));
  }
 diff --git a/tmux.h b/tmux.h
-index 5dc86b2..d4e601b 100644
+index 017a05890..b61009aa1 100644
 --- a/tmux.h
 +++ b/tmux.h
-@@ -96,6 +96,17 @@ struct winlink;
- #define TMUX_LOCK_CMD "lock -np"
+@@ -108,6 +108,17 @@ struct winlink;
+ #define TMUX_MOUSE 0
  #endif
  
 +/* If "pane-border-ascii" is not used, "utf8-cjk" is not used too. */
@@ -319,11 +331,11 @@ index 5dc86b2..d4e601b 100644
 +#define NO_USE_UTF8CJK_EMOJI
 +#endif
 +
- /* Minimum layout cell size, NOT including border lines. */
+ /* Minimum and maximum layout cell size, NOT including border lines. */
  #define PANE_MINIMUM 1
- 
+ #define PANE_MAXIMUM 10000
 diff --git a/tty-acs.c b/tty-acs.c
-index 3dab31b..af80835 100644
+index eedb79c2f..ad6c0b74d 100644
 --- a/tty-acs.c
 +++ b/tty-acs.c
 @@ -23,6 +23,223 @@
@@ -699,10 +711,10 @@ index 3dab31b..af80835 100644
 +#endif
  }
 diff --git a/tty-term.c b/tty-term.c
-index 39bfd9d..9b3d1b2 100644
+index 1ac078cd4..d5e51f7f5 100644
 --- a/tty-term.c
 +++ b/tty-term.c
-@@ -511,6 +511,15 @@ tty_term_apply_overrides(struct tty_term *term)
+@@ -519,6 +519,15 @@ tty_term_apply_overrides(struct tty_term *term)
  		term->flags &= ~TERM_NOAM;
  	log_debug("NOAM flag is %d", !!(term->flags & TERM_NOAM));
  
@@ -718,16 +730,16 @@ index 39bfd9d..9b3d1b2 100644
  	/* Generate ACS table. If none is present, use nearest ASCII. */
  	memset(term->acs, 0, sizeof term->acs);
  	if (tty_term_has(term, TTYC_ACSC))
-@@ -519,6 +528,7 @@ tty_term_apply_overrides(struct tty_term *term)
+@@ -527,6 +536,7 @@ tty_term_apply_overrides(struct tty_term *term)
  		acs = "a#j+k+l+m+n+o-p-q-r-s-t+u+v+w+x|y<z>~.";
  	for (; acs[0] != '\0' && acs[1] != '\0'; acs += 2)
  		term->acs[(u_char) acs[0]][0] = acs[1];
 +#endif
- }
  
- struct tty_term *
+ 	tty_term_validate(term);
+ }
 diff --git a/utf8.c b/utf8.c
-index e57100f..fe0365c 100644
+index 71918083b..eaae1fb07 100644
 --- a/utf8.c
 +++ b/utf8.c
 @@ -27,6 +27,407 @@
@@ -1138,7 +1150,7 @@ index e57100f..fe0365c 100644
  struct utf8_width_item {
  	wchar_t				wc;
  	u_int				width;
-@@ -563,6 +964,23 @@ utf8_width(struct utf8_data *ud, int *width)
+@@ -564,6 +965,23 @@ utf8_width(struct utf8_data *ud, int *width)
  		log_debug("cached width for %08X is %d", (u_int)wc, *width);
  		return (UTF8_DONE);
  	}
@@ -1162,7 +1174,7 @@ index e57100f..fe0365c 100644
  #ifdef HAVE_UTF8PROC
  	*width = utf8proc_wcwidth(wc);
  	log_debug("utf8proc_wcwidth(%05X) returned %d", (u_int)wc, *width);
-@@ -579,6 +997,7 @@ utf8_width(struct utf8_data *ud, int *width)
+@@ -580,6 +998,7 @@ utf8_width(struct utf8_data *ud, int *width)
  #endif
  	if (*width >= 0 && *width <= 0xff)
  		return (UTF8_DONE);
