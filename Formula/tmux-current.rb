@@ -1,16 +1,20 @@
-require "#{Tap.fetch("z80oolong/tmux").path}/lib/extend.rb"
-
 class TmuxCurrent < Formula
   desc "Terminal multiplexer"
   homepage "https://tmux.github.io/"
   license "ISC"
-  revision 15
+  revision 16
+
+  CURRENT_VERSION = "3.8".freeze
+  CURRENT_COMMIT  = "95c1c3d7c50795170fd95ec8614bf45fea09faab".freeze
 
   stable do
-    url "https://github.com/tmux/tmux/releases/download/3.8/tmux-3.8.tar.gz"
+    url "https://github.com/tmux/tmux/releases/download/#{CURRENT_VERSION}/tmux-#{CURRENT_VERSION}.tar.gz"
     sha256 "e79c699c7e949dccd0a4a125e17b8d1261e311b16979dbc8eb34542f3966d82e"
 
-    patch :p1, Formula["z80oolong/tmux/tmux@3.8"].diff_data
+    patch :p1 do
+      file "Patches/tmux/tmux-#{CURRENT_VERSION}-fix.diff"
+      type :unofficial
+    end
   end
 
   head do
@@ -20,7 +24,10 @@ class TmuxCurrent < Formula
     depends_on "automake" => :build
     depends_on "perl" => :build
 
-    patch :p1, Formula["z80oolong/tmux/tmux@3.9-dev"].diff_data
+    patch :p1 do
+      file "Patches/tmux/tmux-HEAD-#{CURRENT_COMMIT[0..8]}-fix.diff"
+      type :unofficial
+    end
   end
 
   keg_only "this formula conflicts with `homebrew/core/tmux`"
@@ -47,9 +54,16 @@ class TmuxCurrent < Formula
   def install
     old_curses_f = Formula["ncurses"]
     new_curses_f = Formula["z80oolong/tmux/tmux-ncurses@6.5"]
+    replace_list = {
+      old_curses_f.lib.to_s     => new_curses_f.lib.to_s,
+      old_curses_f.opt_lib.to_s => new_curses_f.opt_lib.to_s,
+    }
 
-    ENV.replace_rpath old_curses_f.lib     => new_curses_f.lib,
-                      old_curses_f.opt_lib => new_curses_f.opt_lib
+    if (rpaths = ENV.fetch("HOMEBREW_RPATH_PATHS", false))
+      ENV["HOMEBREW_RPATH_PATHS"] = (rpaths.split(":").map do |rpath|
+        replace_list.fetch(rpath, rpath)
+      end).join(":")
+    end
     ENV.append "LDFLAGS", "-lresolv"
     ENV["LC_ALL"] = "C"
 

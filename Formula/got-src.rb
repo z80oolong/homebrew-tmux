@@ -52,11 +52,11 @@ class GotSrc < Formula
     (buildpath/"src/github.com/skanehira").install_symlink buildpath => "got"
 
     if build.head?
-      system Formula["go@1.22"].opt_bin/"go", "install", "-v", "github.com/skanehira/got@latest"
+      system formula_opt_bin("go@1.22")/"go", "install", "-v", "github.com/skanehira/got@latest"
       bin.install buildpath/"bin/got"
     else
       resources.each { |resource| (buildpath/"src"/resource.name).install resource }
-      system Formula["go@1.22"].opt_bin/"go", "build", "-v", "-o", bin/"got", "github.com/skanehira/got"
+      system formula_opt_bin("go@1.22")/"go", "build", "-v", "-o", bin/"got", "github.com/skanehira/got"
     end
 
     (share/"doc/#{name}-#{version}").install "README.md"

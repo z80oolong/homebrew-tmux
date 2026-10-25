@@ -5,7 +5,7 @@ class PowerlineStatusAT284 < Formula
   homepage "https://powerline.readthedocs.io/en/latest/"
   url "https://github.com/powerline/powerline/archive/refs/tags/2.8.4.tar.gz"
   sha256 "9e846af9379b57e410efe264cff3a6b98eb78dd9526e83016776ae5ffc5798f4"
-  revision 1
+  revision 2
 
   keg_only "this is an alternate version of another formula"
 
@@ -23,7 +23,10 @@ class PowerlineStatusAT284 < Formula
     end
   end
 
-  patch :p1, :DATA
+  patch :p1 do
+    file "Patches/powerline-status/powerline-status-2.8.4-fix.diff"
+    type :unofficial
+  end
 
   def install
     libexec.mkdir
@@ -96,27 +99,3 @@ class PowerlineStatusAT284 < Formula
     assert_match Regexp.new(re), shell_output("#{bin}/powerline-daemon -h")
   end
 end
-
-__END__
-diff --git a/powerline/bindings/tmux/__init__.py b/powerline/bindings/tmux/__init__.py
-index eb84e7a..8f5cb4f 100644
---- a/powerline/bindings/tmux/__init__.py
-+++ b/powerline/bindings/tmux/__init__.py
-@@ -78,8 +78,12 @@ def get_tmux_version(pl):
- 	version_string = version_string.strip()
- 	if version_string == 'master':
- 		return TmuxVersionInfo(float('inf'), 0, version_string)
--	major, minor = version_string.split('.')
--	major = NON_DIGITS.subn('', major)[0]
--	suffix = DIGITS.subn('', minor)[0] or None
--	minor = NON_DIGITS.subn('', minor)[0]
--	return TmuxVersionInfo(int(major), int(minor), suffix)
-+	try:
-+		major, minor = version_string.split('.')
-+		major = NON_DIGITS.subn('', major)[0]
-+		suffix = DIGITS.subn('', minor)[0] or None
-+		minor = NON_DIGITS.subn('', minor)[0]
-+		return TmuxVersionInfo(int(major), int(minor), suffix)
-+	except:
-+		# If version_string == "next-2.9", and etc., then version of tmux is 'master'.
-+		return TmuxVersionInfo(float('inf'), 0, version_string)
