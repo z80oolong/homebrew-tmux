@@ -18,7 +18,7 @@ class TmuxAT38 < Formula
   license "ISC"
   revision 15
 
-  keg_only :versioned_formula
+  keg_only "this is an alternate version of another formula"
 
   depends_on "bison" => :build
   depends_on "pkgconf" => :build

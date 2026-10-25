@@ -7,7 +7,7 @@ class PowerlineStatusAT284 < Formula
   sha256 "9e846af9379b57e410efe264cff3a6b98eb78dd9526e83016776ae5ffc5798f4"
   revision 1
 
-  keg_only :versioned_formula
+  keg_only "this is an alternate version of another formula"
 
   depends_on "z80oolong/fonts/umefont"
   depends_on "z80oolong/fonts/vlgothic"

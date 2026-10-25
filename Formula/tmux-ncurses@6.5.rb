@@ -8,7 +8,7 @@ class TmuxNcursesAT65 < Formula
   sha256 "136d91bc269a9a5785e5f9e980bc76ab57428f604ce3e5a5a90cebc767971cc6"
   license "MIT"
 
-  keg_only :versioned_formula
+  keg_only "this is an alternate version of another formula"
 
   depends_on "pkgconf" => :build
   on_linux do

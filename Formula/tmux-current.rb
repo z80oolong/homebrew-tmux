@@ -1,5 +1,4 @@
 require "#{Tap.fetch("z80oolong/tmux").path}/lib/extend.rb"
-ENV.extend(EnvExtend)
 
 class TmuxCurrent < Formula
   desc "Terminal multiplexer"
