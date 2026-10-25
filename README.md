@@ -2,7 +2,7 @@
 
 ## 告知 (2026-10-25, 野良差分ファイル配布先の移行についてのお知らせ)
 
-これまで [tmux-eaw-fix][GST1] リポジトリで配布していた「tmux 2.6 以降において各種問題を修正する野良差分ファイル」は、Homebrew で ```patch do ... file "..." ... end``` 構文が利用可能になったことに伴い、**2026年より本ディレクトリ（```Patches/tmux/```）へ配布先を移行しました。**
+これまで [tmux-eaw-fix][GST1] リポジトリで配布していた「tmux 2.6 以降において各種問題を修正する野良差分ファイル」は、Homebrew で ```patch do ... file "..." ... end``` 構文が利用可能になったことに伴い、**今後は[本リポジトリ内のディレクトリ (```Patches/tmux/```)][EXT2] へ配布先を移行しました。**
 
 - 今後の差分ファイルの更新・追加は、すべて本ディレクトリで行います。
 - 旧リポジトリ [tmux-eaw-fix][GST1] はアーカイブとして当面残しますが、新規の差分ファイルの追加は行いません。
@@ -112,3 +112,4 @@ Homebrew がバージョン 6.0.0 に更新されたことに伴い、セキュ�
 [POWE]: https://powerline.readthedocs.io/en/latest/#
 [BSD2]: https://opensource.org/licenses/BSD-2-Clause
 [ZOOL]: http://zool.jpn.org/
+[EXT2]: https://github.com/z80oolong/homebrew-tmux/tree/master/Patches/tmux
