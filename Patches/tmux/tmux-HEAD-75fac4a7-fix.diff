@@ -1,5 +1,5 @@
 diff --git a/image-sixel.c b/image-sixel.c
-index 4fff89fb7..ef7836b8d 100644
+index 4fff89fb7..f7c9131d9 100644
 --- a/image-sixel.c
 +++ b/image-sixel.c
 @@ -295,12 +295,40 @@ static int
@@ -57,9 +57,9 @@ index 4fff89fb7..ef7836b8d 100644
 +					if (y < (si->y - 6) && sl->data[x] == 0)
 +						sl->data[x] = 1;
 +					if (sl->data[x] != 0) {
-+						colors[i] = sl->data[x];
++						pixels[i] = sl->data[x];
 +						c = sl->data[x] - 1;
-+						chunks[c].next_pattern |= 1 << i;
++						planes[c].next_pattern |= 1 << i;
 +					}
 +				}
 +#else
