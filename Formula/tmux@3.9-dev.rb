@@ -2,7 +2,7 @@ class TmuxAT39Dev < Formula
   desc "Terminal multiplexer"
   homepage "https://tmux.github.io/"
 
-  CURRENT_COMMIT = "95c1c3d7c50795170fd95ec8614bf45fea09faab".freeze
+  CURRENT_COMMIT = "75fac4a77bb40dc655f8b217071c224c0c819c7f".freeze
 
   url "https://github.com/tmux/tmux.git", revision: CURRENT_COMMIT
   version "next-3.9-g#{CURRENT_COMMIT[0..7]}"
@@ -34,7 +34,7 @@ class TmuxAT39Dev < Formula
   end
 
   patch :p1 do
-    file "Patches/tmux/tmux-HEAD-#{CURRENT_COMMIT[0..8]}-fix.diff"
+    file "Patches/tmux/tmux-HEAD-#{CURRENT_COMMIT[0..7]}-fix.diff"
     type :unofficial
   end
 

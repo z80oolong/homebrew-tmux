@@ -5,7 +5,7 @@ class TmuxCurrent < Formula
   revision 16
 
   CURRENT_VERSION = "3.8".freeze
-  CURRENT_COMMIT  = "95c1c3d7c50795170fd95ec8614bf45fea09faab".freeze
+  CURRENT_COMMIT  = "75fac4a77bb40dc655f8b217071c224c0c819c7f".freeze
 
   stable do
     url "https://github.com/tmux/tmux/releases/download/#{CURRENT_VERSION}/tmux-#{CURRENT_VERSION}.tar.gz"
@@ -25,7 +25,7 @@ class TmuxCurrent < Formula
     depends_on "perl" => :build
 
     patch :p1 do
-      file "Patches/tmux/tmux-HEAD-#{CURRENT_COMMIT[0..8]}-fix.diff"
+      file "Patches/tmux/tmux-HEAD-#{CURRENT_COMMIT[0..7]}-fix.diff"
       type :unofficial
     end
   end
