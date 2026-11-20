@@ -2,7 +2,7 @@ class TmuxAT39Dev < Formula
   desc "Terminal multiplexer"
   homepage "https://tmux.github.io/"
 
-  CURRENT_COMMIT = "75fac4a77bb40dc655f8b217071c224c0c819c7f".freeze
+  CURRENT_COMMIT = "c8def16706c8552017ad4b174ddf5b0feba6a1c5".freeze
 
   url "https://github.com/tmux/tmux.git", revision: CURRENT_COMMIT
   version "next-3.9-g#{CURRENT_COMMIT[0..7]}"

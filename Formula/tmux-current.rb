@@ -5,7 +5,7 @@ class TmuxCurrent < Formula
   revision 16
 
   CURRENT_VERSION = "3.8".freeze
-  CURRENT_COMMIT  = "75fac4a77bb40dc655f8b217071c224c0c819c7f".freeze
+  CURRENT_COMMIT  = "c8def16706c8552017ad4b174ddf5b0feba6a1c5".freeze
 
   stable do
     url "https://github.com/tmux/tmux/releases/download/#{CURRENT_VERSION}/tmux-#{CURRENT_VERSION}.tar.gz"

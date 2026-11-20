@@ -1,19 +1,19 @@
 diff --git a/image-sixel.c b/image-sixel.c
-index 4fff89fb7..f7c9131d9 100644
+index 4fff89fb7..58e4d199f 100644
 --- a/image-sixel.c
 +++ b/image-sixel.c
-@@ -295,12 +295,40 @@ static int
+@@ -295,12 +295,38 @@ static int
  sixel_parse_write(struct sixel_image *si, u_int ch)
  {
  	u_int			 i;
 +#ifndef NO_FIX_SIXEL
-+	u_int			 dstdata, srcdata;
++	u_int			 dstdata;
 +#endif
  
  	for (i = 0; i < 6; i++) {
 +#ifndef NO_FIX_SIXEL
 +		if (ch & (1 << i)) {
-+			if (sixel_get_pixel(si, si->dx, si->dy + i) == 0) {
++			if ((dstdata = sixel_get_pixel(si, si->dx, si->dy + i)) == 0) {
 +				/* The element of the array for storing pixels, sixel_get_pixel(si, si->dx, si->dy + i) stores
 +				 * si->dc, a value incremented by one from the palette number.
 +				 */
@@ -27,10 +27,8 @@ index 4fff89fb7..f7c9131d9 100644
 +				 * for storing pixel palette numbers, is incremented by 1, and stored
 +				 * in sixel_get_pixel(si, si->dx, si->dy + i).
 +				 */
-+				dstdata = sixel_get_pixel(si, si->dx, si->dy + i) - 1;
-+				srcdata = si->dc - 1;
-+				dstdata = dstdata | srcdata;
-+				if (sixel_set_pixel(si, si->dx, si->dy + i, dstdata + 1))
++				dstdata--; dstdata |= (si->dc - 1); dstdata++;
++				if (sixel_set_pixel(si, si->dx, si->dy + i, dstdata))
 +					return(1);
 +			}
 +		}
@@ -43,7 +41,7 @@ index 4fff89fb7..f7c9131d9 100644
  	}
  	return (0);
  }
-@@ -754,11 +782,28 @@ sixel_print_compress_colors(struct sixel_image *si, struct sixel_plane *planes,
+@@ -754,11 +780,30 @@ sixel_print_compress_colors(struct sixel_image *si, struct sixel_plane *planes,
  			pixels[i] = 0;
  			if (y + i < si->y) {
  				sl = &si->lines[y + i];
@@ -54,8 +52,10 @@ index 4fff89fb7..f7c9131d9 100644
 +					 * especially if ormode is used, the palette number of sl->data[x] is 1 and The palette number
 +					 * in sl->data[x] should be considered to be 1.
 +					 */
++#if 0
 +					if (y < (si->y - 6) && sl->data[x] == 0)
 +						sl->data[x] = 1;
++#endif
 +					if (sl->data[x] != 0) {
 +						pixels[i] = sl->data[x];
 +						c = sl->data[x] - 1;
